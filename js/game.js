@@ -253,8 +253,9 @@ function update(dt, t) {
   if (bossDef.bulles && t > prochainBulle) {
     prochainBulle = t + bossDef.bulles.cadence;
     const dirB2 = Math.sign(dx) || 1;
+    const boucheY = boss.y - boss.hauteur * 0.95;
     projectiles.push({
-      x: boss.x + dirB2 * 30 * boss.echelle, y: hauteurTir(boss), baseY: hauteurTir(boss),
+      x: boss.x + dirB2 * 30 * boss.echelle, y: boucheY, baseY: boucheY,
       vx: dirB2 * (VITESSE_TIR_BOSS * 0.7), de: 'boss', type: 'bulle',
       degats: bossDef.bulles.degats, phrase: '🫧 Bulle de shampoing !', r: 12
     });
@@ -266,7 +267,7 @@ function update(dt, t) {
   for (let i = projectiles.length - 1; i >= 0; i--) {
     const p = projectiles[i];
     p.x += p.vx * dt;
-    if (p.type === 'bulle') p.y = p.baseY + Math.sin(p.x * 0.02) * 28;
+    if (p.type === 'bulle') p.y = p.baseY + Math.sin(p.x * 0.025) * 48;
     if (p.x < -40 || p.x > W + 40) {
       projectiles.splice(i, 1);
       continue;
@@ -307,17 +308,50 @@ function update(dt, t) {
 }
 
 function dessinerFond() {
-  const g = ctx.createLinearGradient(0, 0, 0, H);
-  g.addColorStop(0, '#1a1a40');
-  g.addColorStop(1, '#3b1f5e');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, W, H);
-  ctx.fillStyle = '#2c2c54';
-  ctx.fillRect(0, SOL, W, H - SOL);
-  ctx.fillStyle = '#ffd23f';
-  ctx.beginPath();
-  ctx.arc(W - 120, 90, 34, 0, Math.PI * 2);
-  ctx.fill();
+  if (etat === 'combat') {
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#0a0a2e');
+    g.addColorStop(1, '#232358');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(255, 240, 180, 0.08)';
+    ctx.beginPath();
+    ctx.moveTo(60, 0); ctx.lineTo(300, SOL); ctx.lineTo(420, SOL); ctx.lineTo(180, 0);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(W - 60, 0); ctx.lineTo(W - 180, 0); ctx.lineTo(W - 420, SOL); ctx.lineTo(W - 300, SOL);
+    ctx.fill();
+    ctx.fillStyle = '#000';
+    ctx.fillRect(W / 2 - 270, 36, 540, 150);
+    ctx.strokeStyle = '#555';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(W / 2 - 270, 36, 540, 150);
+    ctx.fillStyle = '#ffd23f';
+    ctx.font = 'bold 40px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('DÉBAT 📺', W / 2, 100);
+    ctx.fillStyle = '#ff5252';
+    ctx.font = 'bold 20px sans-serif';
+    ctx.fillText('● EN DIRECT', W / 2, 140);
+    ctx.fillStyle = '#4e342e';
+    ctx.fillRect(W / 2 - 340, SOL - 24, 680, 24);
+    ctx.fillStyle = '#3e2723';
+    ctx.fillRect(W / 2 - 340, SOL - 24, 680, 8);
+    ctx.fillStyle = '#1a1a33';
+    ctx.fillRect(0, SOL, W, H - SOL);
+  } else {
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#1a1a40');
+    g.addColorStop(1, '#3b1f5e');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#2c2c54';
+    ctx.fillRect(0, SOL, W, H - SOL);
+    ctx.fillStyle = '#ffd23f';
+    ctx.beginPath();
+    ctx.arc(W - 120, 90, 34, 0, Math.PI * 2);
+    ctx.fill();
+  }
 }
 
 function dessinerCombattant(c, t) {

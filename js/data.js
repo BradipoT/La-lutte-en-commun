@@ -8,7 +8,7 @@ window.GAME_DATA = {
 
   boss: [
     { id: 'glucksmann', nom: 'Raphaël Glucksmann', pv: 80, degats: 7, phrase: 'Argument factice !', couleur: '#7f8c8d', vitesse: 130, cadence: 2800, reflexe: 0.08 },
-    { id: 'valet', nom: 'Matthieu Valet', pv: 120, degats: 10, phrase: 'Fake news !', couleur: '#5d6d7e', vitesse: 145, cadence: 2200, reflexe: 0.15, bulles: { cadence: 3800, degats: 5 }, avertissement: '⚠️ Attention : il a mangé du shampoing et peut lancer des bulles ! En plus de son attaque normale, Matthieu Valet peut envoyer dans votre direction une bulle qui se déplace de manière sinusoïdale. Elle fait des dégâts plus faibles que la boule de feu… et elle ne peut pas être contrée !' },
+    { id: 'valet', nom: 'Matthieu Valet', pv: 120, degats: 10, phrase: 'Fake news !', couleur: '#5d6d7e', vitesse: 145, cadence: 2200, reflexe: 0.15, bulles: { cadence: 2200, degats: 5 }, avertissement: 'Attention ! Il a mangé du shampoing et peut cracher des bulles.' },
     { id: 'praud', nom: 'Pascal Praud', pv: 135, degats: 11, phrase: 'Stéréotype raciste !', couleur: '#8e44ad', vitesse: 160, cadence: 2000, reflexe: 0.20 },
     { id: 'philippe', nom: 'Édouard Philippe', pv: 150, degats: 13, phrase: 'Réforme injuste !', couleur: '#2e86c1', vitesse: 175, cadence: 1900, reflexe: 0.25 },
     { id: 'retailleau', nom: 'Bruno Retailleau', pv: 170, degats: 14, phrase: 'Discours sécuritaire !', couleur: '#1a5276', vitesse: 190, cadence: 1800, reflexe: 0.30 },
