@@ -200,6 +200,7 @@ function appliquerSpeciale(type, t) {
     l2: touche ? (consequences[type] || '') : 'L’attaque n’a pas atteint ' + boss.def.nom + ' !',
     t0: t
   };
+  ondes.push({ x: joueur.x, r: 10, maxR: PORTEE_SPE, vitesse: 1100, touche: true, visuel: true });
   if (!touche && type !== 'soin') return;
   if (type === 'bloqueAttaque') {
     boss.bloqueJusqua = t + 10000;
@@ -761,8 +762,8 @@ function draw(t) {
     if (joueur.cast) dessinerEclairs(joueur, t);
     if (boss.cast) dessinerEclairs(boss, t);
     if (t < joueur.flameJusqua) dessinerAura(joueur, t);
-    dessinerSignesConfusion(boss, t, boss.confusJusqua);
-    dessinerSignesConfusion(joueur, t, joueur.confusJusqua);
+    dessinerSignesConfusion(boss, t, Math.max(boss.confusJusqua, boss.bloqueJusqua, boss.antiReflexeJusqua));
+    dessinerSignesConfusion(joueur, t, Math.max(joueur.confusJusqua, joueur.etourdiJusqua));
     dessinerOndes();
     dessinerProjectiles(t);
     dessinerAnnonce(t);

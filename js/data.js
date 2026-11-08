@@ -69,6 +69,7 @@ window.GAME_DATA = {
         { t: 'La jeunesse d’abord !', r: 'Votre gouvernement l’a tabassé' } ] },
     { id: 'zemmour', nom: 'Éric Zemmour', pv: 210, degats: 15, couleur: '#2c3e50', vitesse: 235, cadence: 1700, reflexe: 0.42,
       special: { nom: '🤯 Racisme sidérant', delai: 12000, confusion: 9000 },
+      avertissement: 'Attention : son racisme est sidérant.',
       arguments: [ { t: ' Il a dit « La ville des noires » !', r: 'Ça rend sourd… comme disait l’autre.' },
         { t: 'Le grand remplacement est en cours !', r: 'Vous savez qu’on voit votre tête ?' },
         { t: 'Il faut défendre nos valeurs chrétiennes !', r: 'Comme l’accueil de l’étranger, donc.' } ] },
