@@ -42,6 +42,9 @@ let phraseJ = '', phraseJT = 0, phraseB = '', phraseBT = 0;
 let prochainBulle = 0;
 let prochainBracelet = 0;
 let ondes = [];
+let dernierSpeciale = 0;
+const COOLDOWN_SPE = 15000;
+const DUREE_CAST = 2500;
 let prochainTirBoss = 0;
 let messageJ = '', messageJT = 0, messageB = '', messageBT = 0;
 const touches = { gauche: false, droite: false };
@@ -69,7 +72,7 @@ function creerCombattant(def, x, estBoss) {
     largeur: 46 * echelle, hauteur: 92 * echelle,
     hp: pv, maxHp: pv, onGround: true, echelle: echelle, estBoss: estBoss,
     phase: null, phaseJusqua: 0, action: null, actionT: 0, enMouvement: false,
-    etourdiJusqua: 0
+    etourdiJusqua: 0, cast: null, bloqueJusqua: 0, confusJusqua: 0, antiReflexeJusqua: 0
   };
 }
 
@@ -142,7 +145,7 @@ function tir() {
 }
 
 function saut() {
-  if (etat === 'combat' && joueur.onGround && performance.now() >= joueur.etourdiJusqua) {
+  if (etat === 'combat' && joueur.onGround && !joueur.cast && performance.now() >= joueur.etourdiJusqua) {
     joueur.vy = -780;
     joueur.onGround = false;
   }
@@ -172,6 +175,52 @@ function special() {
     messageJ = 'Rien à renvoyer pour le moment…';
     messageJT = t + 900;
   }
+}
+
+function appliquerSpeciale(type, t) {
+  const nom = joueur.def.special.nom;
+  if (type === 'bloqueAttaque') {
+    boss.bloqueJusqua = t + 10000;
+    messageJ = '✨ Aura ! L’adversaire ne peut plus attaquer pendant 10 s !';
+    messageJT = t + 2500;
+  } else if (type === 'confus') {
+    boss.confusJusqua = t + 6000;
+    messageJ = '👑 La ville des rois !';
+    messageJT = t + 2000;
+    messageB = '« Attends, il a dit quoi là ? »';
+    messageBT = t + 3000;
+  } else if (type === 'soin') {
+    joueur.hp = Math.min(joueur.maxHp, joueur.hp + Math.round(joueur.maxHp * 0.2));
+    messageJ = '💚 Résilience ! +20 % de PV !';
+    messageJT = t + 2000;
+  } else if (type === 'antiReflexe') {
+    boss.antiReflexeJusqua = t + 12000;
+    messageJ = '🧮 Calculs de maths…';
+    messageJT = t + 2000;
+    messageB = '« Il ne peut plus couper la parole pendant 12 s ! »';
+    messageBT = t + 3000;
+  } else if (type === 'grosseBoule') {
+    const dir = boss.x > joueur.x ? 1 : -1;
+    projectiles.push({
+      x: joueur.x + dir * 34, y: hauteurTir(joueur),
+      vx: dir * 560, de: 'joueur', type: 'boule',
+      degats: 40, phrase: '📢 LA RÉPUBLIQUE C’EST MOI !', r: 30
+    });
+    messageJ = '📢 LA RÉPUBLIQUE C’EST MOI !';
+    messageJT = t + 2000;
+  }
+}
+
+function speciale() {
+  if (etat !== 'combat') return;
+  const t = performance.now();
+  if (t - dernierSpeciale < COOLDOWN_SPE || joueur.cast) return;
+  dernierSpeciale = t;
+  joueur.cast = { t0: t, type: joueur.def.special.type };
+  joueur.action = 'protege';
+  joueur.actionT = t;
+  messageJ = '⭐ ' + joueur.def.special.nom + '… préparation 2,5 s !';
+  messageJT = t + DUREE_CAST;
 }
 
 function finCombat(gagne) {
@@ -207,7 +256,11 @@ function update(dt, t) {
   if (etat !== 'combat') return;
 
   const etourdi = t < joueur.etourdiJusqua;
-  const dir = etourdi ? 0 : (touches.droite ? 1 : 0) - (touches.gauche ? 1 : 0);
+  if (joueur.cast && t - joueur.cast.t0 >= DUREE_CAST) {
+    appliquerSpeciale(joueur.cast.type, t);
+    joueur.cast = null;
+  }
+  const dir = (etourdi || joueur.cast) ? 0 : (touches.droite ? 1 : 0) - (touches.gauche ? 1 : 0);
   joueur.enMouvement = dir !== 0 || !joueur.onGround;
   joueur.x += dir * joueur.def.vitesse * dt;
   joueur.x = Math.max(40, Math.min(W - 220, joueur.x));
@@ -229,10 +282,16 @@ function update(dt, t) {
     boss.phase = Math.random() < 0.5 ? 'avance' : 'recule';
     boss.phaseJusqua = t + 1000 + Math.random() * 2000;
   }
-  const sens = boss.phase === 'avance' ? Math.sign(dx) : -Math.sign(dx);
-  const coef = boss.phase === 'avance' ? 1 : 0.85;
-  boss.enMouvement = true;
-  boss.x += sens * bossDef.vitesse * coef * dt;
+  const bossConfus = t < boss.confusJusqua;
+  const bossBloque = t < boss.bloqueJusqua;
+  if (!bossConfus) {
+    const sens = boss.phase === 'avance' ? Math.sign(dx) : -Math.sign(dx);
+    const coef = boss.phase === 'avance' ? 1 : 0.85;
+    boss.enMouvement = true;
+    boss.x += sens * bossDef.vitesse * coef * dt;
+  } else {
+    boss.enMouvement = false;
+  }
   boss.x = Math.max(40, Math.min(W - 40, boss.x));
   if (boss.onGround && Math.random() < dt * 0.25) {
     boss.vy = -700;
@@ -257,7 +316,7 @@ function update(dt, t) {
     boss.x = Math.max(40, Math.min(W - 40, boss.x));
   }
 
-  if (t > prochainTirBoss) {
+  if (!bossBloque && !bossConfus && t > prochainTirBoss) {
     prochainTirBoss = t + bossDef.cadence;
     if (Math.abs(dx) > 100) {
       const dirB = Math.sign(dx);
@@ -275,7 +334,7 @@ function update(dt, t) {
     }
   }
 
-  if (bossDef.bulles && t > prochainBulle) {
+  if (!bossBloque && !bossConfus && bossDef.bulles && t > prochainBulle) {
     prochainBulle = t + bossDef.bulles.cadence;
     const dirB2 = Math.sign(dx) || 1;
     const boucheY = boss.y - boss.hauteur * 0.95;
@@ -286,7 +345,7 @@ function update(dt, t) {
     });
   }
 
-  if (bossDef.bracelet && t > prochainBracelet) {
+  if (!bossBloque && !bossConfus && bossDef.bracelet && t > prochainBracelet) {
     prochainBracelet = t + bossDef.bracelet.delai;
     ondes.push({ x: boss.x, r: 12, maxR: bossDef.bracelet.portee, vitesse: bossDef.bracelet.vitesse, touche: false });
     messageB = '🔔 Le bracelet sonne !';
@@ -325,7 +384,7 @@ function update(dt, t) {
         }
         continue;
       }
-      if (p.type !== 'bulle' && !p.reflexeTeste && Math.abs(p.x - boss.x) < 150 && Math.abs(p.y - chB) < 70) {
+      if (p.type !== 'bulle' && !p.reflexeTeste && t >= boss.antiReflexeJusqua && Math.abs(p.x - boss.x) < 150 && Math.abs(p.y - chB) < 70) {
         p.reflexeTeste = true;
         if (Math.random() < (bossDef.reflexe || 0)) {
           p.de = 'boss';
@@ -338,7 +397,7 @@ function update(dt, t) {
       }
     } else {
       if (Math.abs(p.x - joueur.x) < joueur.largeur / 2 + p.r && Math.abs(p.y - chJ) < joueur.hauteur / 2 + p.r) {
-        joueur.hp -= p.degats;
+        joueur.hp -= p.degats * (joueur.cast ? 2 : 1);
         projectiles.splice(i, 1);
         if (joueur.hp <= 0) {
           joueur.hp = 0;
@@ -580,15 +639,21 @@ function draw(t) {
     dessinerBarre(W - 360, 24, 340, Math.max(0, boss.hp) / boss.maxHp, '#e74c3c', boss.def.nom, true);
     const ratioI = Math.max(0, Math.min(1, (t - dernierSpecial) / 1000));
     ctx.fillStyle = 'rgba(0,0,0,0.55)';
-    ctx.fillRect(20, 46, 150, 9);
+    ctx.fillRect(20, 44, 150, 7);
     ctx.fillStyle = ratioI >= 1 ? '#ffd23f' : '#777';
-    ctx.fillRect(20, 46, 150 * ratioI, 9);
+    ctx.fillRect(20, 44, 150 * ratioI, 7);
+    const ratioS = Math.max(0, Math.min(1, (t - dernierSpeciale) / COOLDOWN_SPE));
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(20, 55, 150, 7);
+    ctx.fillStyle = ratioS >= 1 ? '#c39bd3' : '#777';
+    ctx.fillRect(20, 55, 150 * ratioS, 7);
     ctx.fillStyle = '#fff';
     ctx.font = '11px sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText('🛡 ironie', 176, 54);
-    dessinerBoiteTexte(20, 62, 440, t - messageJT < 3000 ? messageJ : (t - phraseJT < 2500 ? phraseJ : ''));
-    dessinerBoiteTexte(W - 460, 62, 440, t - messageBT < 3000 ? messageB : (t - phraseBT < 2500 ? phraseB : ''));
+    ctx.fillText('🛡 ironie', 176, 51);
+    ctx.fillText('⭐ spé', 176, 62);
+    dessinerBoiteTexte(20, 68, 440, t - messageJT < 3000 ? messageJ : (t - phraseJT < 2500 ? phraseJ : ''));
+    dessinerBoiteTexte(W - 460, 68, 440, t - messageBT < 3000 ? messageB : (t - phraseBT < 2500 ? phraseB : ''));
 
   }
 }
@@ -622,6 +687,7 @@ window.addEventListener('keydown', e => {
     tir();
   }
   if (e.code === 'ShiftLeft' || e.code === 'KeyE') special();
+  if (e.code === 'KeyF') speciale();
 });
 
 window.addEventListener('keyup', e => {
@@ -728,6 +794,7 @@ lierBouton('btn-droite', () => { touches.droite = true; }, () => { touches.droit
 lierBouton('btn-saut', saut);
 lierBouton('btn-tir', tir);
 lierBouton('btn-special', special);
+lierBouton('btn-speciale', speciale);
 
 chargerImages();
 montrer('ecran-titre');

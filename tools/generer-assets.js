@@ -11,6 +11,7 @@ const TRAITS = {
   guette:      { sexe: 'f', cheveux: '#4e342e', longueur: 'longs',    teint: '#f0c8aa', lunettes: false, barbe: null },
   panot:       { sexe: 'f', cheveux: '#e8c96a', longueur: 'mi-longs', teint: '#e8b48c', lunettes: false, barbe: null },
   balayoko:    { sexe: 'h', cheveux: '#1a1a1a', longueur: 'courts',  teint: '#6b4226', lunettes: false, barbe: '#1a1a1a' },
+  bompard:     { sexe: 'h', cheveux: '#3e2723', longueur: 'courts',  teint: '#e8b48c', lunettes: false, barbe: '#3e2723' },
   melenchon:   { sexe: 'h', cheveux: '#cfcfcf', longueur: 'courts',  teint: '#f0c8aa', lunettes: false, barbe: '#cfcfcf' },
   glucksmann:  { sexe: 'h', cheveux: '#6d4c2f', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
   valet:       { sexe: 'h', cheveux: '#3e2723', longueur: 'courts',  teint: '#d9a066', lunettes: false, barbe: null },

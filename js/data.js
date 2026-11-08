@@ -5,25 +5,36 @@ window.GAME_DATA = {
         'La précarité n’est pas un choix de vie.',
         'Taxez les riches, pas les pauvres.',
         'Un SMIC à 1 700 €, c’est possible.'
-      ] },
+      ],
+      special: { type: 'bloqueAttaque', nom: '✨ Aura' } },
     { id: 'panot', nom: 'Mathilde Panot', couleur: '#9b59b6', vitesse: 255, degats: 15,
       arguments: [
         'La VIe République, c’est maintenant.',
         'Le peuple d’abord, les profits ensuite.',
         'Le 49.3, vous connaissez ?'
-      ] },
+      ],
+      special: { type: 'soin', nom: '💚 Résilience' } },
     { id: 'balayoko', nom: 'Bally Bagayoko', couleur: '#3498db', vitesse: 290, degats: 13,
       arguments: [
         'Les services publics ne sont pas un coût, ce sont des droits.',
         'Un hôpital fermé, ce sont des vies en danger.',
         'Chaque quartier mérite son école publique.'
-      ] },
+      ],
+      special: { type: 'confus', nom: '👑 La ville des rois' } },
+    { id: 'bompard', nom: 'Manuel Bompard', couleur: '#16a085', vitesse: 265, degats: 14,
+      arguments: [
+        'Le SMIC à 1 700 €, on le fait.',
+        'La planification écologique, maintenant !',
+        'Vos cadeaux fiscaux, on les connaît.'
+      ],
+      special: { type: 'antiReflexe', nom: '🧮 Calculs de maths' } },
     { id: 'melenchon', nom: 'Jean-Luc Mélenchon', couleur: '#e67e22', vitesse: 245, degats: 17,
       arguments: [
         'Si vous n’augmentez pas les salaires, vous aurez la récession.',
         'L’argent magique existe… pour les riches.',
         'La planète n’a pas de plan B.'
-      ] }
+      ],
+      special: { type: 'grosseBoule', nom: '📢 LA RÉPUBLIQUE C’EST MOI' } }
   ],
 
   boss: [
@@ -55,7 +66,7 @@ window.GAME_DATA = {
     { id: 'attal', nom: 'Gabriel Attal', pv: 200, degats: 16, couleur: '#b9770e', vitesse: 220, cadence: 1600, reflexe: 0.40,
       arguments: [ { t: 'Vous êtes déconnecté de la réalité !', r: 'Déconnecté, non : juste pas branché sur vos combines.' },
         { t: 'Vous êtes vieux !', r: 'Vieux, mais avec une retraite assurée, contrairement à d’autres.' },
-        { t: 'La jeunesse d’abord !', r: 'Votre l’a tabassé' } ] },
+        { t: 'La jeunesse d’abord !', r: 'Votre gouvernement l’a tabassé' } ] },
     { id: 'zemmour', nom: 'Éric Zemmour', pv: 210, degats: 15, couleur: '#2c3e50', vitesse: 235, cadence: 1700, reflexe: 0.42,
       arguments: [ { t: ' Il a dit « La ville des noires » !', r: 'Ça rend sourd… comme disait l’autre.' },
         { t: 'Le grand remplacement est en cours !', r: 'Vous savez qu’on voit votre tête ?' },
