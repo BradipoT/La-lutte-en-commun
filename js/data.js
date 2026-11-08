@@ -68,6 +68,7 @@ window.GAME_DATA = {
         { t: 'Vous êtes vieux !', r: 'Vieux, mais avec une retraite assurée, contrairement à d’autres.' },
         { t: 'La jeunesse d’abord !', r: 'Votre gouvernement l’a tabassé' } ] },
     { id: 'zemmour', nom: 'Éric Zemmour', pv: 210, degats: 15, couleur: '#2c3e50', vitesse: 235, cadence: 1700, reflexe: 0.42,
+      special: { nom: '🤯 Racisme sidérant', delai: 7000, cast: 2500, confusion: 9000 },
       arguments: [ { t: ' Il a dit « La ville des noires » !', r: 'Ça rend sourd… comme disait l’autre.' },
         { t: 'Le grand remplacement est en cours !', r: 'Vous savez qu’on voit votre tête ?' },
         { t: 'Il faut défendre nos valeurs chrétiennes !', r: 'Comme l’accueil de l’étranger, donc.' } ] },
@@ -76,7 +77,7 @@ window.GAME_DATA = {
         { t: 'L’Europe nous vole notre souveraineté !', r: 'Sans l’Europe, on l’aurait retrouvée… où déjà ?' },
         { t: 'Il faut arrêter les éoliennes !', r: 'Oui, le nucléaire… ah non, aussi ?' } ] },
     { id: 'lepen', nom: 'Marine Le Pen', pv: 220, degats: 14, couleur: '#922b21', vitesse: 240, cadence: 1700, reflexe: 0.40, echelle: 1.25, bossFinal: true,
-      bracelet: { delai: 4000, portee: 320, vitesse: 650, etourdissement: 4000 },
+      bracelet: { delai: 4000, portee: 320, vitesse: 650, etourdissement: 4000, confusion: 5000, degats: 8 },
       avertissement: '⚠️ Attention : son bracelet électronique à la cheville peut sonner ! Une onde rapide peut vous étourdir 4 secondes si elle vous touche.',
       arguments: [ { t: 'On n’en peut plus des délinquants !', r: 'Le bracelet ne serre pas trop la cheville, Marine ?' },
         { t: 'L’insécurité partout !', r: 'Des millions de Français vivent dans l’insécurité à cause de vos idées.' }] }

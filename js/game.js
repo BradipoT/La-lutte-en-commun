@@ -41,7 +41,9 @@ let dernierSpecial = 0;
 let phraseJ = '', phraseJT = 0, phraseB = '', phraseBT = 0;
 let prochainBulle = 0;
 let prochainBracelet = 0;
+let prochainSpeBoss = 0;
 let ondes = [];
+const PORTEE_ATTAQUE = 240;
 let dernierSpeciale = 0;
 const COOLDOWN_SPE = 15000;
 const DUREE_CAST = 2500;
@@ -73,7 +75,7 @@ function creerCombattant(def, x, estBoss) {
     largeur: 46 * echelle, hauteur: 92 * echelle,
     hp: pv, maxHp: pv, onGround: true, echelle: echelle, estBoss: estBoss,
     phase: null, phaseJusqua: 0, action: null, actionT: 0, enMouvement: false,
-    etourdiJusqua: 0, cast: null, bloqueJusqua: 0, confusJusqua: 0, antiReflexeJusqua: 0
+    etourdiJusqua: 0, confusJusqua: 0, cast: null, bloqueJusqua: 0, antiReflexeJusqua: 0, flameJusqua: 0
   };
 }
 
@@ -93,6 +95,7 @@ function commencerCombat() {
   prochainTirBoss = performance.now() + 1200;
   prochainBulle = performance.now() + 2500;
   prochainBracelet = performance.now() + 3000;
+  prochainSpeBoss = performance.now() + 4000;
   ondes = [];
   messageJ = '';
   messageB = '';
@@ -123,13 +126,13 @@ function afficherVersus() {
 }
 
 function hauteurTir(c) {
-  return c.y - c.hauteur * 0.95;
+  return c.y - c.hauteur * 1.05;
 }
 
 function tir() {
   if (etat !== 'combat') return;
   const t = performance.now();
-  if (t - dernierTir < 700) return;
+  if (t - dernierTir < 700 || t < joueur.confusJusqua) return;
   dernierTir = t;
   joueur.action = 'tir';
   joueur.actionT = t;
@@ -140,7 +143,7 @@ function tir() {
   const dir = boss.x > joueur.x ? 1 : -1;
   projectiles.push({
     x: joueur.x + dir * 30, y: hauteurTir(joueur),
-    vx: dir * VITESSE_TIR, de: 'joueur',
+    vx: dir * VITESSE_TIR, de: 'joueur', portee: PORTEE_ATTAQUE, startX: joueur.x + dir * 30,
     degats: joueur.def.degats, phrase: argJ, r: 14
   });
 }
@@ -155,7 +158,7 @@ function saut() {
 function special() {
   if (etat !== 'combat') return;
   const t = performance.now();
-  if (t - dernierSpecial < 1000) return;
+  if (t - dernierSpecial < 1000 || t < joueur.confusJusqua) return;
   dernierSpecial = t;
   const cible = projectiles.find(p =>
     p.de === 'boss' && p.type !== 'bulle' &&
@@ -215,7 +218,7 @@ function appliquerSpeciale(type, t) {
     const dir = boss.x > joueur.x ? 1 : -1;
     projectiles.push({
       x: joueur.x + dir * 34, y: hauteurTir(joueur),
-      vx: dir * 560, de: 'joueur', type: 'boule',
+      vx: dir * 560, de: 'joueur', type: 'boule', portee: PORTEE_ATTAQUE, startX: joueur.x + dir * 34,
       degats: 40, phrase: '📢 LA RÉPUBLIQUE C’EST MOI !', r: 30
     });
     messageJ = '📢 LA RÉPUBLIQUE C’EST MOI !';
@@ -226,7 +229,7 @@ function appliquerSpeciale(type, t) {
 function speciale() {
   if (etat !== 'combat') return;
   const t = performance.now();
-  if (t - dernierSpeciale < COOLDOWN_SPE || joueur.cast) return;
+  if (t - dernierSpeciale < COOLDOWN_SPE || joueur.cast || t < joueur.confusJusqua) return;
   dernierSpeciale = t;
   joueur.cast = { t0: t, type: joueur.def.special.type };
   joueur.action = 'protege';
@@ -294,8 +297,20 @@ function update(dt, t) {
     boss.phase = Math.random() < 0.5 ? 'avance' : 'recule';
     boss.phaseJusqua = t + 1000 + Math.random() * 2000;
   }
-  const bossConfus = t < boss.confusJusqua;
+  const bossConfus = t < boss.confusJusqua || !!boss.cast;
   const bossBloque = t < boss.bloqueJusqua;
+  const speBoss = bossDef.special;
+  if (speBoss && !boss.cast && !bossBloque && !bossConfus && t > prochainSpeBoss) {
+    prochainSpeBoss = t + speBoss.delai;
+    boss.cast = { t0: t, type: 'boss' };
+  }
+  if (boss.cast && t - boss.cast.t0 >= speBoss.cast) {
+    joueur.confusJusqua = t + speBoss.confusion;
+    annonce = { l1: boss.def.nom + ' lance ' + speBoss.nom + ' !', l2: 'Vous êtes confus ' + (speBoss.confusion / 1000) + ' s : vous ne pouvez plus attaquer !', t0: t };
+    messageJ = '🤯 Vous êtes confus ' + (speBoss.confusion / 1000) + ' s !';
+    messageJT = t + 2500;
+    boss.cast = null;
+  }
   if (!bossConfus) {
     const sens = boss.phase === 'avance' ? Math.sign(dx) : -Math.sign(dx);
     const coef = boss.phase === 'avance' ? 1 : 0.85;
@@ -368,9 +383,12 @@ function update(dt, t) {
     o.r += o.vitesse * dt;
     if (!o.touche && Math.abs(joueur.x - o.x) <= o.r + joueur.largeur / 2 && joueur.y > SOL - 140) {
       o.touche = true;
+      joueur.hp = Math.max(0, joueur.hp - (bossDef.bracelet.degats || 0));
       joueur.etourdiJusqua = t + bossDef.bracelet.etourdissement;
-      messageJ = '💫 Sonné·e par le bracelet ! 4 s sans bouger !';
-      messageJT = t + 2000;
+      joueur.confusJusqua = t + (bossDef.bracelet.confusion || 0);
+      messageJ = '💫 Bracelet : -' + (bossDef.bracelet.degats || 0) + ' PV, sonné 4 s, confus 5 s !';
+      messageJT = t + 2500;
+      if (joueur.hp <= 0) finCombat(false);
     }
     if (o.r > o.maxR) ondes.splice(i, 1);
   }
@@ -381,6 +399,10 @@ function update(dt, t) {
   for (let i = projectiles.length - 1; i >= 0; i--) {
     const p = projectiles[i];
     p.x += p.vx * dt;
+    if (p.portee && Math.abs(p.x - p.startX) > p.portee) {
+      projectiles.splice(i, 1);
+      continue;
+    }
     if (p.type === 'bulle') p.y = p.baseY + Math.sin(p.x * 0.025) * 48;
     if (p.x < -40 || p.x > W + 40) {
       projectiles.splice(i, 1);
@@ -584,16 +606,19 @@ function dessinerAura(c, t) {
   ctx.fill();
 }
 
-function dessinerConfusion(t) {
-  if (t >= boss.confusJusqua) return;
+function dessinerSignesConfusion(c, t, jusqua) {
+  if (t >= jusqua) return;
   const signes = ['?', '!', '?', '!'];
   const couleurs = ['#ffd23f', '#ff5252', '#ffd23f', '#ff5252'];
-  ctx.font = 'bold 24px sans-serif';
-  ctx.textAlign = 'center';
   signes.forEach((s, i) => {
     const a = t / 280 + i * (Math.PI / 2);
-    const x = boss.x + Math.cos(a) * (boss.largeur + 34);
-    const y = boss.y - boss.hauteur - 26 + Math.sin(a) * 14;
+    const x = c.x + Math.cos(a) * (c.largeur + 44);
+    const y = c.y - c.hauteur - 30 + Math.sin(a) * 18;
+    ctx.font = 'bold 38px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = '#111';
+    ctx.strokeText(s, x, y);
     ctx.fillStyle = couleurs[i];
     ctx.fillText(s, x, y);
   });
@@ -713,8 +738,10 @@ function draw(t) {
     dessinerCombattant(boss, t);
     dessinerCombattant(joueur, t);
     if (joueur.cast) dessinerEclairs(joueur, t);
+    if (boss.cast) dessinerEclairs(boss, t);
     if (t < joueur.flameJusqua) dessinerAura(joueur, t);
-    dessinerConfusion(t);
+    dessinerSignesConfusion(boss, t, boss.confusJusqua);
+    dessinerSignesConfusion(joueur, t, joueur.confusJusqua);
     dessinerOndes();
     dessinerProjectiles(t);
     dessinerAnnonce(t);
