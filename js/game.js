@@ -86,8 +86,8 @@ function choisirHeros(i) {
   commencerCombat();
 }
 
-function hauteurTorse(c) {
-  return c.y - c.hauteur * 0.55;
+function hauteurTir(c) {
+  return c.y - c.hauteur * 0.82;
 }
 
 function tir() {
@@ -99,7 +99,7 @@ function tir() {
   joueur.actionT = t;
   const dir = boss.x > joueur.x ? 1 : -1;
   projectiles.push({
-    x: joueur.x + dir * 30, y: hauteurTorse(joueur),
+    x: joueur.x + dir * 30, y: hauteurTir(joueur),
     vx: dir * VITESSE_TIR, de: 'joueur',
     degats: joueur.def.degats, phrase: joueur.def.phrase, r: 14
   });
@@ -120,7 +120,7 @@ function special() {
   const cible = projectiles.find(p =>
     p.de === 'boss' &&
     Math.abs(p.x - joueur.x) < 200 &&
-    Math.abs(p.y - hauteurTorse(joueur)) < 70 &&
+    Math.abs(p.y - hauteurTir(joueur)) < 70 &&
     Math.sign(p.vx) === Math.sign(joueur.x - p.x)
   );
   if (cible) {
@@ -227,15 +227,15 @@ function update(dt, t) {
       boss.action = 'tir';
       boss.actionT = t;
       projectiles.push({
-        x: boss.x + dirB * 30 * boss.echelle, y: hauteurTorse(boss),
+        x: boss.x + dirB * 30 * boss.echelle, y: hauteurTir(boss),
         vx: dirB * VITESSE_TIR_BOSS, de: 'boss',
         degats: bossDef.degats, phrase: bossDef.phrase, r: 14
       });
     }
   }
 
-  const chJ = hauteurTorse(joueur);
-  const chB = hauteurTorse(boss);
+  const chJ = hauteurTir(joueur);
+  const chB = hauteurTir(boss);
 
   for (let i = projectiles.length - 1; i >= 0; i--) {
     const p = projectiles[i];
@@ -315,10 +315,6 @@ function dessinerCombattant(c, t) {
     ctx.scale(face, 1);
     ctx.drawImage(img, -iw / 2, -ih, iw, ih);
     ctx.restore();
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 14px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(c.def.nom, c.x, c.y - h - 34 * c.echelle);
     return;
   }
 
@@ -375,25 +371,41 @@ function dessinerCombattant(c, t) {
 
   ctx.restore();
 
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 14px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(c.def.nom, c.x, c.y - h - 34 * c.echelle);
 }
 
-function dessinerProjectiles() {
+function dessinerProjectiles(t) {
   projectiles.forEach(p => {
+    const flick = 1 + 0.18 * Math.sin(t / 40 + p.x * 0.05);
+    const r = p.r * flick;
+    const dirX = Math.sign(p.vx);
+    for (let i = 1; i <= 3; i++) {
+      ctx.beginPath();
+      ctx.arc(p.x - dirX * i * r * 1.1, p.y + Math.sin(t / 60 + i) * 2, r * (0.7 - i * 0.18), 0, Math.PI * 2);
+      ctx.fillStyle = p.de === 'joueur' ? 'rgba(255, 150, 40, 0.35)' : 'rgba(255, 60, 60, 0.35)';
+      ctx.fill();
+    }
+    const g = ctx.createRadialGradient(p.x, p.y, r * 0.15, p.x, p.y, r * 1.5);
+    if (p.de === 'joueur') {
+      g.addColorStop(0, '#fff8dc');
+      g.addColorStop(0.4, '#ffd23f');
+      g.addColorStop(1, 'rgba(255, 80, 0, 0)');
+    } else {
+      g.addColorStop(0, '#ffe0e0');
+      g.addColorStop(0.4, '#ff5252');
+      g.addColorStop(1, 'rgba(180, 0, 0, 0)');
+    }
     ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    ctx.fillStyle = p.de === 'joueur' ? '#ffd23f' : '#ff5252';
+    ctx.arc(p.x, p.y, r * 1.5, 0, Math.PI * 2);
+    ctx.fillStyle = g;
     ctx.fill();
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, r * 0.55, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff8dc';
+    ctx.fill();
     ctx.fillStyle = '#fff';
     ctx.font = '12px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(p.phrase, p.x, p.y - p.r - 6);
+    ctx.fillText(p.phrase, p.x, p.y - r - 12);
   });
 }
 
@@ -404,10 +416,6 @@ function dessinerBarre(x, y, w, ratio, couleur, nom, inverse) {
   ctx.fillRect(x, y, w, 18);
   ctx.fillStyle = couleur;
   ctx.fillRect(inverse ? x + w * (1 - ratio) : x, y, w * ratio, 18);
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 13px sans-serif';
-  ctx.textAlign = inverse ? 'right' : 'left';
-  ctx.fillText(nom, inverse ? x + w : x, y - 6);
 }
 
 function draw(t) {
@@ -415,7 +423,7 @@ function draw(t) {
   if (joueur && etat !== 'titre' && etat !== 'heros') {
     dessinerCombattant(boss, t);
     dessinerCombattant(joueur, t);
-    dessinerProjectiles();
+    dessinerProjectiles(t);
     dessinerBarre(20, 34, 340, Math.max(0, joueur.hp) / joueur.maxHp, '#2ecc71', joueur.def.nom, false);
     dessinerBarre(W - 360, 34, 340, Math.max(0, boss.hp) / boss.maxHp, '#e74c3c', boss.def.nom, true);
     if (t < messageJusqua && message) {
