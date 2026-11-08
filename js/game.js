@@ -41,7 +41,7 @@ function element(id) {
 }
 
 function cacherTout() {
-  ['ecran-titre', 'ecran-heros', 'ecran-recompense', 'ecran-defaite', 'ecran-perdu', 'ecran-victoire', 'controles']
+  ['ecran-titre', 'ecran-heros', 'ecran-versus', 'ecran-recompense', 'ecran-defaite', 'ecran-perdu', 'ecran-victoire', 'controles']
     .forEach(id => element(id).classList.add('cache'));
 }
 
@@ -83,7 +83,13 @@ function resetPartie() {
 function choisirHeros(i) {
   if (!disponibles[i]) return;
   herosChoisi = i;
-  commencerCombat();
+  afficherVersus();
+}
+
+function afficherVersus() {
+  etat = 'versus';
+  element('vs-texte').textContent = data.heroes[herosChoisi].nom + ' affronte ' + data.boss[indexBoss].nom;
+  montrer('ecran-versus');
 }
 
 function hauteurTir(c) {
@@ -93,7 +99,7 @@ function hauteurTir(c) {
 function tir() {
   if (etat !== 'combat') return;
   const t = performance.now();
-  if (t - dernierTir < 420) return;
+  if (t - dernierTir < 700) return;
   dernierTir = t;
   joueur.action = 'tir';
   joueur.actionT = t;
@@ -163,7 +169,7 @@ function suivant() {
     element('liste-mesures').innerHTML = data.recompenses.map(r => '<li>' + r + '</li>').join('');
     montrer('ecran-victoire');
   } else {
-    commencerCombat();
+    afficherVersus();
   }
 }
 
@@ -539,6 +545,12 @@ element('btn-jouer').addEventListener('click', () => {
   montrer('ecran-heros');
 });
 element('btn-suivant').addEventListener('click', suivant);
+element('btn-changer').addEventListener('click', () => {
+  etat = 'heros';
+  construireHeros();
+  montrer('ecran-heros');
+});
+element('btn-combat').addEventListener('click', () => commencerCombat());
 element('btn-relais').addEventListener('click', () => {
   etat = 'heros';
   construireHeros();
