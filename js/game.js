@@ -431,6 +431,12 @@ function draw(t) {
     dessinerCombattant(boss, t);
     dessinerCombattant(joueur, t);
     dessinerProjectiles(t);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 14px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(joueur.def.nom, 20, 18);
+    ctx.textAlign = 'right';
+    ctx.fillText(boss.def.nom, W - 20, 18);
     dessinerBarre(20, 24, 340, Math.max(0, joueur.hp) / joueur.maxHp, '#2ecc71', joueur.def.nom, false);
     dessinerBarre(W - 360, 24, 340, Math.max(0, boss.hp) / boss.maxHp, '#e74c3c', boss.def.nom, true);
     const ratioI = Math.max(0, Math.min(1, (t - dernierSpecial) / 1000));
@@ -448,9 +454,9 @@ function draw(t) {
     ctx.fillStyle = '#ffd23f';
     ctx.font = 'bold 19px sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText(t - phraseJT < 2000 ? phraseJ : joueur.def.nom, 32, 87);
+    ctx.fillText(t - phraseJT < 2000 ? phraseJ : '', 32, 87);
     ctx.textAlign = 'right';
-    ctx.fillText(t - phraseBT < 2000 ? phraseB : boss.def.nom, W - 32, 87);
+    ctx.fillText(t - phraseBT < 2000 ? phraseB : '', W - 32, 87);
     if (t < messageJusqua && message) {
       ctx.fillStyle = '#fff';
       ctx.font = 'bold 17px sans-serif';

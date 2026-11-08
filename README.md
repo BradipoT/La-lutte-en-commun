@@ -1,4 +1,4 @@
-# ⚔️ La Marche vers l'Élysée
+# ⚔️ La Lutte en Commun
 
 Petit jeu de combat 2D jouable sur smartphone (navigateur) : choisissez un héros LFI et battez les candidats de droite un par un, du moins au plus fort, en gagnant une grande mesure du programme à chaque victoire.
 
