@@ -99,7 +99,7 @@ function afficherVersus() {
 }
 
 function hauteurTir(c) {
-  return c.y - c.hauteur * 0.82;
+  return c.y - c.hauteur * 0.95;
 }
 
 function tir() {
@@ -578,7 +578,7 @@ function construireHeros() {
     } else {
       const badge = document.createElement('div');
       badge.className = 'badge-tombe';
-      badge.textContent = '💥 un camarade est tombé';
+      badge.textContent = 'Tombé.e au débat';
       div.appendChild(badge);
     }
     liste.appendChild(div);
