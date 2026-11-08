@@ -31,6 +31,7 @@ let boss = null;
 let projectiles = [];
 let dernierTir = 0;
 let dernierSpecial = 0;
+let phraseJ = '', phraseJT = 0, phraseB = '', phraseBT = 0;
 let prochainTirBoss = 0;
 let message = '';
 let messageJusqua = 0;
@@ -41,7 +42,7 @@ function element(id) {
 }
 
 function cacherTout() {
-  ['ecran-titre', 'ecran-heros', 'ecran-versus', 'ecran-recompense', 'ecran-defaite', 'ecran-perdu', 'ecran-victoire', 'controles']
+  ['ecran-titre', 'ecran-aide', 'ecran-heros', 'ecran-versus', 'ecran-recompense', 'ecran-defaite', 'ecran-perdu', 'ecran-victoire', 'controles']
     .forEach(id => element(id).classList.add('cache'));
 }
 
@@ -103,6 +104,8 @@ function tir() {
   dernierTir = t;
   joueur.action = 'tir';
   joueur.actionT = t;
+  phraseJ = joueur.def.phrase;
+  phraseJT = t;
   const dir = boss.x > joueur.x ? 1 : -1;
   projectiles.push({
     x: joueur.x + dir * 30, y: hauteurTir(joueur),
@@ -232,6 +235,8 @@ function update(dt, t) {
       const dirB = Math.sign(dx);
       boss.action = 'tir';
       boss.actionT = t;
+      phraseB = bossDef.phrase;
+      phraseBT = t;
       projectiles.push({
         x: boss.x + dirB * 30 * boss.echelle, y: hauteurTir(boss),
         vx: dirB * VITESSE_TIR_BOSS, de: 'boss',
@@ -408,10 +413,6 @@ function dessinerProjectiles(t) {
     ctx.arc(p.x, p.y, r * 0.55, 0, Math.PI * 2);
     ctx.fillStyle = '#fff8dc';
     ctx.fill();
-    ctx.fillStyle = '#fff';
-    ctx.font = '12px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(p.phrase, p.x, p.y - r - 12);
   });
 }
 
@@ -430,17 +431,23 @@ function draw(t) {
     dessinerCombattant(boss, t);
     dessinerCombattant(joueur, t);
     dessinerProjectiles(t);
-    dessinerBarre(20, 34, 340, Math.max(0, joueur.hp) / joueur.maxHp, '#2ecc71', joueur.def.nom, false);
-    dessinerBarre(W - 360, 34, 340, Math.max(0, boss.hp) / boss.maxHp, '#e74c3c', boss.def.nom, true);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 15px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(t - phraseJT < 1500 ? phraseJ : joueur.def.nom, 20, 22);
+    ctx.textAlign = 'right';
+    ctx.fillText(t - phraseBT < 1500 ? phraseB : boss.def.nom, W - 20, 22);
+    dessinerBarre(20, 30, 340, Math.max(0, joueur.hp) / joueur.maxHp, '#2ecc71', joueur.def.nom, false);
+    dessinerBarre(W - 360, 30, 340, Math.max(0, boss.hp) / boss.maxHp, '#e74c3c', boss.def.nom, true);
     const ratioI = Math.max(0, Math.min(1, (t - dernierSpecial) / 1000));
     ctx.fillStyle = 'rgba(0,0,0,0.55)';
-    ctx.fillRect(20, 58, 150, 9);
+    ctx.fillRect(20, 54, 150, 9);
     ctx.fillStyle = ratioI >= 1 ? '#ffd23f' : '#777';
-    ctx.fillRect(20, 58, 150 * ratioI, 9);
+    ctx.fillRect(20, 54, 150 * ratioI, 9);
     ctx.fillStyle = '#fff';
     ctx.font = '11px sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText('🛡 ironie', 176, 66);
+    ctx.fillText('🛡 ironie', 176, 62);
     if (t < messageJusqua && message) {
       ctx.fillStyle = '#ffd23f';
       ctx.font = 'bold 22px sans-serif';
@@ -540,6 +547,10 @@ element('btn-plein-ecran').addEventListener('click', () => {
 element('btn-jouer').addEventListener('click', () => {
   demanderPleinEcran();
   resetPartie();
+  etat = 'aide';
+  montrer('ecran-aide');
+});
+element('btn-aide-suivant').addEventListener('click', () => {
   etat = 'heros';
   construireHeros();
   montrer('ecran-heros');

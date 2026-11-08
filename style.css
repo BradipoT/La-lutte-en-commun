@@ -135,6 +135,13 @@ h2 { font-size: clamp(22px, 5vw, 36px); }
 
 #liste-mesures li::before { content: '✅ '; }
 
+.aide-liste {
+  list-style: none;
+  text-align: left;
+  font-size: clamp(16px, 3vw, 20px);
+  line-height: 2;
+}
+
 .micros {
   font-size: 46px;
   letter-spacing: -10px;

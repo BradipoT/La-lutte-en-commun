@@ -2,7 +2,7 @@ window.GAME_DATA = {
   heroes: [
     { id: 'guette', nom: 'Clémence Guetté', couleur: '#e74c3c', vitesse: 270, degats: 14, phrase: 'Point programmatique !' },
     { id: 'panot', nom: 'Mathilde Panot', couleur: '#9b59b6', vitesse: 255, degats: 15, phrase: 'Assemblée citoyenne !' },
-    { id: 'balayoko', nom: 'Badi Balayoko', couleur: '#3498db', vitesse: 290, degats: 13, phrase: 'Service public !' },
+    { id: 'balayoko', nom: 'Bally Bagayoko', couleur: '#3498db', vitesse: 290, degats: 13, phrase: 'Service public !' },
     { id: 'melenchon', nom: 'Jean-Luc Mélenchon', couleur: '#e67e22', vitesse: 245, degats: 17, phrase: 'Le programme en action !' }
   ],
 
