@@ -5,6 +5,7 @@ const H = 540;
 const SOL = H - 70;
 const GRAV = 1800;
 const VITESSE_TIR = 460;
+const VITESSE_TIR_BOSS = 350;
 const data = window.GAME_DATA;
 
 let etat = 'titre';
@@ -36,7 +37,7 @@ function montrer(id) {
 
 function creerCombattant(def, x, estBoss) {
   const echelle = def.echelle || 1;
-  const pv = estBoss ? def.pv : 100;
+  const pv = estBoss ? def.pv : 120;
   return {
     def: def, x: x, y: SOL, vy: 0,
     largeur: 46 * echelle, hauteur: 92 * echelle,
@@ -70,7 +71,7 @@ function hauteurTorse(c) {
 function tir() {
   if (etat !== 'combat') return;
   const t = performance.now();
-  if (t - dernierTir < 550) return;
+  if (t - dernierTir < 420) return;
   dernierTir = t;
   const dir = boss.x > joueur.x ? 1 : -1;
   projectiles.push({
@@ -90,11 +91,11 @@ function saut() {
 function special() {
   if (etat !== 'combat') return;
   const t = performance.now();
-  if (t - dernierSpecial < 1400) return;
+  if (t - dernierSpecial < 1000) return;
   dernierSpecial = t;
   const cible = projectiles.find(p =>
     p.de === 'boss' &&
-    Math.abs(p.x - joueur.x) < 150 &&
+    Math.abs(p.x - joueur.x) < 200 &&
     Math.abs(p.y - hauteurTorse(joueur)) < 70 &&
     Math.sign(p.vx) === Math.sign(joueur.x - p.x)
   );
@@ -173,7 +174,7 @@ function update(dt, t) {
       const dirB = Math.sign(dx);
       projectiles.push({
         x: boss.x + dirB * 30 * boss.echelle, y: hauteurTorse(boss),
-        vx: dirB * VITESSE_TIR, de: 'boss',
+        vx: dirB * VITESSE_TIR_BOSS, de: 'boss',
         degats: bossDef.degats, phrase: bossDef.phrase, r: 14
       });
     }
