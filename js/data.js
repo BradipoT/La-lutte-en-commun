@@ -51,15 +51,14 @@ window.GAME_DATA = {
         { t: 'L’écologie, c’est du bobo-écolo !', r: 'Le bobo-écolo… comme les canicules ?' } ] },
     { id: 'saintcricq', nom: 'Nathalie Saint-Cricq', pv: 185, degats: 15, couleur: '#117864', vitesse: 205, cadence: 1700, reflexe: 0.35,
       arguments: [ { t: 'Vous êtes dans la posture, avouez !', r: 'Orienté, peut-être, mais au moins il vise dans le bon sens.' },
-        { t: 'Vous n’êtes pas crédible !', r: 'Crédible, non : juste pas audible chez vous.' },
-        { t: 'Ça manque de chiffres !', r: 'Des chiffres truqués, ce serait mieux ?' } ] },
+        { t: 'Vous n’êtes pas crédible !', r: 'Crédible, non : juste pas audible chez vous.' } ] },
     { id: 'attal', nom: 'Gabriel Attal', pv: 200, degats: 16, couleur: '#b9770e', vitesse: 220, cadence: 1600, reflexe: 0.40,
       arguments: [ { t: 'Vous êtes déconnecté de la réalité !', r: 'Déconnecté, non : juste pas branché sur vos combines.' },
         { t: 'Vous êtes vieux !', r: 'Vieux, mais avec une retraite assurée, contrairement à d’autres.' },
-        { t: 'La jeunesse d’abord !', r: 'La jeunesse d’abord… pour les dividendes ?' } ] },
+        { t: 'La jeunesse d’abord !', r: 'Votre l'a tabassé' } ] },
     { id: 'zemmour', nom: 'Éric Zemmour', pv: 210, degats: 15, couleur: '#2c3e50', vitesse: 235, cadence: 1700, reflexe: 0.42,
-      arguments: [ { t: '« La ville des noires » !', r: 'Ça rend sourd… comme disait l’autre.' },
-        { t: 'Le grand remplacement est en cours !', r: 'Ah, donc c’est pour ça que tout le monde part en vacances ?' },
+      arguments: [ { t: ' Il a dit « La ville des noires » !', r: 'Ça rend sourd… comme disait l’autre.' },
+        { t: 'Le grand remplacement est en cours !', r: 'Vous savez qu'on voit votre tête?' },
         { t: 'Il faut défendre nos valeurs chrétiennes !', r: 'Comme l’accueil de l’étranger, donc.' } ] },
     { id: 'bardella', nom: 'Jordan Bardella', pv: 215, degats: 16, couleur: '#1f618d', vitesse: 245, cadence: 1650, reflexe: 0.43,
       arguments: [ { t: 'Mais où trouve-t-il toute cette énergie ?', r: 'J’aurais bien une réponse mais ce serait vulgaire.' },
@@ -69,8 +68,7 @@ window.GAME_DATA = {
       bracelet: { delai: 4000, portee: 320, vitesse: 650, etourdissement: 4000 },
       avertissement: '⚠️ Attention : son bracelet électronique à la cheville peut sonner ! Une onde rapide peut vous étourdir 4 secondes si elle vous touche.',
       arguments: [ { t: 'On n’en peut plus des délinquants !', r: 'Le bracelet ne serre pas trop la cheville, Marine ?' },
-        { t: 'L’insécurité partout !', r: 'Partout, sauf dans les meetings bien protégés.' },
-        { t: 'Il faut sortir de l’Europe !', r: 'Pratique pour les paradis fiscaux, en effet.' } ] }
+        { t: 'L’insécurité partout !', r: 'Des millions de français vivent dans l'insécurité à cause vos idées.' }] }
   ],
 
   recompenses: [
