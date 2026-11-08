@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0d0d1f">
 <title>La Lutte en Commun</title>
-<link rel="stylesheet" href="style.css?v=41">
+<link rel="stylesheet" href="style.css?v=42">
 </head>
 <body>
 <canvas id="jeu" width="960" height="540"></canvas>
@@ -101,10 +101,12 @@
 </div>
 
 <div id="controles" class="cache">
-  <div class="groupe groupe-gauche">
-    <button id="btn-gauche" class="bouton">◀</button>
-    <button id="btn-droite" class="bouton">▶</button>
+  <div class="groupe groupe-gauche groupe-triangle">
     <button id="btn-saut" class="bouton">⬆</button>
+    <div class="ligne-bas">
+      <button id="btn-gauche" class="bouton">◀</button>
+      <button id="btn-droite" class="bouton">▶</button>
+    </div>
   </div>
   <div class="groupe groupe-triangle">
     <div class="ligne-bas">
@@ -115,7 +117,7 @@
   </div>
 </div>
 
-<script src="js/data.js?v=41"></script>
-<script src="js/game.js?v=41"></script>
+<script src="js/data.js?v=42"></script>
+<script src="js/game.js?v=42"></script>
 </body>
 </html>
