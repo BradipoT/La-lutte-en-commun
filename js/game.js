@@ -46,7 +46,7 @@ let ondes = [];
 const PORTEE_ATTAQUE = 240;
 let dernierSpeciale = 0;
 const COOLDOWN_SPE = 8000;
-const DUREE_CAST = 2500;
+const DUREE_CAST = 1800;
 const PORTEE_SPE = 480;
 let annonce = null;
 let prochainTirBoss = 0;
@@ -187,6 +187,7 @@ function appliquerSpeciale(type, t) {
   joueur.flameJusqua = t + 800;
   joueur.action = 'pointe';
   joueur.actionT = t;
+  const touche = type === 'soin' || Math.abs(boss.x - joueur.x) <= PORTEE_SPE;
   const consequences = {
     bloqueAttaque: 'L’adversaire ne peut plus attaquer pendant 10 s.',
     confus: 'L’adversaire est confus 6 s : il ne fait plus rien.',
@@ -194,7 +195,12 @@ function appliquerSpeciale(type, t) {
     antiReflexe: 'L’adversaire ne peut plus couper la parole pendant 12 s.',
     grosseBoule: 'Grosse boule de feu : 40 dégâts !'
   };
-  annonce = { l1: joueur.def.nom + ' lance ' + nom + ' !', l2: consequences[type] || '', t0: t };
+  annonce = {
+    l1: joueur.def.nom + ' lance ' + nom + ' !',
+    l2: touche ? (consequences[type] || '') : 'L’attaque n’a pas atteint ' + boss.def.nom + ' !',
+    t0: t
+  };
+  if (!touche && type !== 'soin') return;
   if (type === 'bloqueAttaque') {
     boss.bloqueJusqua = t + 10000;
     messageJ = '✨ Aura ! L’adversaire ne peut plus attaquer pendant 10 s !';
@@ -302,15 +308,22 @@ function update(dt, t) {
   const bossBloque = t < boss.bloqueJusqua;
   const speBoss = bossDef.special;
   if (speBoss && !boss.cast && !bossBloque && !bossConfus && t > prochainSpeBoss) {
-    prochainSpeBoss = t + speBoss.delai;
     boss.cast = { t0: t, type: 'boss' };
   }
-  if (boss.cast && t - boss.cast.t0 >= speBoss.cast) {
-    joueur.confusJusqua = t + speBoss.confusion;
-    annonce = { l1: boss.def.nom + ' lance ' + speBoss.nom + ' !', l2: 'Vous êtes confus ' + (speBoss.confusion / 1000) + ' s : vous ne pouvez plus attaquer !', t0: t };
-    messageJ = '🤯 Vous êtes confus ' + (speBoss.confusion / 1000) + ' s !';
-    messageJT = t + 2500;
+  if (boss.cast && t - boss.cast.t0 >= DUREE_CAST) {
+    const touche = Math.abs(joueur.x - boss.x) <= PORTEE_SPE;
+    annonce = {
+      l1: boss.def.nom + ' lance ' + speBoss.nom + ' !',
+      l2: touche ? 'Vous êtes confus ' + (speBoss.confusion / 1000) + ' s : vous ne pouvez plus attaquer !' : 'L’attaque n’a pas atteint ' + joueur.def.nom + ' !',
+      t0: t
+    };
+    if (touche) {
+      joueur.confusJusqua = t + speBoss.confusion;
+      messageJ = '🤯 Vous êtes confus ' + (speBoss.confusion / 1000) + ' s !';
+      messageJT = t + 2500;
+    }
     boss.cast = null;
+    prochainSpeBoss = t + speBoss.delai;
   }
   if (!bossConfus) {
     const sens = boss.phase === 'avance' ? Math.sign(dx) : -Math.sign(dx);
@@ -633,8 +646,8 @@ function dessinerSignesConfusion(c, t, jusqua) {
 }
 
 function dessinerAnnonce(t) {
-  if (!annonce || t - annonce.t0 > 2600) return;
-  const alpha = Math.min(1, (2600 - (t - annonce.t0)) / 500);
+  if (!annonce || t - annonce.t0 > 3000) return;
+  const alpha = Math.min(1, (3000 - (t - annonce.t0)) / 500);
   ctx.font = 'bold 24px sans-serif';
   const w1 = ctx.measureText(annonce.l1).width;
   ctx.font = '15px sans-serif';
