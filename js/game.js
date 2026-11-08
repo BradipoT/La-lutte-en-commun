@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 42;
+const VERSION = 43;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -849,6 +849,83 @@ window.addEventListener('keyup', e => {
 
 const COULEURS_BARRES = ['#e74c3c', '#e67e22', '#f1c40f', '#82e0aa', '#1e8449'];
 
+let audioCtx = null;
+let musiqueOn = true;
+let seqTimer = null;
+let prochaineNote = 0;
+let stepSeq = 0;
+const BPM = 150;
+const STEP_DUREE = 60 / BPM / 2;
+const MELODIE = [69, 72, 76, 81, 79, 76, 72, 74, 76, 79, 81, 76, 74, 72, 69, 0, 69, 72, 76, 81, 79, 76, 81, 84, 83, 81, 79, 76, 74, 72, 74, 0];
+const BASSE = [45, 45, 48, 45, 45, 45, 48, 45, 41, 41, 48, 41, 43, 43, 47, 43];
+
+function freq(midi) {
+  return 440 * Math.pow(2, (midi - 69) / 12);
+}
+
+function jouerNote(midi, t, duree, type, vol) {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq(midi);
+  gain.gain.setValueAtTime(vol, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + duree);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(t);
+  osc.stop(t + duree + 0.02);
+}
+
+function jouerHat(t) {
+  const tampon = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.03, audioCtx.sampleRate);
+  const canal = tampon.getChannelData(0);
+  for (let i = 0; i < canal.length; i++) canal[i] = (Math.random() * 2 - 1) * (1 - i / canal.length);
+  const src = audioCtx.createBufferSource();
+  src.buffer = tampon;
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.08, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+  const filtre = audioCtx.createBiquadFilter();
+  filtre.type = 'highpass';
+  filtre.frequency.value = 6000;
+  src.connect(filtre);
+  filtre.connect(gain);
+  gain.connect(audioCtx.destination);
+  src.start(t);
+}
+
+function boucleSequence() {
+  if (!audioCtx || !musiqueOn) return;
+  while (prochaineNote < audioCtx.currentTime + 0.15) {
+    const m = MELODIE[stepSeq % MELODIE.length];
+    if (m) jouerNote(m, prochaineNote, STEP_DUREE * 0.9, 'square', 0.12);
+    const b = BASSE[stepSeq % BASSE.length];
+    if (b) jouerNote(b, prochaineNote, STEP_DUREE * 1.8, 'triangle', 0.16);
+    if (stepSeq % 2 === 1) jouerHat(prochaineNote);
+    prochaineNote += STEP_DUREE;
+    stepSeq++;
+  }
+}
+
+function demarrerMusique() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    prochaineNote = audioCtx.currentTime + 0.1;
+    stepSeq = 0;
+    seqTimer = setInterval(boucleSequence, 50);
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function basculerMusique() {
+  musiqueOn = !musiqueOn;
+  element('btn-musique').textContent = musiqueOn ? '🔊 Musique : ON' : '🔇 Musique : OFF';
+  if (audioCtx) {
+    if (musiqueOn) audioCtx.resume();
+    else audioCtx.suspend();
+  }
+}
+
 function barreStats(valeur, min, max, inverse) {
   const v = inverse ? -valeur : valeur;
   const vMin = inverse ? -max : min;
@@ -942,6 +1019,7 @@ element('btn-plein-ecran').addEventListener('click', () => {
 function choisirNiveau(n) {
   niveau = n;
   demanderPleinEcran();
+  demarrerMusique();
   resetPartie();
   etat = 'intro';
   montrer('ecran-intro1');
@@ -975,6 +1053,7 @@ element('btn-changer').addEventListener('click', () => {
   }
 });
 element('btn-combat').addEventListener('click', () => commencerCombat());
+element('btn-musique').addEventListener('click', basculerMusique);
 element('btn-choisir-stats').addEventListener('click', () => choisirHeros(statsEnCours));
 element('btn-retour-stats').addEventListener('click', () => {
   construireHeros();
