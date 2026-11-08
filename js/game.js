@@ -43,7 +43,7 @@ function creerCombattant(def, x, estBoss) {
     def: def, x: x, y: SOL, vy: 0,
     largeur: 46 * echelle, hauteur: 92 * echelle,
     hp: pv, maxHp: pv, onGround: true, echelle: echelle, estBoss: estBoss,
-    phase: null, phaseJusqua: 0
+    phase: null, phaseJusqua: 0, action: null, actionT: 0, enMouvement: false
   };
 }
 
@@ -81,6 +81,8 @@ function tir() {
   const t = performance.now();
   if (t - dernierTir < 420) return;
   dernierTir = t;
+  joueur.action = 'tir';
+  joueur.actionT = t;
   const dir = boss.x > joueur.x ? 1 : -1;
   projectiles.push({
     x: joueur.x + dir * 30, y: hauteurTorse(joueur),
@@ -112,6 +114,8 @@ function special() {
     cible.vx = -cible.vx;
     cible.degats = Math.round(cible.degats * 1.5);
     cible.r = 17;
+    joueur.action = 'ironie';
+    joueur.actionT = t;
     message = 'Ironie ! La boule est renvoyée !';
     messageJusqua = t + 1200;
   } else {
@@ -153,6 +157,7 @@ function update(dt, t) {
   if (etat !== 'combat') return;
 
   const dir = (touches.droite ? 1 : 0) - (touches.gauche ? 1 : 0);
+  joueur.enMouvement = dir !== 0 || !joueur.onGround;
   joueur.x += dir * joueur.def.vitesse * dt;
   joueur.x = Math.max(40, Math.min(W - 40, joueur.x));
   joueur.vy += GRAV * dt;
@@ -175,6 +180,7 @@ function update(dt, t) {
   }
   const sens = boss.phase === 'avance' ? Math.sign(dx) : -Math.sign(dx);
   const coef = boss.phase === 'avance' ? 1 : 0.85;
+  boss.enMouvement = true;
   boss.x += sens * bossDef.vitesse * coef * dt;
   boss.x = Math.max(40, Math.min(W - 40, boss.x));
   if (boss.onGround && Math.random() < dt * 0.25) {
@@ -204,6 +210,8 @@ function update(dt, t) {
     prochainTirBoss = t + bossDef.cadence;
     if (Math.abs(dx) > 120) {
       const dirB = Math.sign(dx);
+      boss.action = 'tir';
+      boss.actionT = t;
       projectiles.push({
         x: boss.x + dirB * 30 * boss.echelle, y: hauteurTorse(boss),
         vx: dirB * VITESSE_TIR_BOSS, de: 'boss',
@@ -237,6 +245,8 @@ function update(dt, t) {
         if (Math.random() < (bossDef.reflexe || 0)) {
           p.de = 'boss';
           p.vx = -p.vx;
+          boss.action = 'ironie';
+          boss.actionT = t;
           message = boss.def.nom + ' coupe la parole !';
           messageJusqua = t + 1000;
         }
@@ -269,25 +279,76 @@ function dessinerFond() {
   ctx.fill();
 }
 
-function dessinerCombattant(c) {
+function dessinerCombattant(c, t) {
+  let pose = 'debout';
+  if (c.action && t - c.actionT < 350) {
+    pose = c.action === 'tir' ? 'pointe' : 'protege';
+  } else if (!c.onGround || c.enMouvement) {
+    pose = 'marche';
+  }
+  if (pose === 'pointe' && (c.enMouvement || !c.onGround)) pose = 'pointeMarche';
+
+  const autre = c.estBoss ? joueur : boss;
+  const face = autre && autre.x >= c.x ? 1 : -1;
+  const h = c.hauteur;
+
   ctx.save();
   ctx.translate(c.x, c.y);
+  ctx.scale(face * c.echelle, c.echelle);
+  ctx.strokeStyle = c.def.couleur;
   ctx.fillStyle = c.def.couleur;
+  ctx.lineWidth = 7;
+  ctx.lineCap = 'round';
+
+  const hipY = -h * 0.45;
+  const epauleY = -h * 0.82;
+
+  ctx.beginPath();
+  if (pose === 'marche' || pose === 'pointeMarche') {
+    ctx.moveTo(0, hipY); ctx.lineTo(16, 0);
+    ctx.moveTo(0, hipY); ctx.lineTo(-12, 0);
+  } else {
+    ctx.moveTo(0, hipY); ctx.lineTo(6, 0);
+    ctx.moveTo(0, hipY); ctx.lineTo(-6, 0);
+  }
+  ctx.stroke();
+
   ctx.beginPath();
   if (ctx.roundRect) {
-    ctx.roundRect(-c.largeur / 2, -c.hauteur, c.largeur, c.hauteur, 10);
+    ctx.roundRect(-8, -h, 18, h * 0.58, 6);
   } else {
-    ctx.rect(-c.largeur / 2, -c.hauteur, c.largeur, c.hauteur);
+    ctx.rect(-8, -h, 18, h * 0.58);
   }
   ctx.fill();
+
   ctx.beginPath();
-  ctx.arc(0, -c.hauteur - 14 * c.echelle, 16 * c.echelle, 0, Math.PI * 2);
+  ctx.arc(4, -h - 10, 11, 0, Math.PI * 2);
   ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(13, -h - 13);
+  ctx.lineTo(21, -h - 9);
+  ctx.lineTo(13, -h - 5);
+  ctx.fill();
+
+  ctx.beginPath();
+  if (pose === 'pointe' || pose === 'pointeMarche') {
+    ctx.moveTo(2, epauleY);
+    ctx.lineTo(26, epauleY + 2);
+    ctx.lineTo(33, epauleY + 2);
+  } else if (pose === 'protege') {
+    ctx.moveTo(-6, epauleY + 6); ctx.lineTo(14, epauleY + 18);
+    ctx.moveTo(-6, epauleY + 18); ctx.lineTo(14, epauleY + 6);
+  } else {
+    ctx.moveTo(2, epauleY); ctx.lineTo(8, -h * 0.5);
+  }
+  ctx.stroke();
+
   ctx.restore();
+
   ctx.fillStyle = '#fff';
   ctx.font = 'bold 14px sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText(c.def.nom, c.x, c.y - c.hauteur - 36 * c.echelle);
+  ctx.fillText(c.def.nom, c.x, c.y - h - 34 * c.echelle);
 }
 
 function dessinerProjectiles() {
@@ -322,8 +383,8 @@ function dessinerBarre(x, y, w, ratio, couleur, nom, inverse) {
 function draw(t) {
   dessinerFond();
   if (joueur && etat !== 'titre' && etat !== 'heros') {
-    dessinerCombattant(boss);
-    dessinerCombattant(joueur);
+    dessinerCombattant(boss, t);
+    dessinerCombattant(joueur, t);
     dessinerProjectiles();
     dessinerBarre(20, 34, 340, Math.max(0, joueur.hp) / joueur.maxHp, '#2ecc71', joueur.def.nom, false);
     dessinerBarre(W - 360, 34, 340, Math.max(0, boss.hp) / boss.maxHp, '#e74c3c', boss.def.nom, true);
