@@ -6,7 +6,6 @@ const SOL = H - 70;
 const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
-const DISTANCE_BOSS = 300;
 const data = window.GAME_DATA;
 
 let etat = 'titre';
@@ -42,7 +41,8 @@ function creerCombattant(def, x, estBoss) {
   return {
     def: def, x: x, y: SOL, vy: 0,
     largeur: 46 * echelle, hauteur: 92 * echelle,
-    hp: pv, maxHp: pv, onGround: true, echelle: echelle, estBoss: estBoss
+    hp: pv, maxHp: pv, onGround: true, echelle: echelle, estBoss: estBoss,
+    phase: null, phaseJusqua: 0
   };
 }
 
@@ -151,13 +151,15 @@ function update(dt, t) {
 
   const bossDef = boss.def;
   const dx = joueur.x - boss.x;
-  if (Math.abs(dx) > DISTANCE_BOSS + 40) {
-    boss.x += Math.sign(dx) * bossDef.vitesse * dt;
-  } else if (Math.abs(dx) < DISTANCE_BOSS - 60) {
-    boss.x -= Math.sign(dx) * bossDef.vitesse * 0.8 * dt;
-  } else if (Math.random() < dt * 0.4) {
-    boss.x += (Math.random() < 0.5 ? -1 : 1) * bossDef.vitesse * 0.5 * dt;
+  if (!boss.phase || t > boss.phaseJusqua) {
+    if (Math.abs(dx) > 430) boss.phase = 'avance';
+    else if (Math.abs(dx) < 200) boss.phase = 'recule';
+    else boss.phase = Math.random() < 0.5 ? 'avance' : 'recule';
+    boss.phaseJusqua = t + 1000 + Math.random() * 2000;
   }
+  const sens = boss.phase === 'avance' ? Math.sign(dx) : -Math.sign(dx);
+  const coef = boss.phase === 'avance' ? 1 : 0.85;
+  boss.x += sens * bossDef.vitesse * coef * dt;
   boss.x = Math.max(40, Math.min(W - 40, boss.x));
   if (boss.onGround && Math.random() < dt * 0.25) {
     boss.vy = -700;
