@@ -43,8 +43,7 @@ let prochainBulle = 0;
 let prochainBracelet = 0;
 let ondes = [];
 let prochainTirBoss = 0;
-let message = '';
-let messageJusqua = 0;
+let messageJ = '', messageJT = 0, messageB = '', messageBT = 0;
 const touches = { gauche: false, droite: false };
 
 function element(id) {
@@ -91,7 +90,8 @@ function commencerCombat() {
   prochainBulle = performance.now() + 2500;
   prochainBracelet = performance.now() + 3000;
   ondes = [];
-  message = '';
+  messageJ = '';
+  messageB = '';
   etat = 'combat';
   cacherTout();
   element('controles').classList.remove('cache');
@@ -166,11 +166,11 @@ function special() {
     cible.r = 17;
     joueur.action = 'ironie';
     joueur.actionT = t;
-    message = cible.reponse ? '🛡 ' + cible.reponse : 'Ironie ! La boule est renvoyée !';
-    messageJusqua = t + 2000;
+    messageJ = cible.reponse ? '🛡 ' + cible.reponse : 'Ironie ! La boule est renvoyée !';
+    messageJT = t + 2500;
   } else {
-    message = 'Rien à renvoyer pour le moment…';
-    messageJusqua = t + 900;
+    messageJ = 'Rien à renvoyer pour le moment…';
+    messageJT = t + 900;
   }
 }
 
@@ -289,8 +289,8 @@ function update(dt, t) {
   if (bossDef.bracelet && t > prochainBracelet) {
     prochainBracelet = t + bossDef.bracelet.delai;
     ondes.push({ x: boss.x, r: 12, maxR: bossDef.bracelet.portee, vitesse: bossDef.bracelet.vitesse, touche: false });
-    message = '🔔 Le bracelet sonne !';
-    messageJusqua = t + 1000;
+    messageB = '🔔 Le bracelet sonne !';
+    messageBT = t + 1000;
   }
   for (let i = ondes.length - 1; i >= 0; i--) {
     const o = ondes[i];
@@ -298,8 +298,8 @@ function update(dt, t) {
     if (!o.touche && Math.abs(joueur.x - o.x) <= o.r + joueur.largeur / 2 && joueur.y > SOL - 140) {
       o.touche = true;
       joueur.etourdiJusqua = t + bossDef.bracelet.etourdissement;
-      message = '💫 Sonné·e par le bracelet ! 4 s sans bouger !';
-      messageJusqua = t + 2000;
+      messageJ = '💫 Sonné·e par le bracelet ! 4 s sans bouger !';
+      messageJT = t + 2000;
     }
     if (o.r > o.maxR) ondes.splice(i, 1);
   }
@@ -332,8 +332,8 @@ function update(dt, t) {
           p.vx = -p.vx;
           boss.action = 'ironie';
           boss.actionT = t;
-          message = 'On lui coupe la parole !';
-          messageJusqua = t + 1500;
+          messageB = 'On lui coupe la parole !';
+          messageBT = t + 1500;
         }
       }
     } else {
@@ -479,6 +479,33 @@ function dessinerCombattant(c, t) {
 
 }
 
+function dessinerBoiteTexte(x, y, w, texte) {
+  if (!texte) return;
+  ctx.font = 'bold 14px sans-serif';
+  const mots = texte.split(' ');
+  const lignes = [];
+  let ligne = '';
+  mots.forEach(m => {
+    const test = ligne ? ligne + ' ' + m : m;
+    if (ctx.measureText(test).width > w - 20 && ligne) {
+      lignes.push(ligne);
+      ligne = m;
+    } else {
+      ligne = test;
+    }
+  });
+  if (ligne) lignes.push(ligne);
+  const h = 16 + lignes.length * 18;
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(x, y, w, h);
+  ctx.strokeStyle = '#bbbbbb';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x, y, w, h);
+  ctx.fillStyle = '#111111';
+  ctx.textAlign = 'left';
+  lignes.forEach((l, i) => ctx.fillText(l, x + 10, y + 24 + i * 18));
+}
+
 function dessinerOndes() {
   ondes.forEach(o => {
     ctx.beginPath();
@@ -560,21 +587,9 @@ function draw(t) {
     ctx.font = '11px sans-serif';
     ctx.textAlign = 'left';
     ctx.fillText('🛡 ironie', 176, 54);
-    ctx.fillStyle = 'rgba(0,0,0,0.45)';
-    ctx.fillRect(20, 62, 420, 34);
-    ctx.fillRect(W - 440, 62, 420, 34);
-    ctx.fillStyle = '#ffd23f';
-    ctx.font = 'bold 19px sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(t - phraseJT < 2000 ? phraseJ : '', 32, 87);
-    ctx.textAlign = 'right';
-    ctx.fillText(t - phraseBT < 2000 ? phraseB : '', W - 32, 87);
-    if (t < messageJusqua && message) {
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 17px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(message, W / 2, 87);
-    }
+    dessinerBoiteTexte(20, 62, 440, t - messageJT < 3000 ? messageJ : (t - phraseJT < 2500 ? phraseJ : ''));
+    dessinerBoiteTexte(W - 460, 62, 440, t - messageBT < 3000 ? messageB : (t - phraseBT < 2500 ? phraseB : ''));
+
   }
 }
 
