@@ -32,6 +32,7 @@ let projectiles = [];
 let dernierTir = 0;
 let dernierSpecial = 0;
 let phraseJ = '', phraseJT = 0, phraseB = '', phraseBT = 0;
+let prochainBulle = 0;
 let prochainTirBoss = 0;
 let message = '';
 let messageJusqua = 0;
@@ -69,6 +70,7 @@ function commencerCombat() {
   dernierTir = 0;
   dernierSpecial = 0;
   prochainTirBoss = performance.now() + 1200;
+  prochainBulle = performance.now() + 2500;
   message = '';
   etat = 'combat';
   cacherTout();
@@ -90,6 +92,9 @@ function choisirHeros(i) {
 function afficherVersus() {
   etat = 'versus';
   element('vs-texte').textContent = data.heroes[herosChoisi].nom + ' affronte ' + data.boss[indexBoss].nom;
+  const av = element('vs-avertissement');
+  av.textContent = data.boss[indexBoss].avertissement || '';
+  av.style.display = data.boss[indexBoss].avertissement ? 'block' : 'none';
   montrer('ecran-versus');
 }
 
@@ -127,7 +132,7 @@ function special() {
   if (t - dernierSpecial < 1000) return;
   dernierSpecial = t;
   const cible = projectiles.find(p =>
-    p.de === 'boss' &&
+    p.de === 'boss' && p.type !== 'bulle' &&
     Math.abs(p.x - joueur.x) < 200 &&
     Math.abs(p.y - hauteurTir(joueur)) < 70 &&
     Math.sign(p.vx) === Math.sign(joueur.x - p.x)
@@ -156,7 +161,7 @@ function finCombat(gagne) {
     disponibles[herosChoisi] = false;
     if (disponibles.some(d => d)) {
       etat = 'defaite';
-      element('texte-defaite').textContent = 'Un camarade est tombé. Un autre ramasse le flambeau et marche vers la victoire.';
+      element('texte-defaite').textContent = 'Un autre ramasse le flambeau et marche vers la victoire.';
       montrer('ecran-defaite');
     } else {
       etat = 'perdu';
@@ -182,7 +187,7 @@ function update(dt, t) {
   const dir = (touches.droite ? 1 : 0) - (touches.gauche ? 1 : 0);
   joueur.enMouvement = dir !== 0 || !joueur.onGround;
   joueur.x += dir * joueur.def.vitesse * dt;
-  joueur.x = Math.max(40, Math.min(W - 40, joueur.x));
+  joueur.x = Math.max(40, Math.min(W - 220, joueur.x));
   joueur.vy += GRAV * dt;
   joueur.y += joueur.vy * dt;
   if (joueur.y >= SOL) {
@@ -231,7 +236,7 @@ function update(dt, t) {
 
   if (t > prochainTirBoss) {
     prochainTirBoss = t + bossDef.cadence;
-    if (Math.abs(dx) > 120) {
+    if (Math.abs(dx) > 100) {
       const dirB = Math.sign(dx);
       boss.action = 'tir';
       boss.actionT = t;
@@ -245,12 +250,23 @@ function update(dt, t) {
     }
   }
 
+  if (bossDef.bulles && t > prochainBulle) {
+    prochainBulle = t + bossDef.bulles.cadence;
+    const dirB2 = Math.sign(dx) || 1;
+    projectiles.push({
+      x: boss.x + dirB2 * 30 * boss.echelle, y: hauteurTir(boss), baseY: hauteurTir(boss),
+      vx: dirB2 * (VITESSE_TIR_BOSS * 0.7), de: 'boss', type: 'bulle',
+      degats: bossDef.bulles.degats, phrase: '🫧 Bulle de shampoing !', r: 12
+    });
+  }
+
   const chJ = hauteurTir(joueur);
   const chB = hauteurTir(boss);
 
   for (let i = projectiles.length - 1; i >= 0; i--) {
     const p = projectiles[i];
     p.x += p.vx * dt;
+    if (p.type === 'bulle') p.y = p.baseY + Math.sin(p.x * 0.02) * 28;
     if (p.x < -40 || p.x > W + 40) {
       projectiles.splice(i, 1);
       continue;
@@ -265,7 +281,7 @@ function update(dt, t) {
         }
         continue;
       }
-      if (!p.reflexeTeste && Math.abs(p.x - boss.x) < 150 && Math.abs(p.y - chB) < 70) {
+      if (p.type !== 'bulle' && !p.reflexeTeste && Math.abs(p.x - boss.x) < 150 && Math.abs(p.y - chB) < 70) {
         p.reflexeTeste = true;
         if (Math.random() < (bossDef.reflexe || 0)) {
           p.de = 'boss';
@@ -389,14 +405,20 @@ function dessinerProjectiles(t) {
     const flick = 1 + 0.18 * Math.sin(t / 40 + p.x * 0.05);
     const r = p.r * flick;
     const dirX = Math.sign(p.vx);
-    for (let i = 1; i <= 3; i++) {
-      ctx.beginPath();
-      ctx.arc(p.x - dirX * i * r * 1.1, p.y + Math.sin(t / 60 + i) * 2, r * (0.7 - i * 0.18), 0, Math.PI * 2);
-      ctx.fillStyle = p.de === 'joueur' ? 'rgba(255, 150, 40, 0.35)' : 'rgba(255, 60, 60, 0.35)';
-      ctx.fill();
+    if (p.type !== 'bulle') {
+      for (let i = 1; i <= 3; i++) {
+        ctx.beginPath();
+        ctx.arc(p.x - dirX * i * r * 1.1, p.y + Math.sin(t / 60 + i) * 2, r * (0.7 - i * 0.18), 0, Math.PI * 2);
+        ctx.fillStyle = p.de === 'joueur' ? 'rgba(255, 150, 40, 0.35)' : 'rgba(255, 60, 60, 0.35)';
+        ctx.fill();
+      }
     }
     const g = ctx.createRadialGradient(p.x, p.y, r * 0.15, p.x, p.y, r * 1.5);
-    if (p.de === 'joueur') {
+    if (p.type === 'bulle') {
+      g.addColorStop(0, 'rgba(255,255,255,0.9)');
+      g.addColorStop(0.5, 'rgba(160,210,255,0.75)');
+      g.addColorStop(1, 'rgba(80,140,255,0)');
+    } else if (p.de === 'joueur') {
       g.addColorStop(0, '#fff8dc');
       g.addColorStop(0.4, '#ffd23f');
       g.addColorStop(1, 'rgba(255, 80, 0, 0)');
@@ -509,9 +531,10 @@ function construireHeros() {
     const div = document.createElement('div');
     div.className = 'carte-heros' + (disponibles[i] ? '' : ' tombe');
     div.style.borderColor = h.couleur;
-    const pastille = document.createElement('div');
-    pastille.className = 'pastille';
-    pastille.style.background = h.couleur;
+    const pastille = document.createElement('img');
+    pastille.className = 'icone-heros';
+    pastille.src = 'assets/personnages/' + h.id + '/debout.svg';
+    pastille.alt = h.nom;
     const nom = document.createElement('div');
     nom.textContent = h.nom;
     div.appendChild(pastille);
@@ -521,7 +544,7 @@ function construireHeros() {
     } else {
       const badge = document.createElement('div');
       badge.className = 'badge-tombe';
-      badge.textContent = '✊ tombé au combat';
+      badge.textContent = '💥 un camarade est tombé';
       div.appendChild(badge);
     }
     liste.appendChild(div);
