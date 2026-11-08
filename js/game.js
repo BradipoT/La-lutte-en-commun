@@ -109,13 +109,15 @@ function tir() {
   dernierTir = t;
   joueur.action = 'tir';
   joueur.actionT = t;
-  phraseJ = joueur.def.phrase;
+  const argsJ = joueur.def.arguments;
+  const argJ = argsJ[Math.floor(Math.random() * argsJ.length)];
+  phraseJ = argJ;
   phraseJT = t;
   const dir = boss.x > joueur.x ? 1 : -1;
   projectiles.push({
     x: joueur.x + dir * 30, y: hauteurTir(joueur),
     vx: dir * VITESSE_TIR, de: 'joueur',
-    degats: joueur.def.degats, phrase: joueur.def.phrase, r: 14
+    degats: joueur.def.degats, phrase: argJ, r: 14
   });
 }
 
@@ -144,8 +146,8 @@ function special() {
     cible.r = 17;
     joueur.action = 'ironie';
     joueur.actionT = t;
-    message = 'Ironie ! La boule est renvoyée !';
-    messageJusqua = t + 1200;
+    message = cible.reponse ? '🛡 ' + cible.reponse : 'Ironie ! La boule est renvoyée !';
+    messageJusqua = t + 2000;
   } else {
     message = 'Rien à renvoyer pour le moment…';
     messageJusqua = t + 900;
@@ -240,12 +242,14 @@ function update(dt, t) {
       const dirB = Math.sign(dx);
       boss.action = 'tir';
       boss.actionT = t;
-      phraseB = bossDef.phrase;
+      const argsB = bossDef.arguments;
+      const argB = argsB[Math.floor(Math.random() * argsB.length)];
+      phraseB = argB.t;
       phraseBT = t;
       projectiles.push({
         x: boss.x + dirB * 30 * boss.echelle, y: hauteurTir(boss),
         vx: dirB * VITESSE_TIR_BOSS, de: 'boss',
-        degats: bossDef.degats, phrase: bossDef.phrase, r: 14
+        degats: bossDef.degats, phrase: argB.t, reponse: argB.r, r: 14
       });
     }
   }
@@ -289,8 +293,8 @@ function update(dt, t) {
           p.vx = -p.vx;
           boss.action = 'ironie';
           boss.actionT = t;
-          message = boss.def.nom + ' coupe la parole !';
-          messageJusqua = t + 1000;
+          message = 'On lui coupe la parole !';
+          messageJusqua = t + 1500;
         }
       }
     } else {
