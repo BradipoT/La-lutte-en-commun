@@ -7,14 +7,14 @@ window.GAME_DATA = {
   ],
 
   boss: [
-    { nom: 'Raphaël Glucksmann', pv: 70, degats: 6, phrase: 'Argument factice !', couleur: '#7f8c8d', vitesse: 130, cadence: 3200, reflexe: 0.05 },
-    { nom: 'Matthieu Valet', pv: 85, degats: 7, phrase: 'Fake news !', couleur: '#5d6d7e', vitesse: 145, cadence: 3000, reflexe: 0.08 },
-    { nom: 'Pascal Praud', pv: 100, degats: 8, phrase: 'Stéréotype raciste !', couleur: '#8e44ad', vitesse: 160, cadence: 2800, reflexe: 0.12 },
-    { nom: 'Édouard Philippe', pv: 115, degats: 9, phrase: 'Réforme injuste !', couleur: '#2e86c1', vitesse: 175, cadence: 2600, reflexe: 0.15 },
-    { nom: 'Bruno Retailleau', pv: 135, degats: 10, phrase: 'Discours sécuritaire !', couleur: '#1a5276', vitesse: 190, cadence: 2400, reflexe: 0.20 },
-    { nom: 'Nathalie Saint-Cricq', pv: 150, degats: 10, phrase: 'Commentaire orienté !', couleur: '#117864', vitesse: 205, cadence: 2400, reflexe: 0.25 },
-    { nom: 'Gabriel Attal', pv: 170, degats: 11, phrase: 'Jeune et déconnecté !', couleur: '#b9770e', vitesse: 220, cadence: 2200, reflexe: 0.30 },
-    { nom: 'Marine Le Pen', pv: 200, degats: 12, phrase: 'Discours de haine !', couleur: '#922b21', vitesse: 240, cadence: 2000, reflexe: 0.30, echelle: 1.25, bossFinal: true }
+    { nom: 'Raphaël Glucksmann', pv: 80, degats: 7, phrase: 'Argument factice !', couleur: '#7f8c8d', vitesse: 130, cadence: 2800, reflexe: 0.08 },
+    { nom: 'Matthieu Valet', pv: 95, degats: 8, phrase: 'Fake news !', couleur: '#5d6d7e', vitesse: 145, cadence: 2600, reflexe: 0.10 },
+    { nom: 'Pascal Praud', pv: 110, degats: 9, phrase: 'Stéréotype raciste !', couleur: '#8e44ad', vitesse: 160, cadence: 2400, reflexe: 0.15 },
+    { nom: 'Édouard Philippe', pv: 125, degats: 10, phrase: 'Réforme injuste !', couleur: '#2e86c1', vitesse: 175, cadence: 2200, reflexe: 0.20 },
+    { nom: 'Bruno Retailleau', pv: 145, degats: 11, phrase: 'Discours sécuritaire !', couleur: '#1a5276', vitesse: 190, cadence: 2100, reflexe: 0.25 },
+    { nom: 'Nathalie Saint-Cricq', pv: 160, degats: 12, phrase: 'Commentaire orienté !', couleur: '#117864', vitesse: 205, cadence: 2000, reflexe: 0.30 },
+    { nom: 'Gabriel Attal', pv: 180, degats: 13, phrase: 'Jeune et déconnecté !', couleur: '#b9770e', vitesse: 220, cadence: 1900, reflexe: 0.35 },
+    { nom: 'Marine Le Pen', pv: 220, degats: 14, phrase: 'Discours de haine !', couleur: '#922b21', vitesse: 240, cadence: 1700, reflexe: 0.40, echelle: 1.25, bossFinal: true }
   ],
 
   recompenses: [

@@ -5,7 +5,8 @@ const H = 540;
 const SOL = H - 70;
 const GRAV = 1800;
 const VITESSE_TIR = 460;
-const VITESSE_TIR_BOSS = 350;
+const VITESSE_TIR_BOSS = 400;
+const DISTANCE_BOSS = 300;
 const data = window.GAME_DATA;
 
 let etat = 'titre';
@@ -150,8 +151,10 @@ function update(dt, t) {
 
   const bossDef = boss.def;
   const dx = joueur.x - boss.x;
-  if (Math.abs(dx) > 220) {
+  if (Math.abs(dx) > DISTANCE_BOSS + 40) {
     boss.x += Math.sign(dx) * bossDef.vitesse * dt;
+  } else if (Math.abs(dx) < DISTANCE_BOSS - 60) {
+    boss.x -= Math.sign(dx) * bossDef.vitesse * 0.8 * dt;
   } else if (Math.random() < dt * 0.4) {
     boss.x += (Math.random() < 0.5 ? -1 : 1) * bossDef.vitesse * 0.5 * dt;
   }
