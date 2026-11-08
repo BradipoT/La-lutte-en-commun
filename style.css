@@ -203,6 +203,12 @@ h2 { font-size: clamp(22px, 5vw, 36px); }
   background: rgba(255, 255, 255, 0.15);
 }
 
+.barre.rempli.c1 { background: #e74c3c; }
+.barre.rempli.c2 { background: #e67e22; }
+.barre.rempli.c3 { background: #f1c40f; }
+.barre.rempli.c4 { background: #82e0aa; }
+.barre.rempli.c5 { background: #1e8449; }
+
 .stat-ligne b {
   min-width: 90px;
   text-align: right;

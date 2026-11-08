@@ -48,7 +48,7 @@ window.GAME_DATA = {
         { t: 'L’Europe, c’est trop bureaucratique !', r: 'Oui, et la paperasse fiscale adore les paradis fiscaux.' },
         { t: 'Il faut taxer les multinationales !', r: 'Évidemment… après les avoir subventionnées, bien sûr.' } ] },
     { id: 'valet', nom: 'Matthieu Valet', pv: 120, degats: 10, couleur: '#5d6d7e', vitesse: 145, cadence: 2200, reflexe: 0.15,
-      bulles: { cadence: 2200, degats: 5 },
+      bulles: { cadence: 1500, degats: 5 },
       avertissement: 'Attention ! Il a mangé du shampoing et peut cracher des bulles.',
       arguments: [ { t: 'Fake news !', r: 'D’accord, mais avouez que votre dernière intox était plus fake que news.' },
         { t: 'Les journalistes sont tous de gauche !', r: 'Tous ? Même ceux qui vous servent de micro ?' },

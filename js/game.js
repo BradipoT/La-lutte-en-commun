@@ -856,7 +856,7 @@ function barreStats(valeur, min, max, inverse) {
   n = Math.max(1, Math.min(5, n));
   let html = '<div class="barres">';
   for (let k = 1; k <= 5; k++) {
-    html += '<span class="barre' + (k <= n ? ' rempli' : '') + '"' + (k <= n ? ' style="background:' + COULEURS_BARRES[k - 1] + '"' : '') + '></span>';
+    html += '<span class="barre' + (k <= n ? ' rempli c' + k : '') + '"></span>';
   }
   return html + '</div>';
 }

@@ -51,7 +51,7 @@ function bras(pose) {
 function cheveuxDessus(t) {
   if (t.longueur === 'longs') return 'M50 18 L63 8 L78 20 L76 26 L63 18 L52 26 Z';
   if (t.longueur === 'mi-longs') return 'M49 16 L63 7 L79 18 L77 28 L63 20 L51 28 Z';
-  return 'M50 18 L63 9 L76 18 L74 24 L63 17 L53 25 Z';
+  return 'M49.1 24 A14 14 0 0 1 76.9 24 Z';
 }
 
 function cheveuxDerriere(t) {
@@ -67,7 +67,7 @@ function lunettes() {
 }
 
 function barbe(couleur) {
-  return '<path d="M50 26 Q60 40 72 26 Q70 36 60 38 Q52 36 50 26 Z" fill="' + couleur + '"/>';
+  return '<path d="M47 25 Q60 46 75 25 Q73 40 60 42 Q49 40 47 25 Z" fill="' + couleur + '"/>';
 }
 
 function svgPerso(couleur, pose, t) {
