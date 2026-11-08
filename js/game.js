@@ -151,10 +151,12 @@ function update(dt, t) {
 
   const bossDef = boss.def;
   const dx = joueur.x - boss.x;
-  if (!boss.phase || t > boss.phaseJusqua) {
-    if (Math.abs(dx) > 430) boss.phase = 'avance';
-    else if (Math.abs(dx) < 200) boss.phase = 'recule';
-    else boss.phase = Math.random() < 0.5 ? 'avance' : 'recule';
+  if (Math.abs(dx) > 430) {
+    boss.phase = 'avance';
+  } else if (Math.abs(dx) < 260) {
+    boss.phase = 'recule';
+  } else if (!boss.phase || t > boss.phaseJusqua) {
+    boss.phase = Math.random() < 0.5 ? 'avance' : 'recule';
     boss.phaseJusqua = t + 1000 + Math.random() * 2000;
   }
   const sens = boss.phase === 'avance' ? Math.sign(dx) : -Math.sign(dx);
@@ -171,6 +173,17 @@ function update(dt, t) {
     boss.y = SOL;
     boss.vy = 0;
     boss.onGround = true;
+  }
+
+  const separation = (joueur.largeur + boss.largeur) / 2 + 6;
+  const ecart = boss.x - joueur.x;
+  if (Math.abs(ecart) < separation) {
+    const poussee = (separation - Math.abs(ecart)) / 2;
+    const dirSep = ecart >= 0 ? 1 : -1;
+    joueur.x -= dirSep * poussee;
+    boss.x += dirSep * poussee;
+    joueur.x = Math.max(40, Math.min(W - 40, joueur.x));
+    boss.x = Math.max(40, Math.min(W - 40, boss.x));
   }
 
   if (t > prochainTirBoss) {
