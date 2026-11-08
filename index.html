@@ -2,22 +2,23 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d0d1f">
 <title>La Marche vers l'Élysée</title>
-<link rel="stylesheet" href="style.css?v=15">
+<link rel="stylesheet" href="style.css?v=16">
 </head>
 <body>
 <canvas id="jeu" width="960" height="540"></canvas>
-
-<div id="ecran-portrait">
-  <h2>📱</h2>
-  <p>Tournez votre téléphone en <strong>paysage</strong> pour jouer !</p>
-</div>
 
 <div id="ecran-titre" class="ecran">
   <h1>⚔️ La Marche vers l'Élysée</h1>
   <p>Un jeu de combat 2D : battez les candidats de droite un par un, du moins au plus fort, et gagnez les grandes mesures du programme à chaque victoire !</p>
   <button id="btn-jouer" class="gros-bouton">Jouer</button>
+  <button id="btn-plein-ecran" class="bouton-plein-ecran">⛶ Plein écran (cache la barre d'URL)</button>
+  <p class="astuce">Astuce : « Ajouter à l'écran d'accueil » pour un vrai plein écran permanent.</p>
 </div>
 
 <div id="ecran-heros" class="ecran cache">
@@ -64,7 +65,7 @@
   </div>
 </div>
 
-<script src="js/data.js?v=15"></script>
-<script src="js/game.js?v=15"></script>
+<script src="js/data.js?v=16"></script>
+<script src="js/game.js?v=16"></script>
 </body>
 </html>

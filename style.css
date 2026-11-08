@@ -135,25 +135,21 @@ h2 { font-size: clamp(22px, 5vw, 36px); }
 
 #liste-mesures li::before { content: '✅ '; }
 
-#ecran-portrait {
-  display: none;
-  position: absolute;
-  inset: 0;
-  z-index: 99;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  background: #0d0d1f;
-  text-align: center;
-  padding: 24px;
+.bouton-plein-ecran {
+  font-size: 15px;
+  padding: 10px 22px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  cursor: pointer;
 }
 
-#ecran-portrait h2 { font-size: 60px; }
-#ecran-portrait p { font-size: 20px; }
+.bouton-plein-ecran:active { background: rgba(255, 255, 255, 0.2); }
 
-@media (orientation: portrait) {
-  #ecran-portrait { display: flex; }
+.astuce {
+  font-size: 13px;
+  opacity: 0.7;
 }
 
 #controles {

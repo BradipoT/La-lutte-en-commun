@@ -501,7 +501,29 @@ function construireHeros() {
   });
 }
 
+function demanderPleinEcran() {
+  if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  }
+}
+
+function majBoutonPleinEcran() {
+  const b = element('btn-plein-ecran');
+  if (b) b.textContent = document.fullscreenElement ? '⛶ Quitter le plein écran' : '⛶ Plein écran (cache la barre d’URL)';
+}
+
+document.addEventListener('fullscreenchange', majBoutonPleinEcran);
+
+element('btn-plein-ecran').addEventListener('click', () => {
+  if (document.fullscreenElement) {
+    if (document.exitFullscreen) document.exitFullscreen();
+  } else {
+    demanderPleinEcran();
+  }
+});
+
 element('btn-jouer').addEventListener('click', () => {
+  demanderPleinEcran();
   resetPartie();
   etat = 'heros';
   construireHeros();
