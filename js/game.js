@@ -45,8 +45,9 @@ let prochainSpeBoss = 0;
 let ondes = [];
 const PORTEE_ATTAQUE = 240;
 let dernierSpeciale = 0;
-const COOLDOWN_SPE = 15000;
+const COOLDOWN_SPE = 8000;
 const DUREE_CAST = 2500;
+const PORTEE_SPE = 480;
 let annonce = null;
 let prochainTirBoss = 0;
 let messageJ = '', messageJT = 0, messageB = '', messageBT = 0;
@@ -218,7 +219,7 @@ function appliquerSpeciale(type, t) {
     const dir = boss.x > joueur.x ? 1 : -1;
     projectiles.push({
       x: joueur.x + dir * 34, y: hauteurTir(joueur),
-      vx: dir * 560, de: 'joueur', type: 'boule', portee: PORTEE_ATTAQUE, startX: joueur.x + dir * 34,
+      vx: dir * 560, de: 'joueur', type: 'boule', portee: PORTEE_SPE, startX: joueur.x + dir * 34,
       degats: 40, phrase: '📢 LA RÉPUBLIQUE C’EST MOI !', r: 30
     });
     messageJ = '📢 LA RÉPUBLIQUE C’EST MOI !';
@@ -597,9 +598,16 @@ function dessinerAura(c, t) {
   const reste = (c.flameJusqua - t) / 800;
   const r = 80 * (1.2 - reste * 0.4);
   const g = ctx.createRadialGradient(c.x, c.y - c.hauteur / 2, 10, c.x, c.y - c.hauteur / 2, r);
-  g.addColorStop(0, 'rgba(255, 240, 150, ' + (0.85 * reste) + ')');
-  g.addColorStop(0.5, 'rgba(255, 140, 0, ' + (0.6 * reste) + ')');
-  g.addColorStop(1, 'rgba(255, 60, 0, 0)');
+  const bleue = c.def.special && c.def.special.type === 'soin';
+  if (bleue) {
+    g.addColorStop(0, 'rgba(200, 235, 255, ' + (0.9 * reste) + ')');
+    g.addColorStop(0.5, 'rgba(80, 170, 255, ' + (0.65 * reste) + ')');
+    g.addColorStop(1, 'rgba(0, 90, 255, 0)');
+  } else {
+    g.addColorStop(0, 'rgba(255, 240, 150, ' + (0.85 * reste) + ')');
+    g.addColorStop(0.5, 'rgba(255, 140, 0, ' + (0.6 * reste) + ')');
+    g.addColorStop(1, 'rgba(255, 60, 0, 0)');
+  }
   ctx.beginPath();
   ctx.arc(c.x, c.y - c.hauteur / 2, r, 0, Math.PI * 2);
   ctx.fillStyle = g;
@@ -650,7 +658,7 @@ function dessinerAnnonce(t) {
 
 function dessinerBoiteTexte(x, y, w, texte) {
   if (!texte) return;
-  ctx.font = 'bold 14px sans-serif';
+  ctx.font = 'bold 17px sans-serif';
   const mots = texte.split(' ');
   const lignes = [];
   let ligne = '';
@@ -664,7 +672,7 @@ function dessinerBoiteTexte(x, y, w, texte) {
     }
   });
   if (ligne) lignes.push(ligne);
-  const h = 16 + lignes.length * 18;
+  const h = 20 + lignes.length * 21;
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(x, y, w, h);
   ctx.strokeStyle = '#bbbbbb';
@@ -672,7 +680,7 @@ function dessinerBoiteTexte(x, y, w, texte) {
   ctx.strokeRect(x, y, w, h);
   ctx.fillStyle = '#111111';
   ctx.textAlign = 'left';
-  lignes.forEach((l, i) => ctx.fillText(l, x + 10, y + 24 + i * 18));
+  lignes.forEach((l, i) => ctx.fillText(l, x + 10, y + 28 + i * 21));
 }
 
 function dessinerOndes() {
