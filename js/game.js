@@ -8,7 +8,7 @@ const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
 
-const POSES = ['debout', 'marche', 'pointe', 'pointeMarche', 'protege'];
+const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege'];
 const imagesPersos = {};
 
 function chargerImages() {
@@ -33,6 +33,8 @@ let dernierTir = 0;
 let dernierSpecial = 0;
 let phraseJ = '', phraseJT = 0, phraseB = '', phraseBT = 0;
 let prochainBulle = 0;
+let prochainBracelet = 0;
+let ondes = [];
 let prochainTirBoss = 0;
 let message = '';
 let messageJusqua = 0;
@@ -59,7 +61,8 @@ function creerCombattant(def, x, estBoss) {
     def: def, x: x, y: SOL, vy: 0,
     largeur: 46 * echelle, hauteur: 92 * echelle,
     hp: pv, maxHp: pv, onGround: true, echelle: echelle, estBoss: estBoss,
-    phase: null, phaseJusqua: 0, action: null, actionT: 0, enMouvement: false
+    phase: null, phaseJusqua: 0, action: null, actionT: 0, enMouvement: false,
+    etourdiJusqua: 0
   };
 }
 
@@ -71,6 +74,8 @@ function commencerCombat() {
   dernierSpecial = 0;
   prochainTirBoss = performance.now() + 1200;
   prochainBulle = performance.now() + 2500;
+  prochainBracelet = performance.now() + 3000;
+  ondes = [];
   message = '';
   etat = 'combat';
   cacherTout();
@@ -122,7 +127,7 @@ function tir() {
 }
 
 function saut() {
-  if (etat === 'combat' && joueur.onGround) {
+  if (etat === 'combat' && joueur.onGround && performance.now() >= joueur.etourdiJusqua) {
     joueur.vy = -780;
     joueur.onGround = false;
   }
@@ -186,7 +191,8 @@ function suivant() {
 function update(dt, t) {
   if (etat !== 'combat') return;
 
-  const dir = (touches.droite ? 1 : 0) - (touches.gauche ? 1 : 0);
+  const etourdi = t < joueur.etourdiJusqua;
+  const dir = etourdi ? 0 : (touches.droite ? 1 : 0) - (touches.gauche ? 1 : 0);
   joueur.enMouvement = dir !== 0 || !joueur.onGround;
   joueur.x += dir * joueur.def.vitesse * dt;
   joueur.x = Math.max(40, Math.min(W - 220, joueur.x));
@@ -263,6 +269,24 @@ function update(dt, t) {
       vx: dirB2 * (VITESSE_TIR_BOSS * 0.7), de: 'boss', type: 'bulle',
       degats: bossDef.bulles.degats, phrase: '🫧 Bulle de shampoing !', r: 12
     });
+  }
+
+  if (bossDef.bracelet && t > prochainBracelet) {
+    prochainBracelet = t + bossDef.bracelet.delai;
+    ondes.push({ x: boss.x, r: 12, maxR: bossDef.bracelet.portee, vitesse: bossDef.bracelet.vitesse, touche: false });
+    message = '🔔 Le bracelet sonne !';
+    messageJusqua = t + 1000;
+  }
+  for (let i = ondes.length - 1; i >= 0; i--) {
+    const o = ondes[i];
+    o.r += o.vitesse * dt;
+    if (!o.touche && Math.abs(joueur.x - o.x) <= o.r + joueur.largeur / 2 && joueur.y > SOL - 140) {
+      o.touche = true;
+      joueur.etourdiJusqua = t + bossDef.bracelet.etourdissement;
+      message = '💫 Sonné·e par le bracelet ! 4 s sans bouger !';
+      messageJusqua = t + 2000;
+    }
+    if (o.r > o.maxR) ondes.splice(i, 1);
   }
 
   const chJ = hauteurTir(joueur);
@@ -362,8 +386,10 @@ function dessinerCombattant(c, t) {
   let pose = 'debout';
   if (c.action && t - c.actionT < 350) {
     pose = c.action === 'tir' ? 'pointe' : 'protege';
-  } else if (!c.onGround || c.enMouvement) {
+  } else if (!c.onGround) {
     pose = 'marche';
+  } else if (c.enMouvement) {
+    pose = Math.floor(t / 180) % 2 === 0 ? 'marche' : 'marche2';
   }
   if (pose === 'pointe' && (c.enMouvement || !c.onGround)) pose = 'pointeMarche';
 
@@ -438,6 +464,16 @@ function dessinerCombattant(c, t) {
 
 }
 
+function dessinerOndes() {
+  ondes.forEach(o => {
+    ctx.beginPath();
+    ctx.arc(o.x, SOL - 8, o.r, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(142, 68, 173, ' + Math.max(0.15, 1 - o.r / o.maxR) + ')';
+    ctx.lineWidth = 7;
+    ctx.stroke();
+  });
+}
+
 function dessinerProjectiles(t) {
   projectiles.forEach(p => {
     const flick = 1 + 0.18 * Math.sin(t / 40 + p.x * 0.05);
@@ -490,6 +526,7 @@ function draw(t) {
   if (joueur && etat !== 'titre' && etat !== 'heros') {
     dessinerCombattant(boss, t);
     dessinerCombattant(joueur, t);
+    dessinerOndes();
     dessinerProjectiles(t);
     ctx.fillStyle = '#fff';
     ctx.font = 'bold 14px sans-serif';

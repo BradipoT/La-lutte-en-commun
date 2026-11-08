@@ -5,7 +5,7 @@ global.window = {};
 require(path.join(__dirname, '..', 'js', 'data.js'));
 const data = global.window.GAME_DATA;
 
-const POSES = ['debout', 'marche', 'pointe', 'pointeMarche', 'protege'];
+const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege'];
 
 const TRAITS = {
   guette:      { sexe: 'f', cheveux: '#4e342e', longueur: 'longs',    teint: '#f0c8aa', lunettes: false, barbe: null },
@@ -19,7 +19,7 @@ const TRAITS = {
   retailleau:  { sexe: 'h', cheveux: '#e0e0e0', longueur: 'courts',  teint: '#f0c8aa', lunettes: false, barbe: null },
   saintcricq:  { sexe: 'f', cheveux: '#c8a24a', longueur: 'mi-longs', teint: '#f5d0b0', lunettes: false, barbe: null },
   attal:       { sexe: 'h', cheveux: '#4e342e', longueur: 'courts',  teint: '#f0c8aa', lunettes: false, barbe: null },
-  lepen:       { sexe: 'f', cheveux: '#e8c96a', longueur: 'mi-longs', teint: '#f5d0b0', lunettes: false, barbe: null }
+  lepen:       { sexe: 'f', cheveux: '#e8c96a', longueur: 'mi-longs', teint: '#f5d0b0', lunettes: false, barbe: null, bracelet: true }
 };
 
 const PANTS = '#282846';
@@ -33,10 +33,16 @@ function jambes(pose) {
   return 'M60 100 L68 182 M60 100 L52 182';
 }
 
+function braceletElectronique() {
+  return '<ellipse cx="68" cy="176" rx="7" ry="4" fill="#8e44ad" stroke="#5b2c6f" stroke-width="2"/>'
+    + '<circle cx="68" cy="176" r="1.6" fill="#ff5252"/>';
+}
+
 function bras(pose) {
   if (pose === 'pointe' || pose === 'pointeMarche') return { path: 'M56 52 L95 48 M95 48 L108 48', hand: [107, 48] };
   if (pose === 'protege') return { path: 'M50 56 L76 74 M50 74 L76 56', hand: null };
   if (pose === 'marche') return { path: 'M56 52 L74 76', hand: null };
+  if (pose === 'marche2') return { path: 'M56 52 L40 78', hand: null };
   return { path: 'M56 52 L62 92', hand: [62, 94] };
 }
 
@@ -78,6 +84,7 @@ function svgPerso(couleur, pose, t) {
     + '<circle cx="68" cy="25" r="1.8" fill="' + EYE + '"/>'
     + (t.lunettes ? lunettes() : '')
     + (t.barbe ? barbe(t.barbe) : '')
+    + (t.bracelet ? braceletElectronique() : '')
     + '</svg>\n';
 }
 
