@@ -309,7 +309,7 @@ function dessinerCombattant(c, t) {
   const img = imagesPersos[c.def.id + '_' + pose];
   if (img && img.complete && img.naturalWidth > 0) {
     const ih = 175 * c.echelle;
-    const iw = ih * 0.75;
+    const iw = ih * 0.6;
     ctx.save();
     ctx.translate(c.x, c.y);
     ctx.scale(face, 1);
