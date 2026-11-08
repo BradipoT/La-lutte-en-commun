@@ -33,6 +33,7 @@ const NIVEAUX = {
   dur: { pv: 1, degats: 1, cadence: 1, reflexe: 1, pvJoueur: 120 }
 };
 let niveau = 'dur';
+let statsEnCours = 0;
 let joueur = null;
 let boss = null;
 let projectiles = [];
@@ -58,7 +59,7 @@ function element(id) {
 }
 
 function cacherTout() {
-  ['ecran-titre', 'ecran-intro1', 'ecran-intro2', 'ecran-intro3', 'ecran-aide', 'ecran-heros', 'ecran-versus', 'ecran-recompense', 'ecran-defaite', 'ecran-perdu', 'ecran-victoire', 'controles']
+  ['ecran-titre', 'ecran-intro1', 'ecran-intro2', 'ecran-intro3', 'ecran-aide', 'ecran-heros', 'ecran-stats', 'ecran-versus', 'ecran-recompense', 'ecran-defaite', 'ecran-perdu', 'ecran-victoire', 'controles']
     .forEach(id => element(id).classList.add('cache'));
 }
 
@@ -70,7 +71,7 @@ function montrer(id) {
 function creerCombattant(def, x, estBoss) {
   const echelle = def.echelle || 1;
   const f = NIVEAUX[niveau];
-  const pv = estBoss ? Math.round(def.pv * f.pv) : f.pvJoueur;
+  const pv = estBoss ? Math.round(def.pv * f.pv) : (def.stats ? def.stats.pv : f.pvJoueur);
   return {
     def: def, x: x, y: SOL, vy: 0,
     largeur: 46 * echelle, hauteur: 92 * echelle,
@@ -133,7 +134,7 @@ function hauteurTir(c) {
 function tir() {
   if (etat !== 'combat') return;
   const t = performance.now();
-  if (t - dernierTir < 700 || t < joueur.confusJusqua) return;
+  if (t - dernierTir < joueur.def.stats.cadenceTir || t < joueur.confusJusqua) return;
   dernierTir = t;
   joueur.action = 'tir';
   joueur.actionT = t;
@@ -145,13 +146,13 @@ function tir() {
   projectiles.push({
     x: joueur.x + dir * 30, y: hauteurTir(joueur),
     vx: dir * VITESSE_TIR, de: 'joueur', portee: PORTEE_ATTAQUE, startX: joueur.x + dir * 30,
-    degats: joueur.def.degats, phrase: argJ, r: 14
+    degats: joueur.def.stats.degats, phrase: argJ, r: 14
   });
 }
 
 function saut() {
   if (etat === 'combat' && joueur.onGround && !joueur.cast && performance.now() >= joueur.etourdiJusqua) {
-    joueur.vy = -780;
+    joueur.vy = -joueur.def.stats.saut;
     joueur.onGround = false;
   }
 }
@@ -237,7 +238,7 @@ function appliquerSpeciale(type, t) {
 function speciale() {
   if (etat !== 'combat') return;
   const t = performance.now();
-  if (t - dernierSpeciale < COOLDOWN_SPE || joueur.cast || t < joueur.confusJusqua) return;
+  if (t - dernierSpeciale < joueur.def.stats.cooldownSpe || joueur.cast || t < joueur.confusJusqua) return;
   dernierSpeciale = t;
   joueur.cast = { t0: t, type: joueur.def.special.type };
   joueur.action = 'protege';
@@ -285,7 +286,7 @@ function update(dt, t) {
   }
   const dir = (etourdi || joueur.cast) ? 0 : (touches.droite ? 1 : 0) - (touches.gauche ? 1 : 0);
   joueur.enMouvement = dir !== 0 || !joueur.onGround;
-  joueur.x += dir * joueur.def.vitesse * dt;
+  joueur.x += dir * joueur.def.stats.vitesse * dt;
   joueur.x = Math.max(40, Math.min(W - 220, joueur.x));
   joueur.vy += GRAV * dt;
   joueur.y += joueur.vy * dt;
@@ -780,7 +781,7 @@ function draw(t) {
     ctx.fillRect(20, 44, 150, 7);
     ctx.fillStyle = ratioI >= 1 ? '#ffd23f' : '#777';
     ctx.fillRect(20, 44, 150 * ratioI, 7);
-    const ratioS = Math.max(0, Math.min(1, (t - dernierSpeciale) / COOLDOWN_SPE));
+    const ratioS = Math.max(0, Math.min(1, (t - dernierSpeciale) / joueur.def.stats.cooldownSpe));
     ctx.fillStyle = 'rgba(0,0,0,0.55)';
     ctx.fillRect(20, 55, 150, 7);
     ctx.fillStyle = ratioS >= 1 ? '#c39bd3' : '#777';
@@ -833,6 +834,24 @@ window.addEventListener('keyup', e => {
   if (e.code === 'ArrowRight') touches.droite = false;
 });
 
+function ouvrirStats(i) {
+  statsEnCours = i;
+  const h = data.heroes[i];
+  const s = h.stats;
+  element('stats-contenu').innerHTML =
+    '<h2 style="color:' + h.couleur + '">' + h.nom + '</h2>'
+    + '<img class="icone-heros" style="width:96px;height:128px" src="assets/personnages/' + h.id + '/debout.svg" alt="' + h.nom + '">'
+    + '<ul class="stats-liste">'
+    + '<li>💪 Force (dégâts des boules) : <strong>' + s.degats + '</strong></li>'
+    + '<li>🔥 Fréquence des punch lines : toutes les <strong>' + s.cadenceTir + ' ms</strong></li>'
+    + '<li>🌀 Agilité : vitesse <strong>' + s.vitesse + '</strong>, saut <strong>' + s.saut + '</strong></li>'
+    + '<li>⭐ Recharge du pouvoir : <strong>' + (s.cooldownSpe / 1000) + ' s</strong></li>'
+    + '<li>❤️ Points de vie : <strong>' + s.pv + '</strong></li>'
+    + '</ul>'
+    + '<p class="stats-pouvoir"><strong>Pouvoir spécial ' + h.special.nom + '</strong><br>' + h.special.desc + '</p>';
+  montrer('ecran-stats');
+}
+
 function construireHeros() {
   const liste = element('liste-heros');
   liste.innerHTML = '';
@@ -849,7 +868,7 @@ function construireHeros() {
     div.appendChild(pastille);
     div.appendChild(nom);
     if (disponibles[i]) {
-      div.addEventListener('click', () => choisirHeros(i));
+      div.addEventListener('click', () => ouvrirStats(i));
     } else {
       const badge = document.createElement('div');
       badge.className = 'badge-tombe';
@@ -905,11 +924,23 @@ element('btn-aide-suivant').addEventListener('click', () => {
 });
 element('btn-suivant').addEventListener('click', suivant);
 element('btn-changer').addEventListener('click', () => {
-  etat = 'heros';
+  indexBoss++;
+  if (indexBoss >= data.boss.length) {
+    etat = 'victoire';
+    element('liste-mesures').innerHTML = data.recompenses.map(r => '<li>' + r + '</li>').join('');
+    montrer('ecran-victoire');
+  } else {
+    etat = 'heros';
+    construireHeros();
+    montrer('ecran-heros');
+  }
+});
+element('btn-combat').addEventListener('click', () => commencerCombat());
+element('btn-choisir-stats').addEventListener('click', () => choisirHeros(statsEnCours));
+element('btn-retour-stats').addEventListener('click', () => {
   construireHeros();
   montrer('ecran-heros');
 });
-element('btn-combat').addEventListener('click', () => commencerCombat());
 element('btn-relais').addEventListener('click', () => {
   etat = 'heros';
   construireHeros();

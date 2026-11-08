@@ -1,40 +1,45 @@
 window.GAME_DATA = {
   heroes: [
-    { id: 'guette', nom: 'Clémence Guetté', couleur: '#e74c3c', vitesse: 270, degats: 14,
+    { id: 'guette', nom: 'Clémence Guetté', couleur: '#e74c3c',
+      stats: { degats: 16, cadenceTir: 700, vitesse: 300, saut: 820, cooldownSpe: 12000, pv: 110 },
       arguments: [
         'La précarité n’est pas un choix de vie.',
         'Taxez les riches, pas les pauvres.',
         'Un SMIC à 1 700 €, c’est possible.'
       ],
-      special: { type: 'bloqueAttaque', nom: '✨ Aura' } },
-    { id: 'panot', nom: 'Mathilde Panot', couleur: '#9b59b6', vitesse: 255, degats: 15,
+      special: { type: 'bloqueAttaque', nom: '✨ Aura', desc: 'L’adversaire ne peut plus attaquer pendant 10 s.' } },
+    { id: 'panot', nom: 'Mathilde Panot', couleur: '#9b59b6',
+      stats: { degats: 13, cadenceTir: 500, vitesse: 250, saut: 780, cooldownSpe: 16000, pv: 95 },
       arguments: [
         'La VIe République, c’est maintenant.',
         'Le peuple d’abord, les profits ensuite.',
         'Le 49.3, vous connaissez ?'
       ],
-      special: { type: 'soin', nom: '💚 Résilience' } },
-    { id: 'balayoko', nom: 'Bally Bagayoko', couleur: '#3498db', vitesse: 290, degats: 13,
+      special: { type: 'soin', nom: '💚 Résilience', desc: 'Récupère 20 % de PV.' } },
+    { id: 'balayoko', nom: 'Bally Bagayoko', couleur: '#3498db',
+      stats: { degats: 13, cadenceTir: 700, vitesse: 330, saut: 860, cooldownSpe: 10000, pv: 140 },
       arguments: [
         'Les services publics ne sont pas un coût, ce sont des droits.',
         'Un hôpital fermé, ce sont des vies en danger.',
         'Chaque quartier mérite son école publique.'
       ],
-      special: { type: 'confus', nom: '👑 La ville des rois' } },
-    { id: 'bompard', nom: 'Manuel Bompard', couleur: '#16a085', vitesse: 265, degats: 14,
+      special: { type: 'confus', nom: '👑 La ville des rois', desc: 'L’adversaire est confus 6 s : il ne fait plus rien.' } },
+    { id: 'bompard', nom: 'Manuel Bompard', couleur: '#16a085',
+      stats: { degats: 14, cadenceTir: 650, vitesse: 270, saut: 800, cooldownSpe: 9000, pv: 120 },
       arguments: [
         'Le SMIC à 1 700 €, on le fait.',
         'La planification écologique, maintenant !',
         'Vos cadeaux fiscaux, on les connaît.'
       ],
-      special: { type: 'antiReflexe', nom: '🧮 Calculs de maths' } },
-    { id: 'melenchon', nom: 'Jean-Luc Mélenchon', couleur: '#e67e22', vitesse: 245, degats: 17,
+      special: { type: 'antiReflexe', nom: '🧮 Calculs de maths', desc: 'L’adversaire ne peut plus couper la parole pendant 12 s.' } },
+    { id: 'melenchon', nom: 'Jean-Luc Mélenchon', couleur: '#e67e22',
+      stats: { degats: 18, cadenceTir: 550, vitesse: 240, saut: 760, cooldownSpe: 7000, pv: 130 },
       arguments: [
         'Si vous n’augmentez pas les salaires, vous aurez la récession.',
         'L’argent magique existe… pour les riches.',
         'La planète n’a pas de plan B.'
       ],
-      special: { type: 'grosseBoule', nom: '📢 LA RÉPUBLIQUE C’EST MOI' } }
+      special: { type: 'grosseBoule', nom: '📢 LA RÉPUBLIQUE C’EST MOI', desc: 'Grosse boule de feu : 40 dégâts, portée 480 px.' } }
   ],
 
   boss: [
@@ -78,7 +83,7 @@ window.GAME_DATA = {
         { t: 'L’Europe nous vole notre souveraineté !', r: 'Sans l’Europe, on l’aurait retrouvée… où déjà ?' },
         { t: 'Il faut arrêter les éoliennes !', r: 'Oui, le nucléaire… ah non, aussi ?' } ] },
     { id: 'lepen', nom: 'Marine Le Pen', pv: 220, degats: 14, couleur: '#922b21', vitesse: 240, cadence: 1700, reflexe: 0.40, echelle: 1.25, bossFinal: true,
-      bracelet: { delai: 4000, portee: 320, vitesse: 650, etourdissement: 4000, confusion: 5000, degats: 8 },
+      bracelet: { delai: 9000, portee: 320, vitesse: 650, etourdissement: 4000, confusion: 5000, degats: 8 },
       avertissement: '⚠️ Attention : son bracelet électronique à la cheville peut sonner ! Une onde rapide peut vous étourdir 4 secondes si elle vous touche.',
       arguments: [ { t: 'On n’en peut plus des délinquants !', r: 'Le bracelet ne serre pas trop la cheville, Marine ?' },
         { t: 'L’insécurité partout !', r: 'Des millions de Français vivent dans l’insécurité à cause de vos idées.' }] }
