@@ -200,11 +200,14 @@ function update(dt, t) {
         }
         continue;
       }
-      if (Math.abs(p.x - boss.x) < 150 && Math.abs(p.y - chB) < 70 && Math.random() < (bossDef.reflexe || 0)) {
-        p.de = 'boss';
-        p.vx = -p.vx;
-        message = boss.def.nom + ' coupe la parole !';
-        messageJusqua = t + 1000;
+      if (!p.reflexeTeste && Math.abs(p.x - boss.x) < 150 && Math.abs(p.y - chB) < 70) {
+        p.reflexeTeste = true;
+        if (Math.random() < (bossDef.reflexe || 0)) {
+          p.de = 'boss';
+          p.vx = -p.vx;
+          message = boss.def.nom + ' coupe la parole !';
+          messageJusqua = t + 1000;
+        }
       }
     } else {
       if (Math.abs(p.x - joueur.x) < joueur.largeur / 2 + p.r && Math.abs(p.y - chJ) < joueur.hauteur / 2 + p.r) {
