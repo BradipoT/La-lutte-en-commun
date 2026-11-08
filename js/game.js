@@ -723,9 +723,9 @@ function dessinerProjectiles(t) {
     }
     const g = ctx.createRadialGradient(p.x, p.y, r * 0.15, p.x, p.y, r * 1.5);
     if (p.type === 'bulle') {
-      g.addColorStop(0, 'rgba(255,255,255,0.9)');
-      g.addColorStop(0.5, 'rgba(160,210,255,0.75)');
-      g.addColorStop(1, 'rgba(80,140,255,0)');
+      g.addColorStop(0, 'rgba(230,245,255,0.95)');
+      g.addColorStop(0.75, 'rgba(160,210,255,0.9)');
+      g.addColorStop(1, 'rgba(120,180,255,0.9)');
     } else if (p.de === 'joueur') {
       g.addColorStop(0, '#fff8dc');
       g.addColorStop(0.4, '#ffd23f');
@@ -739,10 +739,22 @@ function dessinerProjectiles(t) {
     ctx.arc(p.x, p.y, r * 1.5, 0, Math.PI * 2);
     ctx.fillStyle = g;
     ctx.fill();
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, r * 0.55, 0, Math.PI * 2);
-    ctx.fillStyle = '#fff8dc';
-    ctx.fill();
+    if (p.type === 'bulle') {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r * 1.5, 0, Math.PI * 2);
+      ctx.strokeStyle = '#2e6fb8';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(p.x - r * 0.4, p.y - r * 0.4, r * 0.3, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      ctx.fill();
+    } else {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r * 0.55, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff8dc';
+      ctx.fill();
+    }
   });
 }
 
@@ -834,20 +846,46 @@ window.addEventListener('keyup', e => {
   if (e.code === 'ArrowRight') touches.droite = false;
 });
 
+const COULEURS_BARRES = ['#e74c3c', '#e67e22', '#f1c40f', '#82e0aa', '#1e8449'];
+
+function barreStats(valeur, min, max, inverse) {
+  const v = inverse ? -valeur : valeur;
+  const vMin = inverse ? -max : min;
+  const vMax = inverse ? -min : max;
+  let n = vMax === vMin ? 5 : Math.round(1 + 4 * (v - vMin) / (vMax - vMin));
+  n = Math.max(1, Math.min(5, n));
+  let html = '<div class="barres">';
+  for (let k = 1; k <= 5; k++) {
+    html += '<span class="barre' + (k <= n ? ' rempli' : '') + '"' + (k <= n ? ' style="background:' + COULEURS_BARRES[k - 1] + '"' : '') + '></span>';
+  }
+  return html + '</div>';
+}
+
+function ligneStat(label, cle, valeur, min, max, inverse, unite) {
+  return '<div class="stat-ligne"><span class="stat-label">' + label + '</span>'
+    + barreStats(valeur, min, max, inverse)
+    + '<b>' + valeur + unite + '</b></div>';
+}
+
 function ouvrirStats(i) {
   statsEnCours = i;
   const h = data.heroes[i];
   const s = h.stats;
+  const mins = {}, maxs = {};
+  ['degats', 'cadenceTir', 'vitesse', 'cooldownSpe', 'pv'].forEach(k => {
+    mins[k] = Math.min.apply(null, data.heroes.map(x => x.stats[k]));
+    maxs[k] = Math.max.apply(null, data.heroes.map(x => x.stats[k]));
+  });
   element('stats-contenu').innerHTML =
     '<h2 style="color:' + h.couleur + '">' + h.nom + '</h2>'
     + '<img class="icone-heros" style="width:96px;height:128px" src="assets/personnages/' + h.id + '/debout.svg" alt="' + h.nom + '">'
-    + '<ul class="stats-liste">'
-    + '<li>💪 Force (dégâts des boules) : <strong>' + s.degats + '</strong></li>'
-    + '<li>🔥 Fréquence des punch lines : toutes les <strong>' + s.cadenceTir + ' ms</strong></li>'
-    + '<li>🌀 Agilité : vitesse <strong>' + s.vitesse + '</strong>, saut <strong>' + s.saut + '</strong></li>'
-    + '<li>⭐ Recharge du pouvoir : <strong>' + (s.cooldownSpe / 1000) + ' s</strong></li>'
-    + '<li>❤️ Points de vie : <strong>' + s.pv + '</strong></li>'
-    + '</ul>'
+    + '<div class="stats-bloc">'
+    + ligneStat('💪 Force', 'degats', s.degats, mins.degats, maxs.degats, false, ' dégâts')
+    + ligneStat('🔥 Punch lines', 'cadenceTir', s.cadenceTir, mins.cadenceTir, maxs.cadenceTir, true, ' ms')
+    + ligneStat('🌀 Agilité', 'vitesse', s.vitesse, mins.vitesse, maxs.vitesse, false, ' (saut ' + s.saut + ')')
+    + ligneStat('⭐ Pouvoir', 'cooldownSpe', s.cooldownSpe, mins.cooldownSpe, maxs.cooldownSpe, true, ' ms')
+    + ligneStat('❤️ PV', 'pv', s.pv, mins.pv, maxs.pv, false, ' PV')
+    + '</div>'
     + '<p class="stats-pouvoir"><strong>Pouvoir spécial ' + h.special.nom + '</strong><br>' + h.special.desc + '</p>';
   montrer('ecran-stats');
 }

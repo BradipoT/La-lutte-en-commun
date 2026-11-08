@@ -33,7 +33,7 @@ window.GAME_DATA = {
       ],
       special: { type: 'antiReflexe', nom: '🧮 Calculs de maths', desc: 'L’adversaire ne peut plus couper la parole pendant 12 s.' } },
     { id: 'melenchon', nom: 'Jean-Luc Mélenchon', couleur: '#e67e22',
-      stats: { degats: 18, cadenceTir: 550, vitesse: 240, saut: 760, cooldownSpe: 7000, pv: 130 },
+      stats: { degats: 19, cadenceTir: 500, vitesse: 230, saut: 740, cooldownSpe: 6000, pv: 140 },
       arguments: [
         'Si vous n’augmentez pas les salaires, vous aurez la récession.',
         'L’argent magique existe… pour les riches.',
