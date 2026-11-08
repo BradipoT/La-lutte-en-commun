@@ -177,6 +177,27 @@ h2 { font-size: clamp(22px, 5vw, 36px); }
   max-width: 800px;
 }
 
+.choix-niveau-label {
+  font-weight: bold;
+  margin-bottom: -6px;
+}
+
+.choix-niveau {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.bouton-niveau {
+  font-size: clamp(15px, 3vw, 20px) !important;
+  padding: 12px 24px !important;
+}
+
+.niv-facile { background: linear-gradient(135deg, #27ae60, #1e8449); box-shadow: 0 6px 18px rgba(39, 174, 96, 0.45); }
+.niv-moyen { background: linear-gradient(135deg, #e67e22, #ca6f1e); box-shadow: 0 6px 18px rgba(230, 126, 34, 0.45); }
+.niv-dur { background: linear-gradient(135deg, #e74c3c, #c0392b); box-shadow: 0 6px 18px rgba(231, 76, 60, 0.45); }
+
 .bouton-plein-ecran {
   font-size: 15px;
   padding: 10px 22px;

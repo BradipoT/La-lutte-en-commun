@@ -26,6 +26,13 @@ let etat = 'titre';
 let indexBoss = 0;
 let herosChoisi = 0;
 let disponibles = [true, true, true, true];
+
+const NIVEAUX = {
+  facile: { pv: 0.6, degats: 0.6, cadence: 1.5, reflexe: 0.5, pvJoueur: 150 },
+  moyen: { pv: 0.8, degats: 0.8, cadence: 1.25, reflexe: 0.75, pvJoueur: 135 },
+  dur: { pv: 1, degats: 1, cadence: 1, reflexe: 1, pvJoueur: 120 }
+};
+let niveau = 'dur';
 let joueur = null;
 let boss = null;
 let projectiles = [];
@@ -56,7 +63,8 @@ function montrer(id) {
 
 function creerCombattant(def, x, estBoss) {
   const echelle = def.echelle || 1;
-  const pv = estBoss ? def.pv : 120;
+  const f = NIVEAUX[niveau];
+  const pv = estBoss ? Math.round(def.pv * f.pv) : f.pvJoueur;
   return {
     def: def, x: x, y: SOL, vy: 0,
     largeur: 46 * echelle, hauteur: 92 * echelle,
@@ -67,8 +75,15 @@ function creerCombattant(def, x, estBoss) {
 }
 
 function commencerCombat() {
+  const f = NIVEAUX[niveau];
+  const defBoss = Object.assign({}, data.boss[indexBoss], {
+    pv: Math.round(data.boss[indexBoss].pv * f.pv),
+    degats: Math.max(1, Math.round(data.boss[indexBoss].degats * f.degats)),
+    cadence: Math.round(data.boss[indexBoss].cadence * f.cadence),
+    reflexe: data.boss[indexBoss].reflexe * f.reflexe
+  });
   joueur = creerCombattant(data.heroes[herosChoisi], 160, false);
-  boss = creerCombattant(data.boss[indexBoss], W - 200, true);
+  boss = creerCombattant(defBoss, W - 200, true);
   projectiles = [];
   dernierTir = 0;
   dernierSpecial = 0;
@@ -647,11 +662,16 @@ element('btn-plein-ecran').addEventListener('click', () => {
   }
 });
 
-element('btn-jouer').addEventListener('click', () => {
+function choisirNiveau(n) {
+  niveau = n;
   demanderPleinEcran();
   resetPartie();
   etat = 'intro';
   montrer('ecran-intro1');
+}
+
+['facile', 'moyen', 'dur'].forEach(n => {
+  element('btn-niv-' + n).addEventListener('click', () => choisirNiveau(n));
 });
 element('btn-i1').addEventListener('click', () => montrer('ecran-intro2'));
 element('btn-i2').addEventListener('click', () => montrer('ecran-intro3'));
@@ -678,8 +698,9 @@ element('btn-relais').addEventListener('click', () => {
 });
 element('btn-recommencer').addEventListener('click', () => {
   resetPartie();
-  etat = 'titre';
-  montrer('ecran-titre');
+  etat = 'heros';
+  construireHeros();
+  montrer('ecran-heros');
 });
 element('btn-rejouer').addEventListener('click', () => {
   resetPartie();

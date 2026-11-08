@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0d0d1f">
 <title>La Lutte en Commun</title>
-<link rel="stylesheet" href="style.css?v=26">
+<link rel="stylesheet" href="style.css?v=27">
 </head>
 <body>
 <canvas id="jeu" width="960" height="540"></canvas>
@@ -16,7 +16,12 @@
 <div id="ecran-titre" class="ecran">
   <h1>⚔️ La Lutte en Commun</h1>
   <p>Un jeu de combat 2D : battez les candidats de droite un par un, du moins au plus fort, et gagnez les grandes mesures du programme à chaque victoire !</p>
-  <button id="btn-jouer" class="gros-bouton">Jouer</button>
+  <p class="choix-niveau-label">Choisissez la difficulté :</p>
+  <div class="choix-niveau">
+    <button id="btn-niv-facile" class="gros-bouton bouton-niveau niv-facile">😌 Facile</button>
+    <button id="btn-niv-moyen" class="gros-bouton bouton-niveau niv-moyen">😐 Moyen</button>
+    <button id="btn-niv-dur" class="gros-bouton bouton-niveau niv-dur">😤 Dur</button>
+  </div>
   <button id="btn-plein-ecran" class="bouton-plein-ecran">⛶ Plein écran (cache la barre d'URL)</button>
   <p class="astuce">Astuce : « Ajouter à l'écran d'accueil » pour un vrai plein écran permanent.</p>
 </div>
@@ -100,7 +105,7 @@
   </div>
 </div>
 
-<script src="js/data.js?v=26"></script>
-<script src="js/game.js?v=26"></script>
+<script src="js/data.js?v=27"></script>
+<script src="js/game.js?v=27"></script>
 </body>
 </html>
