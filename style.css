@@ -92,6 +92,21 @@ h2 { font-size: clamp(22px, 5vw, 36px); }
 
 .carte-heros:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.14); }
 
+.carte-heros.tombe {
+  opacity: 0.35;
+  filter: grayscale(1);
+  cursor: not-allowed;
+}
+
+.carte-heros.tombe:active { transform: none; background: rgba(255, 255, 255, 0.06); }
+
+.badge-tombe {
+  font-size: 11px;
+  font-weight: bold;
+  color: #ff8a80;
+  text-transform: uppercase;
+}
+
 .pastille {
   width: 54px;
   height: 54px;

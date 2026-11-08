@@ -11,6 +11,7 @@ const data = window.GAME_DATA;
 let etat = 'titre';
 let indexBoss = 0;
 let herosChoisi = 0;
+let disponibles = [true, true, true, true];
 let joueur = null;
 let boss = null;
 let projectiles = [];
@@ -26,7 +27,7 @@ function element(id) {
 }
 
 function cacherTout() {
-  ['ecran-titre', 'ecran-heros', 'ecran-recompense', 'ecran-defaite', 'ecran-victoire', 'controles']
+  ['ecran-titre', 'ecran-heros', 'ecran-recompense', 'ecran-defaite', 'ecran-perdu', 'ecran-victoire', 'controles']
     .forEach(id => element(id).classList.add('cache'));
 }
 
@@ -59,9 +60,15 @@ function commencerCombat() {
   element('controles').classList.remove('cache');
 }
 
-function choisirHeros(i) {
-  herosChoisi = i;
+function resetPartie() {
   indexBoss = 0;
+  herosChoisi = 0;
+  disponibles = data.heroes.map(() => true);
+}
+
+function choisirHeros(i) {
+  if (!disponibles[i]) return;
+  herosChoisi = i;
   commencerCombat();
 }
 
@@ -119,8 +126,15 @@ function finCombat(gagne) {
     element('texte-recompense').textContent = data.recompenses[indexBoss];
     montrer('ecran-recompense');
   } else {
-    etat = 'defaite';
-    montrer('ecran-defaite');
+    disponibles[herosChoisi] = false;
+    if (disponibles.some(d => d)) {
+      etat = 'defaite';
+      element('texte-defaite').textContent = 'Un camarade est tombé. Un autre ramasse le flambeau et marche vers la victoire.';
+      montrer('ecran-defaite');
+    } else {
+      etat = 'perdu';
+      montrer('ecran-perdu');
+    }
   }
 }
 
@@ -363,7 +377,7 @@ function construireHeros() {
   liste.innerHTML = '';
   data.heroes.forEach((h, i) => {
     const div = document.createElement('div');
-    div.className = 'carte-heros';
+    div.className = 'carte-heros' + (disponibles[i] ? '' : ' tombe');
     div.style.borderColor = h.couleur;
     const pastille = document.createElement('div');
     pastille.className = 'pastille';
@@ -376,20 +390,37 @@ function construireHeros() {
     div.appendChild(pastille);
     div.appendChild(nom);
     div.appendChild(phrase);
-    div.addEventListener('click', () => choisirHeros(i));
+    if (disponibles[i]) {
+      div.addEventListener('click', () => choisirHeros(i));
+    } else {
+      const badge = document.createElement('div');
+      badge.className = 'badge-tombe';
+      badge.textContent = '✊ tombé au combat';
+      div.appendChild(badge);
+    }
     liste.appendChild(div);
   });
 }
 
 element('btn-jouer').addEventListener('click', () => {
+  resetPartie();
   etat = 'heros';
   construireHeros();
   montrer('ecran-heros');
 });
 element('btn-suivant').addEventListener('click', suivant);
-element('btn-reessayer').addEventListener('click', () => commencerCombat());
+element('btn-relais').addEventListener('click', () => {
+  etat = 'heros';
+  construireHeros();
+  montrer('ecran-heros');
+});
+element('btn-recommencer').addEventListener('click', () => {
+  resetPartie();
+  etat = 'titre';
+  montrer('ecran-titre');
+});
 element('btn-rejouer').addEventListener('click', () => {
-  indexBoss = 0;
+  resetPartie();
   etat = 'titre';
   montrer('ecran-titre');
 });

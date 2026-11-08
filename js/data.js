@@ -14,7 +14,7 @@ window.GAME_DATA = {
     { nom: 'Bruno Retailleau', pv: 145, degats: 11, phrase: 'Discours sécuritaire !', couleur: '#1a5276', vitesse: 190, cadence: 2100, reflexe: 0.25 },
     { nom: 'Nathalie Saint-Cricq', pv: 160, degats: 12, phrase: 'Commentaire orienté !', couleur: '#117864', vitesse: 205, cadence: 2000, reflexe: 0.30 },
     { nom: 'Gabriel Attal', pv: 175, degats: 13, phrase: 'Jeune et déconnecté !', couleur: '#b9770e', vitesse: 220, cadence: 1900, reflexe: 0.35 },
-    { nom: 'Marine Le Pen', pv: 240, degats: 15, phrase: 'Discours de haine !', couleur: '#922b21', vitesse: 240, cadence: 1600, reflexe: 0.45, echelle: 1.25, bossFinal: true }
+    { nom: 'Marine Le Pen', pv: 220, degats: 14, phrase: 'Discours de haine !', couleur: '#922b21', vitesse: 240, cadence: 1700, reflexe: 0.40, echelle: 1.25, bossFinal: true }
   ],
 
   recompenses: [
