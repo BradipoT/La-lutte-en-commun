@@ -426,6 +426,15 @@ function draw(t) {
     dessinerProjectiles(t);
     dessinerBarre(20, 34, 340, Math.max(0, joueur.hp) / joueur.maxHp, '#2ecc71', joueur.def.nom, false);
     dessinerBarre(W - 360, 34, 340, Math.max(0, boss.hp) / boss.maxHp, '#e74c3c', boss.def.nom, true);
+    const ratioI = Math.max(0, Math.min(1, (t - dernierSpecial) / 1000));
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(20, 58, 150, 9);
+    ctx.fillStyle = ratioI >= 1 ? '#ffd23f' : '#777';
+    ctx.fillRect(20, 58, 150 * ratioI, 9);
+    ctx.fillStyle = '#fff';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('🛡 ironie', 176, 66);
     if (t < messageJusqua && message) {
       ctx.fillStyle = '#ffd23f';
       ctx.font = 'bold 22px sans-serif';
