@@ -42,7 +42,7 @@ function element(id) {
 }
 
 function cacherTout() {
-  ['ecran-titre', 'ecran-aide', 'ecran-heros', 'ecran-versus', 'ecran-recompense', 'ecran-defaite', 'ecran-perdu', 'ecran-victoire', 'controles']
+  ['ecran-titre', 'ecran-intro1', 'ecran-intro2', 'ecran-intro3', 'ecran-aide', 'ecran-heros', 'ecran-versus', 'ecran-recompense', 'ecran-defaite', 'ecran-perdu', 'ecran-victoire', 'controles']
     .forEach(id => element(id).classList.add('cache'));
 }
 
@@ -431,28 +431,31 @@ function draw(t) {
     dessinerCombattant(boss, t);
     dessinerCombattant(joueur, t);
     dessinerProjectiles(t);
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 15px sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(t - phraseJT < 1500 ? phraseJ : joueur.def.nom, 20, 22);
-    ctx.textAlign = 'right';
-    ctx.fillText(t - phraseBT < 1500 ? phraseB : boss.def.nom, W - 20, 22);
-    dessinerBarre(20, 30, 340, Math.max(0, joueur.hp) / joueur.maxHp, '#2ecc71', joueur.def.nom, false);
-    dessinerBarre(W - 360, 30, 340, Math.max(0, boss.hp) / boss.maxHp, '#e74c3c', boss.def.nom, true);
+    dessinerBarre(20, 24, 340, Math.max(0, joueur.hp) / joueur.maxHp, '#2ecc71', joueur.def.nom, false);
+    dessinerBarre(W - 360, 24, 340, Math.max(0, boss.hp) / boss.maxHp, '#e74c3c', boss.def.nom, true);
     const ratioI = Math.max(0, Math.min(1, (t - dernierSpecial) / 1000));
     ctx.fillStyle = 'rgba(0,0,0,0.55)';
-    ctx.fillRect(20, 54, 150, 9);
+    ctx.fillRect(20, 46, 150, 9);
     ctx.fillStyle = ratioI >= 1 ? '#ffd23f' : '#777';
-    ctx.fillRect(20, 54, 150 * ratioI, 9);
+    ctx.fillRect(20, 46, 150 * ratioI, 9);
     ctx.fillStyle = '#fff';
     ctx.font = '11px sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText('🛡 ironie', 176, 62);
+    ctx.fillText('🛡 ironie', 176, 54);
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.fillRect(20, 62, 420, 34);
+    ctx.fillRect(W - 440, 62, 420, 34);
+    ctx.fillStyle = '#ffd23f';
+    ctx.font = 'bold 19px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(t - phraseJT < 2000 ? phraseJ : joueur.def.nom, 32, 87);
+    ctx.textAlign = 'right';
+    ctx.fillText(t - phraseBT < 2000 ? phraseB : boss.def.nom, W - 32, 87);
     if (t < messageJusqua && message) {
-      ctx.fillStyle = '#ffd23f';
-      ctx.font = 'bold 22px sans-serif';
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 17px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(message, W / 2, 110);
+      ctx.fillText(message, W / 2, 87);
     }
   }
 }
@@ -505,12 +508,8 @@ function construireHeros() {
     pastille.style.background = h.couleur;
     const nom = document.createElement('div');
     nom.textContent = h.nom;
-    const phrase = document.createElement('div');
-    phrase.className = 'phrase';
-    phrase.textContent = '🔥 ' + h.phrase;
     div.appendChild(pastille);
     div.appendChild(nom);
-    div.appendChild(phrase);
     if (disponibles[i]) {
       div.addEventListener('click', () => choisirHeros(i));
     } else {
@@ -547,6 +546,12 @@ element('btn-plein-ecran').addEventListener('click', () => {
 element('btn-jouer').addEventListener('click', () => {
   demanderPleinEcran();
   resetPartie();
+  etat = 'intro';
+  montrer('ecran-intro1');
+});
+element('btn-i1').addEventListener('click', () => montrer('ecran-intro2'));
+element('btn-i2').addEventListener('click', () => montrer('ecran-intro3'));
+element('btn-i3').addEventListener('click', () => {
   etat = 'aide';
   montrer('ecran-aide');
 });
