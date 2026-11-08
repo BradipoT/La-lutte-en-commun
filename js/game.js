@@ -7,6 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
+const VERSION = 39;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -16,7 +17,7 @@ function chargerImages() {
   data.heroes.concat(data.boss).forEach(p => {
     POSES.forEach(pose => {
       const img = new Image();
-      img.src = 'assets/personnages/' + p.id + '/' + pose + '.svg';
+      img.src = 'assets/personnages/' + p.id + '/' + pose + '.svg?v=' + VERSION;
       imagesPersos[p.id + '_' + pose] = img;
     });
   });
@@ -878,7 +879,7 @@ function ouvrirStats(i) {
   });
   element('stats-contenu').innerHTML =
     '<h2 style="color:' + h.couleur + '">' + h.nom + '</h2>'
-    + '<img class="icone-heros" style="width:96px;height:128px" src="assets/personnages/' + h.id + '/debout.svg" alt="' + h.nom + '">'
+    + '<img class="icone-heros" style="width:96px;height:128px" src="assets/personnages/' + h.id + '/debout.svg?v=' + VERSION + '" alt="' + h.nom + '">'
     + '<div class="stats-bloc">'
     + ligneStat('💪 Force', 'degats', s.degats, mins.degats, maxs.degats, false, ' dégâts')
     + ligneStat('🔥 Punch lines', 'cadenceTir', s.cadenceTir, mins.cadenceTir, maxs.cadenceTir, true, ' ms')
@@ -899,7 +900,7 @@ function construireHeros() {
     div.style.borderColor = h.couleur;
     const pastille = document.createElement('img');
     pastille.className = 'icone-heros';
-    pastille.src = 'assets/personnages/' + h.id + '/debout.svg';
+    pastille.src = 'assets/personnages/' + h.id + '/debout.svg?v=' + VERSION;
     pastille.alt = h.nom;
     const nom = document.createElement('div');
     nom.textContent = h.nom;
