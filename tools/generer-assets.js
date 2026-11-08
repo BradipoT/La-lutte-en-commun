@@ -5,7 +5,7 @@ global.window = {};
 require(path.join(__dirname, '..', 'js', 'data.js'));
 const data = global.window.GAME_DATA;
 
-const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege'];
+const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 
 const TRAITS = {
   guette:      { sexe: 'f', cheveux: '#4e342e', longueur: 'longs',    teint: '#f0c8aa', lunettes: false, barbe: null },
@@ -44,6 +44,7 @@ function bras(pose) {
   if (pose === 'protege') return { path: 'M50 56 L76 74 M50 74 L76 56', hand: null };
   if (pose === 'marche') return { path: 'M56 52 L74 76', hand: null };
   if (pose === 'marche2') return { path: 'M56 52 L40 78', hand: null };
+  if (pose === 'brasCiel') return { path: 'M56 52 L44 18 M56 52 L74 20', hand: null };
   return { path: 'M56 52 L62 92', hand: [62, 94] };
 }
 

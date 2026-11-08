@@ -8,7 +8,7 @@ const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
 
-const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege'];
+const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
 
 function chargerImages() {
@@ -45,6 +45,7 @@ let ondes = [];
 let dernierSpeciale = 0;
 const COOLDOWN_SPE = 15000;
 const DUREE_CAST = 2500;
+let annonce = null;
 let prochainTirBoss = 0;
 let messageJ = '', messageJT = 0, messageB = '', messageBT = 0;
 const touches = { gauche: false, droite: false };
@@ -179,6 +180,17 @@ function special() {
 
 function appliquerSpeciale(type, t) {
   const nom = joueur.def.special.nom;
+  joueur.flameJusqua = t + 800;
+  joueur.action = 'pointe';
+  joueur.actionT = t;
+  const consequences = {
+    bloqueAttaque: 'L’adversaire ne peut plus attaquer pendant 10 s.',
+    confus: 'L’adversaire est confus 6 s : il ne fait plus rien.',
+    soin: 'Le camarade récupère 20 % de PV.',
+    antiReflexe: 'L’adversaire ne peut plus couper la parole pendant 12 s.',
+    grosseBoule: 'Grosse boule de feu : 40 dégâts !'
+  };
+  annonce = { l1: joueur.def.nom + ' lance ' + nom + ' !', l2: consequences[type] || '', t0: t };
   if (type === 'bloqueAttaque') {
     boss.bloqueJusqua = t + 10000;
     messageJ = '✨ Aura ! L’adversaire ne peut plus attaquer pendant 10 s !';
@@ -458,7 +470,11 @@ function dessinerFond() {
 
 function dessinerCombattant(c, t) {
   let pose = 'debout';
-  if (c.action && t - c.actionT < 350) {
+  if (c.cast) {
+    pose = 'brasCiel';
+  } else if (t < (c.flameJusqua || 0)) {
+    pose = 'pointe';
+  } else if (c.action && t - c.actionT < 350) {
     pose = c.action === 'tir' ? 'pointe' : 'protege';
   } else if (!c.onGround) {
     pose = 'marche';
@@ -536,6 +552,75 @@ function dessinerCombattant(c, t) {
 
   ctx.restore();
 
+}
+
+function dessinerEclairs(c, t) {
+  ctx.strokeStyle = '#ffe066';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  for (let i = 0; i < 3; i++) {
+    const a = t / 90 + i * 2.1;
+    const bx = c.x + Math.cos(a) * (c.largeur + 18);
+    const by = c.y - c.hauteur * (0.4 + 0.5 * ((i + 1) / 3)) + Math.sin(a * 1.7) * 10;
+    ctx.beginPath();
+    ctx.moveTo(bx, by - 16);
+    ctx.lineTo(bx + 6, by - 6);
+    ctx.lineTo(bx - 4, by + 2);
+    ctx.lineTo(bx + 5, by + 14);
+    ctx.stroke();
+  }
+}
+
+function dessinerAura(c, t) {
+  const reste = (c.flameJusqua - t) / 800;
+  const r = 80 * (1.2 - reste * 0.4);
+  const g = ctx.createRadialGradient(c.x, c.y - c.hauteur / 2, 10, c.x, c.y - c.hauteur / 2, r);
+  g.addColorStop(0, 'rgba(255, 240, 150, ' + (0.85 * reste) + ')');
+  g.addColorStop(0.5, 'rgba(255, 140, 0, ' + (0.6 * reste) + ')');
+  g.addColorStop(1, 'rgba(255, 60, 0, 0)');
+  ctx.beginPath();
+  ctx.arc(c.x, c.y - c.hauteur / 2, r, 0, Math.PI * 2);
+  ctx.fillStyle = g;
+  ctx.fill();
+}
+
+function dessinerConfusion(t) {
+  if (t >= boss.confusJusqua) return;
+  const signes = ['?', '!', '?', '!'];
+  const couleurs = ['#ffd23f', '#ff5252', '#ffd23f', '#ff5252'];
+  ctx.font = 'bold 24px sans-serif';
+  ctx.textAlign = 'center';
+  signes.forEach((s, i) => {
+    const a = t / 280 + i * (Math.PI / 2);
+    const x = boss.x + Math.cos(a) * (boss.largeur + 34);
+    const y = boss.y - boss.hauteur - 26 + Math.sin(a) * 14;
+    ctx.fillStyle = couleurs[i];
+    ctx.fillText(s, x, y);
+  });
+}
+
+function dessinerAnnonce(t) {
+  if (!annonce || t - annonce.t0 > 2600) return;
+  const alpha = Math.min(1, (2600 - (t - annonce.t0)) / 500);
+  ctx.font = 'bold 24px sans-serif';
+  const w1 = ctx.measureText(annonce.l1).width;
+  ctx.font = '15px sans-serif';
+  const w2 = ctx.measureText(annonce.l2).width;
+  const w = Math.max(w1, w2) + 50;
+  const h = 78;
+  const x = W / 2 - w / 2;
+  const y = H / 2 - h / 2 - 40;
+  ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
+  ctx.fillRect(x, y, w, h);
+  ctx.strokeStyle = 'rgba(180,180,180,' + alpha + ')';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(x, y, w, h);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'rgba(20,20,40,' + alpha + ')';
+  ctx.font = 'bold 24px sans-serif';
+  ctx.fillText(annonce.l1, W / 2, y + 34);
+  ctx.font = '15px sans-serif';
+  ctx.fillText(annonce.l2, W / 2, y + 60);
 }
 
 function dessinerBoiteTexte(x, y, w, texte) {
@@ -627,8 +712,12 @@ function draw(t) {
   if (joueur && etat !== 'titre' && etat !== 'heros') {
     dessinerCombattant(boss, t);
     dessinerCombattant(joueur, t);
+    if (joueur.cast) dessinerEclairs(joueur, t);
+    if (t < joueur.flameJusqua) dessinerAura(joueur, t);
+    dessinerConfusion(t);
     dessinerOndes();
     dessinerProjectiles(t);
+    dessinerAnnonce(t);
     ctx.fillStyle = '#fff';
     ctx.font = 'bold 14px sans-serif';
     ctx.textAlign = 'left';
