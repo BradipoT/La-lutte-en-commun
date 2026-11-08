@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 39;
+const VERSION = 40;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -857,7 +857,7 @@ function barreStats(valeur, min, max, inverse) {
   n = Math.max(1, Math.min(5, n));
   let html = '<div class="barres">';
   for (let k = 1; k <= 5; k++) {
-    html += '<span class="barre' + (k <= n ? ' rempli c' + k : '') + '"></span>';
+    html += '<span class="barre' + (k <= n ? ' rempli c' + k : '') + '"' + (k <= n ? ' style="background:' + COULEURS_BARRES[k - 1] + ';"' : '') + '></span>';
   }
   return html + '</div>';
 }
