@@ -8,6 +8,20 @@ const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
 
+const POSES = ['debout', 'marche', 'pointe', 'pointeMarche', 'protege'];
+const imagesPersos = {};
+
+function chargerImages() {
+  if (typeof Image === 'undefined') return;
+  data.heroes.concat(data.boss).forEach(p => {
+    POSES.forEach(pose => {
+      const img = new Image();
+      img.src = 'assets/personnages/' + p.id + '/' + pose + '.svg';
+      imagesPersos[p.id + '_' + pose] = img;
+    });
+  });
+}
+
 let etat = 'titre';
 let indexBoss = 0;
 let herosChoisi = 0;
@@ -292,6 +306,22 @@ function dessinerCombattant(c, t) {
   const face = autre && autre.x >= c.x ? 1 : -1;
   const h = c.hauteur;
 
+  const img = imagesPersos[c.def.id + '_' + pose];
+  if (img && img.complete && img.naturalWidth > 0) {
+    const ih = 175 * c.echelle;
+    const iw = ih * 0.75;
+    ctx.save();
+    ctx.translate(c.x, c.y);
+    ctx.scale(face, 1);
+    ctx.drawImage(img, -iw / 2, -ih, iw, ih);
+    ctx.restore();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 14px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(c.def.nom, c.x, c.y - h - 34 * c.echelle);
+    return;
+  }
+
   ctx.save();
   ctx.translate(c.x, c.y);
   ctx.scale(face * c.echelle, c.echelle);
@@ -492,5 +522,6 @@ lierBouton('btn-saut', saut);
 lierBouton('btn-tir', tir);
 lierBouton('btn-special', special);
 
+chargerImages();
 montrer('ecran-titre');
 requestAnimationFrame(boucle);
