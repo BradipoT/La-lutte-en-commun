@@ -12,9 +12,9 @@ window.GAME_DATA = {
     { nom: 'Pascal Praud', pv: 100, degats: 8, phrase: 'Stéréotype raciste !', couleur: '#8e44ad', vitesse: 160, cadence: 2800, reflexe: 0.12 },
     { nom: 'Édouard Philippe', pv: 115, degats: 9, phrase: 'Réforme injuste !', couleur: '#2e86c1', vitesse: 175, cadence: 2600, reflexe: 0.15 },
     { nom: 'Bruno Retailleau', pv: 135, degats: 10, phrase: 'Discours sécuritaire !', couleur: '#1a5276', vitesse: 190, cadence: 2400, reflexe: 0.20 },
-    { nom: 'Nathalie Saint-Cricq', pv: 150, degats: 11, phrase: 'Commentaire orienté !', couleur: '#117864', vitesse: 205, cadence: 2200, reflexe: 0.25 },
-    { nom: 'Gabriel Attal', pv: 170, degats: 13, phrase: 'Jeune et déconnecté !', couleur: '#b9770e', vitesse: 220, cadence: 2000, reflexe: 0.30 },
-    { nom: 'Marine Le Pen', pv: 200, degats: 15, phrase: 'Discours de haine !', couleur: '#922b21', vitesse: 240, cadence: 1800, reflexe: 0.35, echelle: 1.25, bossFinal: true }
+    { nom: 'Nathalie Saint-Cricq', pv: 150, degats: 10, phrase: 'Commentaire orienté !', couleur: '#117864', vitesse: 205, cadence: 2400, reflexe: 0.25 },
+    { nom: 'Gabriel Attal', pv: 170, degats: 11, phrase: 'Jeune et déconnecté !', couleur: '#b9770e', vitesse: 220, cadence: 2200, reflexe: 0.30 },
+    { nom: 'Marine Le Pen', pv: 200, degats: 12, phrase: 'Discours de haine !', couleur: '#922b21', vitesse: 240, cadence: 2000, reflexe: 0.30, echelle: 1.25, bossFinal: true }
   ],
 
   recompenses: [
