@@ -39,7 +39,7 @@ window.GAME_DATA = {
         'L’argent magique existe… pour les riches.',
         'La planète n’a pas de plan B.'
       ],
-      special: { type: 'grosseBoule', nom: '📢 LA RÉPUBLIQUE C’EST MOI', desc: 'Grosse boule de feu : 40 dégâts, portée 480 px.' } }
+      special: { type: 'gigantisme', nom: '📢 LA RÉPUBLIQUE C’EST MOI', desc: 'Grandit pendant 15 s : toutes ses stats sont améliorées.' } }
   ],
 
   boss: [

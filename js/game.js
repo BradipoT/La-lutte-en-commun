@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 59;
+const VERSION = 60;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -78,11 +78,11 @@ function creerCombattant(def, x, estBoss) {
   const f = NIVEAUX[niveau];
   const pv = estBoss ? Math.round(def.pv * f.pv) : (def.stats ? def.stats.pv : f.pvJoueur);
   return {
-    def: def, x: x, y: SOL, vy: 0,
+    def: def, stats: Object.assign({}, def.stats || {}), x: x, y: SOL, vy: 0,
     largeur: 46 * echelle, hauteur: 92 * echelle,
     hp: pv, maxHp: pv, onGround: true, echelle: echelle, estBoss: estBoss,
     phase: null, phaseJusqua: 0, action: null, actionT: 0, enMouvement: false,
-    etourdiJusqua: 0, confusJusqua: 0, toucheJusqua: 0, tombeJusqua: 0, gagneJusqua: 0, cast: null, castCharge: 0, bloqueJusqua: 0, antiReflexeJusqua: 0, flameJusqua: 0
+    etourdiJusqua: 0, confusJusqua: 0, toucheJusqua: 0, tombeJusqua: 0, gagneJusqua: 0, cast: null, castCharge: 0, buffJusqua: 0, bloqueJusqua: 0, antiReflexeJusqua: 0, flameJusqua: 0
   };
 }
 
@@ -150,8 +150,8 @@ function tirCharge() {
   const dir = boss.x > joueur.x ? 1 : -1;
   projectiles.push({
     x: joueur.x + dir * 34, y: hauteurTir(joueur),
-    vx: dir * 720, de: 'joueur', type: 'boule', portee: joueur.def.stats.portee, startX: joueur.x + dir * 34,
-    degats: joueur.def.stats.degats * 2, phrase: '🔥 ' + argJ, r: 22, nonContree: true
+    vx: dir * 720, de: 'joueur', type: 'boule', portee: joueur.stats.portee, startX: joueur.x + dir * 34,
+    degats: joueur.stats.degats * 2, phrase: '🔥 ' + argJ, r: 22, nonContree: true
   });
   joueur.action = 'tir';
   joueur.actionT = t;
@@ -161,7 +161,7 @@ function tirCharge() {
 function tir() {
   if (etat !== 'combat') return;
   const t = performance.now();
-  if (t - dernierTir < joueur.def.stats.cadenceTir || t < joueur.confusJusqua || t < joueur.toucheJusqua) return;
+  if (t - dernierTir < joueur.stats.cadenceTir || t < joueur.confusJusqua || t < joueur.toucheJusqua) return;
   dernierTir = t;
   sfx('tir');
   joueur.action = 'tir';
@@ -173,14 +173,14 @@ function tir() {
   const dir = boss.x > joueur.x ? 1 : -1;
   projectiles.push({
     x: joueur.x + dir * 30, y: hauteurTir(joueur),
-    vx: dir * VITESSE_TIR, de: 'joueur', portee: joueur.def.stats.portee, startX: joueur.x + dir * 30,
-    degats: joueur.def.stats.degats, phrase: argJ, r: 14
+    vx: dir * VITESSE_TIR, de: 'joueur', portee: joueur.stats.portee, startX: joueur.x + dir * 30,
+    degats: joueur.stats.degats, phrase: argJ, r: 14
   });
 }
 
 function saut() {
   if (etat === 'combat' && joueur.onGround && !joueur.cast && performance.now() >= joueur.etourdiJusqua && performance.now() >= joueur.toucheJusqua) {
-    joueur.vy = -joueur.def.stats.saut;
+    joueur.vy = -joueur.stats.saut;
     joueur.onGround = false;
     sfx('saut');
   }
@@ -216,19 +216,20 @@ function special() {
 
 function appliquerSpeciale(type, t) {
   sfx('speciale');
-  boss.hp -= Math.round(joueur.def.stats.degats * 1.5);
+  boss.hp -= Math.round(joueur.stats.degats * 1.5);
   if (boss.hp <= 0) { boss.hp = 0; finCombat(true, t); return; }
   const nom = joueur.def.special.nom;
   joueur.flameJusqua = t + 800;
   joueur.action = 'pointe';
   joueur.actionT = t;
-  const touche = type === 'soin' || Math.abs(boss.x - joueur.x) <= PORTEE_SPE;
+  const touche = type === 'soin' || type === 'gigantisme' || Math.abs(boss.x - joueur.x) <= PORTEE_SPE;
   const consequences = {
     bloqueAttaque: 'L’adversaire ne peut plus attaquer pendant 10 s.',
     confus: 'L’adversaire est confus 6 s : il ne fait plus rien.',
     soin: 'Le camarade récupère 20 % de PV.',
     antiReflexe: 'L’adversaire ne peut plus couper la parole pendant 12 s.',
-    grosseBoule: 'Grosse boule de feu : 40 dégâts !'
+    grosseBoule: 'Grosse boule de feu : 40 dégâts !',
+    gigantisme: 'Il grandit : toutes ses stats sont améliorées pendant 15 s !'
   };
   annonce = {
     l1: joueur.def.nom + ' lance ' + nom + ' !',
@@ -257,14 +258,17 @@ function appliquerSpeciale(type, t) {
     messageJT = t + 2000;
     messageB = '« Il ne peut plus couper la parole pendant 12 s ! »';
     messageBT = t + 3000;
-  } else if (type === 'grosseBoule') {
-    const dir = boss.x > joueur.x ? 1 : -1;
-    projectiles.push({
-      x: joueur.x + dir * 34, y: hauteurTir(joueur),
-      vx: dir * 560, de: 'joueur', type: 'boule', portee: joueur.def.stats.portee, startX: joueur.x + dir * 34,
-      degats: 40, phrase: '📢 LA RÉPUBLIQUE C’EST MOI !', r: 30
+  } else if (type === 'gigantisme') {
+    joueur.buffJusqua = t + 15000;
+    joueur.echelle = (joueur.def.echelle || 1) * 1.6;
+    joueur.stats = Object.assign({}, joueur.def.stats, {
+      degats: Math.round(joueur.def.stats.degats * 1.5),
+      cadenceTir: Math.round(joueur.def.stats.cadenceTir * 0.7),
+      vitesse: Math.round(joueur.def.stats.vitesse * 1.25),
+      saut: Math.round(joueur.def.stats.saut * 1.2),
+      portee: Math.round(joueur.def.stats.portee * 1.5)
     });
-    messageJ = '📢 LA RÉPUBLIQUE C’EST MOI !';
+    messageJ = '📢 LA RÉPUBLIQUE C’EST MOI ! Je grandis 15 s !';
     messageJT = t + 2000;
   }
 }
@@ -272,7 +276,7 @@ function appliquerSpeciale(type, t) {
 function speciale() {
   if (etat !== 'combat') return;
   const t = performance.now();
-  if (t - dernierSpeciale < joueur.def.stats.cooldownSpe || joueur.cast || t < joueur.confusJusqua || t < joueur.toucheJusqua) return;
+  if (t - dernierSpeciale < joueur.stats.cooldownSpe || joueur.cast || t < joueur.confusJusqua || t < joueur.toucheJusqua) return;
   dernierSpeciale = t;
   joueur.cast = { t0: t, type: joueur.def.special.type };
   joueur.action = 'protege';
@@ -348,13 +352,20 @@ function update(dt, t) {
     appliquerSpeciale(joueur.cast.type, t);
     joueur.cast = null;
   }
+  if (joueur.buffJusqua && t >= joueur.buffJusqua) {
+    joueur.buffJusqua = 0;
+    joueur.echelle = joueur.def.echelle || 1;
+    joueur.stats = Object.assign({}, joueur.def.stats);
+    messageJ = 'Taille normale retrouvée.';
+    messageJT = t + 1500;
+  }
   if (joueur.castCharge && t - joueur.castCharge >= 1000) {
     joueur.castCharge = 0;
     tirCharge();
   }
   const dir = (etourdi || joueur.cast || joueur.castCharge) ? 0 : (touches.droite ? 1 : 0) - (touches.gauche ? 1 : 0);
   joueur.enMouvement = dir !== 0 || !joueur.onGround;
-  joueur.x += dir * joueur.def.stats.vitesse * dt;
+  joueur.x += dir * joueur.stats.vitesse * dt;
   joueur.x = Math.max(40, Math.min(W - 220, joueur.x));
   joueur.vy += GRAV * dt;
   joueur.y += joueur.vy * dt;
@@ -904,7 +915,7 @@ function draw(t) {
     ctx.fillRect(20, 44, 150, 7);
     ctx.fillStyle = ratioI >= 1 ? '#ffd23f' : '#777';
     ctx.fillRect(20, 44, 150 * ratioI, 7);
-    const ratioS = Math.max(0, Math.min(1, (t - dernierSpeciale) / joueur.def.stats.cooldownSpe));
+    const ratioS = Math.max(0, Math.min(1, (t - dernierSpeciale) / joueur.stats.cooldownSpe));
     ctx.fillStyle = 'rgba(0,0,0,0.55)';
     ctx.fillRect(20, 55, 150, 7);
     ctx.fillStyle = ratioS >= 1 ? '#c39bd3' : '#777';
