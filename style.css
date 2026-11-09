@@ -418,11 +418,27 @@ h2 { font-size: clamp(22px, 5vw, 36px); }
   .carte-heros { width: 150px; padding: 12px 8px; }
 }
 
-#ecran-intro1 {
-  background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.65)), url('assets/intro-sombre.svg') center/cover no-repeat;
+@keyframes zoomPan1 {
+  from { background-size: 125% auto; background-position: 0% 50%; }
+  to   { background-size: 138% auto; background-position: 100% 50%; }
 }
 
-#ecran-intro1 p {
+@keyframes zoomPan2 {
+  from { background-size: 155% auto; background-position: 100% 50%; }
+  to   { background-size: 175% auto; background-position: 0% 50%; }
+}
+
+#ecran-intro1 {
+  background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.65)), url('assets/intro/paysage-dystopique.png') center/cover no-repeat;
+  animation: zoomPan1 45s ease-in-out infinite alternate;
+}
+
+#ecran-intro2 {
+  background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.65)), url('assets/intro/grok.jpg') center/cover no-repeat;
+  animation: zoomPan2 30s ease-in-out infinite alternate;
+}
+
+#ecran-intro1 p, #ecran-intro2 p {
   background: rgba(0, 0, 0, 0.55);
   border-radius: 12px;
   padding: 12px 16px;
