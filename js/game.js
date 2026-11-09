@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 75;
+const VERSION = 76;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -55,6 +55,8 @@ const COOLDOWN_SPE = 8000;
 const DUREE_CAST = 1100;
 const PORTEE_SPE = 480;
 let annonce = null;
+let shakeJusqua = 0;
+const SHAKE_MAG = 4;
 let prochainTirBoss = 0;
 let messageJ = '', messageJT = 0, messageB = '', messageBT = 0;
 const touches = { gauche: false, droite: false };
@@ -525,6 +527,7 @@ function update(dt, t) {
       if (Math.abs(p.x - boss.x) < boss.largeur / 2 + p.r && Math.abs(p.y - chB) < boss.hauteur / 2 + p.r) {
         boss.hp -= p.degats;
         boss.toucheJusqua = t + 500;
+        shakeJusqua = t + 160;
         sfx('touche');
         projectiles.splice(i, 1);
         if (boss.cast) {
@@ -555,6 +558,7 @@ function update(dt, t) {
       if (Math.abs(p.x - joueur.x) < joueur.largeur / 2 + p.r && Math.abs(p.y - chJ) < joueur.hauteur / 2 + p.r) {
         joueur.hp -= p.degats * ((joueur.cast || joueur.castCharge) ? 2 : 1);
         joueur.toucheJusqua = t + 500;
+        shakeJusqua = t + 160;
         sfx('touche');
         projectiles.splice(i, 1);
         if (joueur.cast) {
@@ -577,7 +581,46 @@ function update(dt, t) {
   }
 }
 
-function dessinerFond() {
+function dessinerParallaxStudio(t) {
+  for (let i = 0; i < 6; i++) {
+    const sx = 60 + i * 160;
+    const sway = Math.sin(t / 900 + i * 1.7) * 14;
+    ctx.strokeStyle = 'rgba(120,120,160,0.5)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(sx, 0);
+    ctx.lineTo(sx + sway, 70);
+    ctx.stroke();
+    ctx.fillStyle = '#ffd23f';
+    ctx.beginPath();
+    ctx.arc(sx + sway, 74, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255, 220, 120, 0.10)';
+    ctx.beginPath();
+    ctx.moveTo(sx + sway, 78);
+    ctx.lineTo(sx + sway - 40, SOL);
+    ctx.lineTo(sx + sway + 40, SOL);
+    ctx.fill();
+  }
+  ctx.fillStyle = 'rgba(10, 10, 30, 0.55)';
+  for (let i = 0; i < 24; i++) {
+    const ax = 20 + i * 41 + (i % 3) * 7;
+    const bob = Math.sin(t / 350 + i * 0.9) * 3;
+    ctx.beginPath();
+    ctx.arc(ax, SOL + 34 + bob, 11, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillRect(ax - 12, SOL + 40 + bob, 24, 18);
+  }
+}
+
+function dessinerOmbre(c) {
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+  ctx.beginPath();
+  ctx.ellipse(c.x, SOL + 8, c.largeur * 0.55, 7, 0, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function dessinerFond(t) {
   if (etat === 'combat') {
     const g = ctx.createLinearGradient(0, 0, 0, H);
     g.addColorStop(0, '#0a0a2e');
@@ -609,6 +652,7 @@ function dessinerFond() {
     ctx.fillRect(W / 2 - 340, SOL - 24, 680, 8);
     ctx.fillStyle = '#1a1a33';
     ctx.fillRect(0, SOL, W, H - SOL);
+    dessinerParallaxStudio(t);
   } else {
     const g = ctx.createLinearGradient(0, 0, 0, H);
     g.addColorStop(0, '#1a1a40');
@@ -833,6 +877,18 @@ function dessinerOndes() {
 
 function dessinerProjectiles(t) {
   projectiles.forEach(p => {
+    const dir = Math.sign(p.vx) || 1;
+    for (let k = 3; k >= 1; k--) {
+      const tx = p.x - dir * k * 12;
+      ctx.beginPath();
+      ctx.arc(tx, p.y, p.r * 1.5 * (1 - k / 4), 0, Math.PI * 2);
+      ctx.fillStyle = p.type === 'bulle'
+        ? 'rgba(140, 190, 255, ' + (0.10 * (4 - k)) + ')'
+        : 'rgba(255, 150, 40, ' + (0.12 * (4 - k)) + ')';
+      ctx.fill();
+    }
+  });
+  projectiles.forEach(p => {
     const flick = 1 + 0.18 * Math.sin(t / 40 + p.x * 0.05);
     const r = p.r * flick;
     const dirX = Math.sign(p.vx);
@@ -891,8 +947,14 @@ function dessinerBarre(x, y, w, ratio, couleur, nom, inverse) {
 }
 
 function draw(t) {
-  dessinerFond();
+  ctx.save();
+  if (t < shakeJusqua) {
+    ctx.translate((Math.random() - 0.5) * SHAKE_MAG * 2, (Math.random() - 0.5) * SHAKE_MAG * 2);
+  }
+  dessinerFond(t);
   if (joueur && etat !== 'titre' && etat !== 'heros') {
+    dessinerOmbre(boss);
+    dessinerOmbre(joueur);
     dessinerCombattant(boss, t);
     dessinerCombattant(joueur, t);
     if (joueur.cast || joueur.castCharge) dessinerEclairs(joueur, t);
@@ -903,6 +965,10 @@ function draw(t) {
     dessinerOndes();
     dessinerProjectiles(t);
     dessinerAnnonce(t);
+  }
+  ctx.restore();
+  if (joueur && etat !== 'titre' && etat !== 'heros') {
+    dessinerHUD(t);
     ctx.fillStyle = '#fff';
     ctx.font = 'bold 14px sans-serif';
     ctx.textAlign = 'left';
