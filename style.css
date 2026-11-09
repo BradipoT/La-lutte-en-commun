@@ -402,3 +402,18 @@ h2 { font-size: clamp(22px, 5vw, 36px); }
   color: #ffd23f;
   margin: 0;
 }
+
+.carte-heros.verrouille {
+  opacity: 0.9;
+  filter: none;
+  border-style: dashed;
+  cursor: not-allowed;
+}
+
+.carte-heros.verrouille .badge-tombe {
+  color: #ffd23f;
+}
+
+@media (max-width: 560px) {
+  .carte-heros { width: 150px; padding: 12px 8px; }
+}

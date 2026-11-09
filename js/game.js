@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 57;
+const VERSION = 58;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -1152,7 +1152,8 @@ function construireHeros() {
   liste.innerHTML = '';
   data.heroes.forEach((h, i) => {
     const div = document.createElement('div');
-    div.className = 'carte-heros' + (disponibles[i] ? '' : ' tombe');
+    const verrouille = i === data.heroes.length - 1 && !melenchonDebloque;
+    div.className = 'carte-heros' + (disponibles[i] ? '' : (verrouille ? ' verrouille' : ' tombe'));
     div.style.borderColor = h.couleur;
     const pastille = document.createElement('img');
     pastille.className = 'icone-heros';
@@ -1167,7 +1168,7 @@ function construireHeros() {
     } else {
       const badge = document.createElement('div');
       badge.className = 'badge-tombe';
-      badge.textContent = (i === data.heroes.length - 1 && !melenchonDebloque) ? '🔒' : 'Tombé.e au débat';
+      badge.textContent = (i === data.heroes.length - 1 && !melenchonDebloque) ? '🔒 À DÉBLOQUER' : 'Tombé.e au débat';
       div.appendChild(badge);
     }
     liste.appendChild(div);
