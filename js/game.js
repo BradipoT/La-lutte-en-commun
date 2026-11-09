@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 64;
+const VERSION = 65;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -1003,7 +1003,7 @@ const MORCEAUX = {
     typeMel: 'square', volMel: 0.12,
     typeBass: 'triangle', volBass: 0.16,
     melodie: [0, 64, 69, 71, 72, 69, 69, 69, 69, 64, 69, 71, 72, 69, 69, 69, 69, 64, 69, 71, 72, 72, 71, 69, 72, 72, 71, 69, 76, 76, 76, 76, 76, 76, 74, 76, 77, 77, 77, 77, 77, 77, 76, 74, 77, 76, 76, 76, 76, 76, 74, 72, 71, 71, 76, 76, 72, 72, 71, 71, 69, 69, 69, 69],
-    basse: [45, 0, 0, 0, 52, 0, 0, 0, 45, 0, 0, 0, 52, 0, 0, 0, 45, 0, 0, 0, 52, 0, 0, 0, 45, 0, 0, 0, 49, 0, 0, 0, 50, 0, 0, 0, 53, 0, 0, 0, 45, 0, 0, 0, 52, 0, 0, 0, 52, 0, 0, 0, 47, 0, 0, 0, 45, 0, 0, 0, 52, 0, 0, 0],
+    basse: [45, 0, 52, 0, 45, 0, 52, 0, 45, 0, 52, 0, 45, 0, 52, 0, 45, 0, 52, 0, 45, 0, 52, 0, 45, 0, 49, 0, 45, 0, 49, 0, 50, 0, 53, 0, 50, 0, 53, 0, 45, 0, 52, 0, 45, 0, 52, 0, 52, 0, 47, 0, 52, 0, 47, 0, 45, 0, 52, 0, 45, 0, 52, 0],
     accords: [[57, 60, 64], [57, 60, 64], [57, 60, 64], [57, 61, 64], [50, 53, 57], [57, 60, 64], [52, 56, 59], [57, 60, 64]]
   }
 };
@@ -1051,8 +1051,8 @@ function boucleSequence() {
     if (m) jouerNote(m, prochaineNote, duree * 0.9, morceau.typeMel, morceau.volMel);
     const b = morceau.basse[stepSeq % morceau.basse.length];
     if (b) jouerNote(b, prochaineNote, duree * 1.8, morceau.typeBass, morceau.volBass);
-    if (morceau.accords && stepSeq % 8 === 1) {
-      const accord = morceau.accords[Math.floor((stepSeq - 1) / 8) % morceau.accords.length];
+    if (morceau.accords && stepSeq % 8 === 2) {
+      const accord = morceau.accords[Math.floor((stepSeq - 2) / 8) % morceau.accords.length];
       accord.forEach(n => jouerNote(n, prochaineNote, duree * 7.5, 'triangle', 0.07));
     }
     if (morceau.bpm >= 120 && stepSeq % 2 === 1) jouerHat(prochaineNote);
