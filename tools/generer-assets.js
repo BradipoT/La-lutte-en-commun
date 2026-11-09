@@ -70,20 +70,47 @@ function barbe(couleur) {
   return '<path d="M47 25 Q60 46 75 25 Q73 40 60 42 Q49 40 47 25 Z" fill="' + couleur + '"/>';
 }
 
+function shade(hex, amt) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = Math.max(0, Math.min(255, (n >> 16) + amt));
+  const g = Math.max(0, Math.min(255, ((n >> 8) & 255) + amt));
+  const b = Math.max(0, Math.min(255, (n & 255) + amt));
+  return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+}
+
+function chaussures(pose) {
+  const pieds = (pose === 'marche' || pose === 'pointeMarche') ? [[85, 180], [38, 180]] : [[68, 180], [52, 180]];
+  return pieds.map(p => '<ellipse cx="' + p[0] + '" cy="' + p[1] + '" rx="7" ry="3.5" fill="#1c1c1c"/>').join('');
+}
+
 function svgPerso(couleur, pose, t) {
   const b = bras(pose);
   const derriere = cheveuxDerriere(t);
+  const veste = shade(couleur, -30);
+  const peau2 = shade(t.teint, -18);
   return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 200" width="120" height="200">'
     + (derriere ? '<path d="' + derriere + '" fill="' + t.cheveux + '"/>' : '')
     + '<g stroke="' + PANTS + '" stroke-width="7" stroke-linecap="round" fill="none"><path d="' + jambes(pose) + '"/></g>'
-    + '<path d="M48 42 L74 42 L78 102 L44 102 Z" fill="' + couleur + '"/>'
-    + '<path d="M58 42 L66 42 L62 66 Z" fill="' + SHIRT + '"/>'
+    + chaussures(pose)
+    + '<g stroke="' + veste + '" stroke-width="6" stroke-linecap="round" fill="none"><path d="M57 54 L45 78"/></g>'
+    + '<circle cx="45" cy="80" r="3.2" fill="' + t.teint + '"/>'
+    + '<path d="M46 44 L76 44 L80 102 L42 102 Z" fill="' + couleur + '"/>'
+    + '<path d="M46 44 L61 44 L55 78 L42 102 L46 44 Z" fill="' + veste + '"/>'
+    + '<path d="M76 44 L61 44 L67 78 L80 102 L76 44 Z" fill="' + veste + '"/>'
+    + '<path d="M58 44 L64 44 L64 62 L61 68 L58 62 Z" fill="' + SHIRT + '"/>'
+    + '<path d="M60 46 L62 46 L63 66 L61 72 L59 66 Z" fill="#8e2f3c"/>'
     + '<g stroke="' + couleur + '" stroke-width="6" stroke-linecap="round" fill="none"><path d="' + b.path + '"/></g>'
-    + (b.hand ? '<circle cx="' + b.hand[0] + '" cy="' + b.hand[1] + '" r="3" fill="' + t.teint + '"/>' : '')
-    + '<circle cx="63" cy="26" r="14" fill="' + t.teint + '"/>'
-    + '<path d="M75 24 L84 29 L75 33 Z" fill="' + t.teint + '"/>'
+    + (b.hand ? '<circle cx="' + b.hand[0] + '" cy="' + b.hand[1] + '" r="3.2" fill="' + t.teint + '"/>' : '')
+    + '<rect x="58" y="36" width="10" height="9" fill="' + peau2 + '"/>'
+    + '<circle cx="63" cy="25" r="14" fill="' + t.teint + '"/>'
+    + '<path d="M63 11 A14 14 0 0 1 77 25 L77 39 L63 39 Z" fill="' + peau2 + '" opacity="0.45"/>'
+    + '<circle cx="49" cy="26" r="2.6" fill="' + t.teint + '"/>'
+    + '<path d="M75 23 L85 28 L75 32 Z" fill="' + t.teint + '"/>'
+    + '<circle cx="58" cy="24" r="1.8" fill="' + EYE + '"/>'
+    + '<circle cx="68" cy="24" r="1.8" fill="' + EYE + '"/>'
+    + '<path d="M55 20 L61 20 M65 20 L71 20" stroke="' + t.cheveux + '" stroke-width="1.6" stroke-linecap="round"/>'
+    + '<path d="M58 31 Q63 34 68 31" stroke="#b06a4a" stroke-width="1.6" fill="none" stroke-linecap="round"/>'
     + '<path d="' + cheveuxDessus(t) + '" fill="' + t.cheveux + '"/>'
-    + '<circle cx="68" cy="25" r="1.8" fill="' + EYE + '"/>'
     + (t.lunettes ? lunettes() : '')
     + (t.barbe ? barbe(t.barbe) : '')
     + (t.bracelet ? braceletElectronique() : '')
