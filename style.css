@@ -367,3 +367,38 @@ h2 { font-size: clamp(22px, 5vw, 36px); }
 }
 
 .bouton:active { background: rgba(255, 255, 255, 0.35); }
+
+.niveau-choisi {
+  font-weight: bold;
+  font-size: clamp(14px, 2.8vw, 18px) !important;
+  margin: 0;
+}
+
+.indice-melenchon {
+  font-size: clamp(12px, 2.4vw, 15px) !important;
+  color: #ffd23f;
+  margin: 0;
+}
+
+.bosses-vaincus {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.icone-boss {
+  width: 44px;
+  height: 59px;
+  border-radius: 8px;
+  border: 2px solid #ffd23f;
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+}
+
+.boss-nom {
+  min-height: 20px;
+  font-weight: bold;
+  color: #ffd23f;
+  margin: 0;
+}

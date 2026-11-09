@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 55;
+const VERSION = 56;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -216,8 +216,8 @@ function special() {
 
 function appliquerSpeciale(type, t) {
   sfx('speciale');
-  joueur.hp -= 10;
-  if (joueur.hp <= 0) { joueur.hp = 0; finCombat(false, t); return; }
+  boss.hp -= Math.round(joueur.def.stats.degats * 1.5);
+  if (boss.hp <= 0) { boss.hp = 0; finCombat(true, t); return; }
   const nom = joueur.def.special.nom;
   joueur.flameJusqua = t + 800;
   joueur.action = 'pointe';
