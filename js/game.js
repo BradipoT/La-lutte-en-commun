@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 74;
+const VERSION = 75;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -984,31 +984,7 @@ let prochaineNote = 0;
 let stepSeq = 0;
 let morceau = null;
 
-const MORCEAUX = {
-  sombre: {
-    bpm: 90,
-    typeMel: 'sawtooth', volMel: 0.07,
-    typeBass: 'sawtooth', volBass: 0.08,
-    melodie: [57, 0, 0, 60, 0, 0, 63, 0, 62, 0, 60, 0, 57, 0, 55, 0, 57, 0, 0, 60, 0, 63, 0, 65, 64, 0, 63, 60, 59, 0, 0, 0],
-    basse: [33, 0, 0, 0, 33, 0, 0, 0, 32, 0, 0, 0, 31, 0, 0, 0]
-  },
-  espoir: {
-    bpm: 140,
-    typeMel: 'square', volMel: 0.13,
-    typeBass: 'triangle', volBass: 0.14,
-    melodie: [60, 64, 67, 72, 67, 64, 67, 72, 69, 72, 76, 79, 76, 74, 72, 69, 65, 69, 72, 77, 74, 72, 69, 67, 72, 0, 0, 0, 0, 0, 0, 0],
-    basse: [36, 43, 36, 43, 36, 43, 36, 43, 33, 40, 33, 40, 33, 40, 33, 40, 29, 36, 29, 36, 29, 36, 29, 36, 31, 38, 31, 38, 31, 38, 31, 38],
-    accords: [[48, 52, 55], [45, 48, 52], [41, 45, 48], [43, 47, 50]]
-  },
-  bella: {
-    bpm: 132,
-    typeMel: 'square', volMel: 0.12,
-    typeBass: 'triangle', volBass: 0.16,
-    melodie: [0, 64, 69, 71, 72, 69, 69, 69, 69, 64, 69, 71, 72, 69, 69, 69, 69, 64, 69, 71, 72, 72, 71, 69, 72, 72, 71, 69, 76, 76, 76, 76, 76, 76, 74, 76, 77, 77, 77, 77, 77, 77, 76, 74, 77, 76, 76, 76, 76, 76, 74, 72, 71, 71, 76, 76, 72, 72, 71, 71, 69, 69, 69, 69],
-    basse: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    accords: [[57, 60, 64], [57, 60, 64], [57, 60, 64], [57, 61, 64], [50, 53, 57], [57, 60, 64], [52, 56, 59], [57, 60, 64]]
-  }
-};
+const MORCEAUX = window.MUSIQUE_MORCEAUX;
 
 function freq(midi) {
   return 440 * Math.pow(2, (midi - 69) / 12);
