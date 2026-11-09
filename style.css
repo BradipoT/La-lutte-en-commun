@@ -259,6 +259,30 @@ h2 { font-size: clamp(22px, 5vw, 36px); }
 .niv-moyen { background: linear-gradient(135deg, #e67e22, #ca6f1e); box-shadow: 0 6px 18px rgba(230, 126, 34, 0.45); }
 .niv-dur { background: linear-gradient(135deg, #e74c3c, #c0392b); box-shadow: 0 6px 18px rgba(231, 76, 60, 0.45); }
 
+@media (max-height: 560px) {
+  .ecran {
+    gap: 8px;
+    padding: 10px;
+    justify-content: flex-start;
+    overflow-y: auto;
+  }
+
+  .ecran h2 { font-size: 22px; }
+  .ecran p { font-size: 14px !important; }
+
+  .stats-contenu { gap: 8px; }
+  .stats-contenu .icone-heros { width: 56px !important; height: 75px !important; }
+  .stats-bloc { gap: 5px; }
+  .stat-ligne { font-size: 13px; }
+  .stat-label { width: 92px; }
+  .barre { width: 16px; height: 10px; }
+  .stats-pouvoir { padding: 8px 12px; font-size: 13px !important; }
+  .gros-bouton { padding: 10px 22px !important; font-size: 16px !important; }
+  .bouton-plein-ecran { padding: 8px 14px; font-size: 13px; }
+  .intro-texte { font-size: 15px !important; }
+  .aide-liste { font-size: 14px; line-height: 1.6; }
+}
+
 .bouton-musique {
   position: fixed;
   top: 8px;
