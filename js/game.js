@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 72;
+const VERSION = 73;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -316,6 +316,7 @@ function avantLePen() {
     melenchonDebloque = true;
     disponibles[disponibles.length - 1] = true;
     setMorceau('espoir');
+    reprendreMusique();
     etat = 'arrivee';
     montrer('ecran-arrivee');
     return true;
@@ -1256,6 +1257,7 @@ element('btn-changer').addEventListener('click', () => {
 });
 element('btn-arrivee-suite').addEventListener('click', () => montrer('ecran-melenchon'));
 element('btn-melenchon-ok').addEventListener('click', () => {
+  reprendreMusique();
   etat = 'heros';
   construireHeros();
   montrer('ecran-heros');
