@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 47;
+const VERSION = 48;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -254,8 +254,8 @@ function speciale() {
 }
 
 function finCombat(gagne) {
-  pauseMusique();
   sfx(gagne ? 'victoire' : 'tombe');
+  setTimeout(pauseMusique, 1400);
   if (gagne) {
     etat = 'recompense';
     element('texte-recompense').textContent = data.recompenses[indexBoss];
