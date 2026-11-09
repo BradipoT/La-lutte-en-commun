@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 79;
+const VERSION = 80;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -840,7 +840,7 @@ function dessinerAnnonce(t) {
 
 function dessinerBoiteTexte(x, y, w, texte) {
   if (!texte) return;
-  ctx.font = 'bold 17px sans-serif';
+  ctx.font = 'bold 18px sans-serif';
   const mots = texte.split(' ');
   const lignes = [];
   let ligne = '';
@@ -991,8 +991,8 @@ function draw(t) {
     ctx.textAlign = 'left';
     ctx.fillText('🛡 ironie', 176, 51);
     ctx.fillText('⭐ spé', 176, 62);
-    dessinerBoiteTexte(20, 68, 440, t - messageJT < 3000 ? messageJ : (t - phraseJT < 2500 ? phraseJ : ''));
-    dessinerBoiteTexte(W - 460, 68, 440, t - messageBT < 3000 ? messageB : (t - phraseBT < 2500 ? phraseB : ''));
+    dessinerBoiteTexte(20, 78, 440, t - messageJT < 3000 ? messageJ : (t - phraseJT < 2500 ? phraseJ : ''));
+    dessinerBoiteTexte(W - 460, 78, 440, t - messageBT < 3000 ? messageB : (t - phraseBT < 2500 ? phraseB : ''));
 
   }
 }
