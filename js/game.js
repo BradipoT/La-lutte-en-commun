@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 50;
+const VERSION = 51;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -78,7 +78,7 @@ function creerCombattant(def, x, estBoss) {
     largeur: 46 * echelle, hauteur: 92 * echelle,
     hp: pv, maxHp: pv, onGround: true, echelle: echelle, estBoss: estBoss,
     phase: null, phaseJusqua: 0, action: null, actionT: 0, enMouvement: false,
-    etourdiJusqua: 0, confusJusqua: 0, cast: null, bloqueJusqua: 0, antiReflexeJusqua: 0, flameJusqua: 0
+    etourdiJusqua: 0, confusJusqua: 0, toucheJusqua: 0, cast: null, bloqueJusqua: 0, antiReflexeJusqua: 0, flameJusqua: 0
   };
 }
 
@@ -136,7 +136,7 @@ function hauteurTir(c) {
 function tir() {
   if (etat !== 'combat') return;
   const t = performance.now();
-  if (t - dernierTir < joueur.def.stats.cadenceTir || t < joueur.confusJusqua) return;
+  if (t - dernierTir < joueur.def.stats.cadenceTir || t < joueur.confusJusqua || t < joueur.toucheJusqua) return;
   dernierTir = t;
   sfx('tir');
   joueur.action = 'tir';
@@ -154,7 +154,7 @@ function tir() {
 }
 
 function saut() {
-  if (etat === 'combat' && joueur.onGround && !joueur.cast && performance.now() >= joueur.etourdiJusqua) {
+  if (etat === 'combat' && joueur.onGround && !joueur.cast && performance.now() >= joueur.etourdiJusqua && performance.now() >= joueur.toucheJusqua) {
     joueur.vy = -joueur.def.stats.saut;
     joueur.onGround = false;
     sfx('saut');
@@ -164,7 +164,7 @@ function saut() {
 function special() {
   if (etat !== 'combat') return;
   const t = performance.now();
-  if (t - dernierSpecial < 1000 || t < joueur.confusJusqua) return;
+  if (t - dernierSpecial < 1000 || t < joueur.confusJusqua || t < joueur.toucheJusqua) return;
   dernierSpecial = t;
   const cible = projectiles.find(p =>
     p.de === 'boss' && p.type !== 'bulle' &&
@@ -244,7 +244,7 @@ function appliquerSpeciale(type, t) {
 function speciale() {
   if (etat !== 'combat') return;
   const t = performance.now();
-  if (t - dernierSpeciale < joueur.def.stats.cooldownSpe || joueur.cast || t < joueur.confusJusqua) return;
+  if (t - dernierSpeciale < joueur.def.stats.cooldownSpe || joueur.cast || t < joueur.confusJusqua || t < joueur.toucheJusqua) return;
   dernierSpeciale = t;
   joueur.cast = { t0: t, type: joueur.def.special.type };
   joueur.action = 'protege';
@@ -288,7 +288,7 @@ function suivant() {
 function update(dt, t) {
   if (etat !== 'combat') return;
 
-  const etourdi = t < joueur.etourdiJusqua;
+  const etourdi = t < joueur.etourdiJusqua || t < joueur.toucheJusqua;
   if (joueur.cast && t - joueur.cast.t0 >= DUREE_CAST) {
     appliquerSpeciale(joueur.cast.type, t);
     joueur.cast = null;
@@ -315,7 +315,7 @@ function update(dt, t) {
     boss.phase = Math.random() < 0.5 ? 'avance' : 'recule';
     boss.phaseJusqua = t + 1000 + Math.random() * 2000;
   }
-  const bossConfus = t < boss.confusJusqua || !!boss.cast;
+  const bossConfus = t < boss.confusJusqua || t < boss.toucheJusqua || !!boss.cast;
   const bossBloque = t < boss.bloqueJusqua;
   const speBoss = bossDef.special;
   if (speBoss && !boss.cast && !bossBloque && !bossConfus && t > prochainSpeBoss) {
@@ -438,6 +438,7 @@ function update(dt, t) {
     if (p.de === 'joueur') {
       if (Math.abs(p.x - boss.x) < boss.largeur / 2 + p.r && Math.abs(p.y - chB) < boss.hauteur / 2 + p.r) {
         boss.hp -= p.degats;
+        boss.toucheJusqua = t + 700;
         sfx('touche');
         projectiles.splice(i, 1);
         if (boss.cast) {
@@ -466,6 +467,7 @@ function update(dt, t) {
     } else {
       if (Math.abs(p.x - joueur.x) < joueur.largeur / 2 + p.r && Math.abs(p.y - chJ) < joueur.hauteur / 2 + p.r) {
         joueur.hp -= p.degats * (joueur.cast ? 2 : 1);
+        joueur.toucheJusqua = t + 700;
         sfx('touche');
         projectiles.splice(i, 1);
         if (joueur.cast) {
@@ -555,6 +557,7 @@ function dessinerCombattant(c, t) {
     const iw = ih * 0.6;
     ctx.save();
     ctx.translate(c.x, c.y);
+    if (t < (c.toucheJusqua || 0)) ctx.rotate(-0.14 * face);
     ctx.scale(face, 1);
     ctx.drawImage(img, -iw / 2, -ih, iw, ih);
     ctx.restore();
@@ -563,6 +566,7 @@ function dessinerCombattant(c, t) {
 
   ctx.save();
   ctx.translate(c.x, c.y);
+  if (t < (c.toucheJusqua || 0)) ctx.rotate(-0.14 * face);
   ctx.scale(face * c.echelle, c.echelle);
   ctx.strokeStyle = c.def.couleur;
   ctx.fillStyle = c.def.couleur;
@@ -891,7 +895,7 @@ const MORCEAUX = {
     bpm: 132,
     typeMel: 'square', volMel: 0.12,
     typeBass: 'triangle', volBass: 0.16,
-    melodie: [64,64,69,69,71,71,72,72, 69,69,69,69, 64,64,69,69,71,71,72,72, 69,69,69,69, 64,64,69,69,71,71,72,72, 71,71,69,69,72,72,0,0, 71,71,69,69,64,64,64,64, 64,64,64,64,0,0,0,0, 64,64,62,62,64,64,65,65, 65,65,64,64,62,62,64,64, 64,64,62,62,64,64,65,65, 65,65,64,64,62,62,64,64, 64,64,62,62,60,60,60,60, 71,71,64,64,71,71,72,72, 69,69,69,69,0,0,0,0],
+    melodie: [64,64,64,64,69,69,71,71, 72,72,69,69,64,64,69,69, 71,71,72,72,71,71,69,69, 72,72,71,71,69,69,64,64, 64,64,69,69,71,71,72,72, 71,71,69,69,72,72,71,71, 69,69,64,64,64,64,64,64, 64,64,62,62,64,64,65,65, 65,65,64,64,62,62,64,64, 64,64,62,62,60,60,0,0, 59,59,64,64,59,59,60,60, 57,57,0,0,0,0,0,0],
     basse: [48, 0, 43, 0, 48, 0, 43, 0]
   }
 };
