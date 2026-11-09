@@ -8,10 +8,12 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0d0d1f">
 <title>La Lutte en Commun</title>
-<link rel="stylesheet" href="style.css?v=44">
+<link rel="stylesheet" href="style.css?v=45">
 </head>
 <body>
 <canvas id="jeu" width="960" height="540"></canvas>
+
+<button id="btn-musique" class="bouton-musique">🔊</button>
 
 <div id="ecran-titre" class="ecran">
   <h1>⚔️ La Lutte en Commun</h1>
@@ -23,7 +25,6 @@
     <button id="btn-niv-dur" class="gros-bouton bouton-niveau niv-dur">😤 Dur</button>
   </div>
   <button id="btn-plein-ecran" class="bouton-plein-ecran">⛶ Plein écran (cache la barre d'URL)</button>
-  <button id="btn-musique" class="bouton-plein-ecran">🔊 Musique : ON</button>
   <p class="astuce">Astuce : « Ajouter à l'écran d'accueil » pour un vrai plein écran permanent.</p>
 </div>
 
@@ -114,11 +115,11 @@
       <button id="btn-tir" class="bouton">🔥</button>
       <button id="btn-special" class="bouton">🛡</button>
     </div>
-    <button id="btn-speciale" class="bouton bouton-speciale">⭐ attaque spéciale</button>
+    <button id="btn-speciale" class="bouton bouton-speciale" title="Attaque spéciale">⭐</button>
   </div>
 </div>
 
-<script src="js/data.js?v=44"></script>
-<script src="js/game.js?v=44"></script>
+<script src="js/data.js?v=45"></script>
+<script src="js/game.js?v=45"></script>
 </body>
 </html>

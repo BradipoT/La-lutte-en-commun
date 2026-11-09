@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 44;
+const VERSION = 45;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -146,7 +146,7 @@ function tir() {
   const dir = boss.x > joueur.x ? 1 : -1;
   projectiles.push({
     x: joueur.x + dir * 30, y: hauteurTir(joueur),
-    vx: dir * VITESSE_TIR, de: 'joueur', portee: PORTEE_ATTAQUE, startX: joueur.x + dir * 30,
+    vx: dir * VITESSE_TIR, de: 'joueur', portee: joueur.def.stats.portee, startX: joueur.x + dir * 30,
     degats: joueur.def.stats.degats, phrase: argJ, r: 14
   });
 }
@@ -228,7 +228,7 @@ function appliquerSpeciale(type, t) {
     const dir = boss.x > joueur.x ? 1 : -1;
     projectiles.push({
       x: joueur.x + dir * 34, y: hauteurTir(joueur),
-      vx: dir * 560, de: 'joueur', type: 'boule', portee: PORTEE_SPE, startX: joueur.x + dir * 34,
+      vx: dir * 560, de: 'joueur', type: 'boule', portee: joueur.def.stats.portee, startX: joueur.x + dir * 34,
       degats: 40, phrase: '📢 LA RÉPUBLIQUE C’EST MOI !', r: 30
     });
     messageJ = '📢 LA RÉPUBLIQUE C’EST MOI !';
@@ -372,7 +372,7 @@ function update(dt, t) {
       phraseBT = t;
       projectiles.push({
         x: boss.x + dirB * 30 * boss.echelle, y: hauteurTir(boss),
-        vx: dirB * VITESSE_TIR_BOSS, de: 'boss',
+        vx: dirB * VITESSE_TIR_BOSS, de: 'boss', portee: bossDef.portee, startX: boss.x + dirB * 30 * boss.echelle,
         degats: bossDef.degats, phrase: argB.t, reponse: argB.r, r: 14
       });
     }
@@ -868,8 +868,8 @@ const MORCEAUX = {
     bpm: 140,
     typeMel: 'square', volMel: 0.12,
     typeBass: 'triangle', volBass: 0.16,
-    melodie: [69, 69, 71, 72, 71, 69, 71, 72, 69, 69, 71, 72, 74, 72, 71, 69, 68, 69, 71, 72, 71, 69, 68, 69, 0, 0, 69, 69, 71, 72, 0, 0],
-    basse: [45, 0, 52, 0, 45, 0, 52, 0, 45, 0, 52, 0, 50, 0, 47, 0]
+    melodie: [69, 69, 71, 72, 71, 69, 71, 72, 69, 71, 72, 74, 72, 71, 69, 68, 69, 0, 0, 0, 69, 69, 71, 72, 71, 69, 68, 69, 71, 72, 74, 0],
+    basse: [45, 0, 52, 0, 45, 0, 52, 0, 45, 0, 52, 0, 45, 52, 45, 0]
   }
 };
 
@@ -940,7 +940,7 @@ function demarrerMusique() {
 
 function basculerMusique() {
   musiqueOn = !musiqueOn;
-  element('btn-musique').textContent = musiqueOn ? '🔊 Musique : ON' : '🔇 Musique : OFF';
+  element('btn-musique').textContent = musiqueOn ? '🔊' : '🔇';
   if (audioCtx) {
     if (musiqueOn) audioCtx.resume();
     else audioCtx.suspend();
@@ -971,7 +971,7 @@ function ouvrirStats(i) {
   const h = data.heroes[i];
   const s = h.stats;
   const mins = {}, maxs = {};
-  ['degats', 'cadenceTir', 'vitesse', 'cooldownSpe', 'pv'].forEach(k => {
+  ['degats', 'cadenceTir', 'vitesse', 'cooldownSpe', 'pv', 'portee'].forEach(k => {
     mins[k] = Math.min.apply(null, data.heroes.map(x => x.stats[k]));
     maxs[k] = Math.max.apply(null, data.heroes.map(x => x.stats[k]));
   });
@@ -984,6 +984,7 @@ function ouvrirStats(i) {
     + ligneStat('🌀 Agilité', 'vitesse', s.vitesse, mins.vitesse, maxs.vitesse, false, ' (saut ' + s.saut + ')')
     + ligneStat('⭐ Pouvoir', 'cooldownSpe', s.cooldownSpe, mins.cooldownSpe, maxs.cooldownSpe, true, ' ms')
     + ligneStat('❤️ PV', 'pv', s.pv, mins.pv, maxs.pv, false, ' PV')
+    + ligneStat('🎯 Portée', 'portee', s.portee, mins.portee, maxs.portee, false, ' px')
     + '</div>'
     + '<p class="stats-pouvoir"><strong>Pouvoir spécial ' + h.special.nom + '</strong><br>' + h.special.desc + '</p>';
   montrer('ecran-stats');
