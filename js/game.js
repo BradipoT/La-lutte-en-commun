@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 43;
+const VERSION = 44;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -854,10 +854,24 @@ let musiqueOn = true;
 let seqTimer = null;
 let prochaineNote = 0;
 let stepSeq = 0;
-const BPM = 150;
-const STEP_DUREE = 60 / BPM / 2;
-const MELODIE = [69, 72, 76, 81, 79, 76, 72, 74, 76, 79, 81, 76, 74, 72, 69, 0, 69, 72, 76, 81, 79, 76, 81, 84, 83, 81, 79, 76, 74, 72, 74, 0];
-const BASSE = [45, 45, 48, 45, 45, 45, 48, 45, 41, 41, 48, 41, 43, 43, 47, 43];
+let morceau = null;
+
+const MORCEAUX = {
+  sombre: {
+    bpm: 90,
+    typeMel: 'sawtooth', volMel: 0.07,
+    typeBass: 'sawtooth', volBass: 0.08,
+    melodie: [57, 0, 0, 60, 0, 0, 63, 0, 62, 0, 60, 0, 57, 0, 55, 0, 57, 0, 0, 60, 0, 63, 0, 65, 64, 0, 63, 60, 59, 0, 0, 0],
+    basse: [33, 0, 0, 0, 33, 0, 0, 0, 32, 0, 0, 0, 31, 0, 0, 0]
+  },
+  bella: {
+    bpm: 140,
+    typeMel: 'square', volMel: 0.12,
+    typeBass: 'triangle', volBass: 0.16,
+    melodie: [69, 69, 71, 72, 71, 69, 71, 72, 69, 69, 71, 72, 74, 72, 71, 69, 68, 69, 71, 72, 71, 69, 68, 69, 0, 0, 69, 69, 71, 72, 0, 0],
+    basse: [45, 0, 52, 0, 45, 0, 52, 0, 45, 0, 52, 0, 50, 0, 47, 0]
+  }
+};
 
 function freq(midi) {
   return 440 * Math.pow(2, (midi - 69) / 12);
@@ -895,25 +909,32 @@ function jouerHat(t) {
 }
 
 function boucleSequence() {
-  if (!audioCtx || !musiqueOn) return;
+  if (!audioCtx || !musiqueOn || !morceau) return;
+  const duree = 60 / morceau.bpm / 2;
   while (prochaineNote < audioCtx.currentTime + 0.15) {
-    const m = MELODIE[stepSeq % MELODIE.length];
-    if (m) jouerNote(m, prochaineNote, STEP_DUREE * 0.9, 'square', 0.12);
-    const b = BASSE[stepSeq % BASSE.length];
-    if (b) jouerNote(b, prochaineNote, STEP_DUREE * 1.8, 'triangle', 0.16);
-    if (stepSeq % 2 === 1) jouerHat(prochaineNote);
-    prochaineNote += STEP_DUREE;
+    const m = morceau.melodie[stepSeq % morceau.melodie.length];
+    if (m) jouerNote(m, prochaineNote, duree * 0.9, morceau.typeMel, morceau.volMel);
+    const b = morceau.basse[stepSeq % morceau.basse.length];
+    if (b) jouerNote(b, prochaineNote, duree * 1.8, morceau.typeBass, morceau.volBass);
+    if (morceau.bpm >= 120 && stepSeq % 2 === 1) jouerHat(prochaineNote);
+    prochaineNote += duree;
     stepSeq++;
   }
+}
+
+function setMorceau(nom) {
+  morceau = MORCEAUX[nom];
+  stepSeq = 0;
+  if (audioCtx) prochaineNote = audioCtx.currentTime + 0.1;
 }
 
 function demarrerMusique() {
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    prochaineNote = audioCtx.currentTime + 0.1;
-    stepSeq = 0;
     seqTimer = setInterval(boucleSequence, 50);
   }
+  if (!morceau) setMorceau('sombre');
+  prochaineNote = audioCtx.currentTime + 0.1;
   if (audioCtx.state === 'suspended') audioCtx.resume();
 }
 
@@ -1031,6 +1052,7 @@ function choisirNiveau(n) {
 element('btn-i1').addEventListener('click', () => montrer('ecran-intro2'));
 element('btn-i2').addEventListener('click', () => montrer('ecran-intro3'));
 element('btn-i3').addEventListener('click', () => {
+  setMorceau('bella');
   etat = 'aide';
   montrer('ecran-aide');
 });
