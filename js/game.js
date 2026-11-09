@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 52;
+const VERSION = 53;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -44,6 +44,9 @@ let phraseJ = '', phraseJT = 0, phraseB = '', phraseBT = 0;
 let prochainBulle = 0;
 let prochainBracelet = 0;
 let prochainSpeBoss = 0;
+let prochainChargeBoss = 0;
+let appuiTirDebut = 0;
+let finEnAttente = null;
 let ondes = [];
 const PORTEE_ATTAQUE = 240;
 let dernierSpeciale = 0;
@@ -78,7 +81,7 @@ function creerCombattant(def, x, estBoss) {
     largeur: 46 * echelle, hauteur: 92 * echelle,
     hp: pv, maxHp: pv, onGround: true, echelle: echelle, estBoss: estBoss,
     phase: null, phaseJusqua: 0, action: null, actionT: 0, enMouvement: false,
-    etourdiJusqua: 0, confusJusqua: 0, toucheJusqua: 0, tombeJusqua: 0, gagneJusqua: 0, cast: null, bloqueJusqua: 0, antiReflexeJusqua: 0, flameJusqua: 0
+    etourdiJusqua: 0, confusJusqua: 0, toucheJusqua: 0, tombeJusqua: 0, gagneJusqua: 0, cast: null, castCharge: 0, bloqueJusqua: 0, antiReflexeJusqua: 0, flameJusqua: 0
   };
 }
 
@@ -99,6 +102,8 @@ function commencerCombat() {
   prochainBulle = performance.now() + 2500;
   prochainBracelet = performance.now() + 3000;
   prochainSpeBoss = performance.now() + 4000;
+  prochainChargeBoss = performance.now() + 6000;
+  finEnAttente = null;
   ondes = [];
   reprendreMusique();
   messageJ = '';
@@ -131,6 +136,24 @@ function afficherVersus() {
 
 function hauteurTir(c) {
   return c.y - c.hauteur * 1.05;
+}
+
+function tirCharge() {
+  if (etat !== 'combat') return;
+  const t = performance.now();
+  const argsJ = joueur.def.arguments;
+  const argJ = argsJ[Math.floor(Math.random() * argsJ.length)];
+  phraseJ = '🔥 ' + argJ;
+  phraseJT = t;
+  const dir = boss.x > joueur.x ? 1 : -1;
+  projectiles.push({
+    x: joueur.x + dir * 34, y: hauteurTir(joueur),
+    vx: dir * 720, de: 'joueur', type: 'boule', portee: joueur.def.stats.portee, startX: joueur.x + dir * 34,
+    degats: joueur.def.stats.degats * 2, phrase: '🔥 ' + argJ, r: 22, nonContree: true
+  });
+  joueur.action = 'tir';
+  joueur.actionT = t;
+  sfx('tir');
 }
 
 function tir() {
@@ -167,7 +190,7 @@ function special() {
   if (t - dernierSpecial < 1000 || t < joueur.confusJusqua || t < joueur.toucheJusqua) return;
   dernierSpecial = t;
   const cible = projectiles.find(p =>
-    p.de === 'boss' && p.type !== 'bulle' &&
+    p.de === 'boss' && p.type !== 'bulle' && !p.nonContree &&
     Math.abs(p.x - joueur.x) < 200 &&
     Math.abs(p.y - hauteurTir(joueur)) < 70 &&
     Math.sign(p.vx) === Math.sign(joueur.x - p.x)
@@ -255,9 +278,13 @@ function speciale() {
 
 function finCombat(gagne, t) {
   sfx(gagne ? 'victoire' : 'tombe');
+  setTimeout(pauseMusique, 1400);
   if (gagne) { boss.tombeJusqua = t + 1500; joueur.gagneJusqua = t + 1500; }
   else { joueur.tombeJusqua = t + 1500; boss.gagneJusqua = t + 1500; }
-  setTimeout(pauseMusique, 1400);
+  finEnAttente = { gagne: gagne, t0: t };
+}
+
+function afficherFin(gagne) {
   if (gagne) {
     etat = 'recompense';
     element('texte-recompense').textContent = data.recompenses[indexBoss];
@@ -289,13 +316,25 @@ function suivant() {
 
 function update(dt, t) {
   if (etat !== 'combat') return;
+  if (finEnAttente) {
+    if (t - finEnAttente.t0 >= 1500) {
+      const g = finEnAttente.gagne;
+      finEnAttente = null;
+      afficherFin(g);
+    }
+    return;
+  }
 
   const etourdi = t < joueur.etourdiJusqua || t < joueur.toucheJusqua;
   if (joueur.cast && t - joueur.cast.t0 >= DUREE_CAST) {
     appliquerSpeciale(joueur.cast.type, t);
     joueur.cast = null;
   }
-  const dir = (etourdi || joueur.cast) ? 0 : (touches.droite ? 1 : 0) - (touches.gauche ? 1 : 0);
+  if (joueur.castCharge && t - joueur.castCharge >= 1200) {
+    joueur.castCharge = 0;
+    tirCharge();
+  }
+  const dir = (etourdi || joueur.cast || joueur.castCharge) ? 0 : (touches.droite ? 1 : 0) - (touches.gauche ? 1 : 0);
   joueur.enMouvement = dir !== 0 || !joueur.onGround;
   joueur.x += dir * joueur.def.stats.vitesse * dt;
   joueur.x = Math.max(40, Math.min(W - 220, joueur.x));
@@ -323,7 +362,22 @@ function update(dt, t) {
   if (speBoss && !boss.cast && !bossBloque && !bossConfus && t > prochainSpeBoss) {
     boss.cast = { t0: t, type: 'boss' };
   }
-  if (boss.cast && t - boss.cast.t0 >= DUREE_CAST) {
+  if (bossDef.charge && !boss.cast && !bossConfus && !bossBloque && t > prochainChargeBoss && Math.abs(dx) > 150) {
+    boss.cast = { t0: t, type: 'charge' };
+    prochainChargeBoss = t + 9000;
+  }
+  if (boss.cast && boss.cast.type === 'charge' && t - boss.cast.t0 >= 1200) {
+    const dirB3 = Math.sign(dx) || 1;
+    projectiles.push({
+      x: boss.x + dirB3 * 30 * boss.echelle, y: hauteurTir(boss),
+      vx: dirB3 * 560, de: 'boss', type: 'boule', portee: bossDef.portee, startX: boss.x,
+      degats: bossDef.degats * 2, phrase: '🔥 Attaque chargée !', r: 22, nonContree: true
+    });
+    sfx('tir');
+    boss.cast = null;
+    prochainChargeBoss = t + 9000;
+  }
+  if (boss.cast && boss.cast.type !== 'charge' && t - boss.cast.t0 >= DUREE_CAST) {
     const touche = Math.abs(joueur.x - boss.x) <= PORTEE_SPE;
     annonce = {
       l1: boss.def.nom + ' lance ' + speBoss.nom + ' !',
@@ -454,7 +508,7 @@ function update(dt, t) {
         }
         continue;
       }
-      if (p.type !== 'bulle' && !p.reflexeTeste && t >= boss.antiReflexeJusqua && Math.abs(p.x - boss.x) < 150 && Math.abs(p.y - chB) < 70) {
+      if (p.type !== 'bulle' && !p.nonContree && !p.reflexeTeste && t >= boss.antiReflexeJusqua && Math.abs(p.x - boss.x) < 150 && Math.abs(p.y - chB) < 70) {
         p.reflexeTeste = true;
         if (Math.random() < (bossDef.reflexe || 0)) {
           sfx('contre');
@@ -468,13 +522,18 @@ function update(dt, t) {
       }
     } else {
       if (Math.abs(p.x - joueur.x) < joueur.largeur / 2 + p.r && Math.abs(p.y - chJ) < joueur.hauteur / 2 + p.r) {
-        joueur.hp -= p.degats * (joueur.cast ? 2 : 1);
+        joueur.hp -= p.degats * ((joueur.cast || joueur.castCharge) ? 2 : 1);
         joueur.toucheJusqua = t + 500;
         sfx('touche');
         projectiles.splice(i, 1);
         if (joueur.cast) {
           joueur.cast = null;
           messageJ = '❌ Préparation interrompue !';
+          messageJT = t + 1500;
+        }
+        if (joueur.castCharge) {
+          joueur.castCharge = 0;
+          messageJ = '❌ Charge interrompue !';
           messageJT = t + 1500;
         }
         if (joueur.hp <= 0) {
@@ -536,7 +595,7 @@ function dessinerFond() {
 
 function dessinerCombattant(c, t) {
   let pose = 'debout';
-  if (t < (c.gagneJusqua || 0)) pose = 'brasCiel';
+  if (t < (c.gagneJusqua || 0) || c.castCharge) pose = 'brasCiel';
   else if (c.cast) {
     pose = 'brasCiel';
   } else if (t < (c.flameJusqua || 0)) {
@@ -560,7 +619,7 @@ function dessinerCombattant(c, t) {
     const iw = ih * 0.6;
     ctx.save();
     ctx.translate(c.x, c.y);
-    if (t < (c.tombeJusqua || 0)) ctx.rotate(-1.25 * face);
+    if (t < (c.tombeJusqua || 0)) ctx.rotate(-1.45 * face);
     else if (t < (c.toucheJusqua || 0)) ctx.rotate(-0.14 * face);
     ctx.scale(face, 1);
     ctx.drawImage(img, -iw / 2, -ih, iw, ih);
@@ -570,7 +629,7 @@ function dessinerCombattant(c, t) {
 
   ctx.save();
   ctx.translate(c.x, c.y);
-  if (t < (c.tombeJusqua || 0)) ctx.rotate(-1.25 * face);
+  if (t < (c.tombeJusqua || 0)) ctx.rotate(-1.45 * face);
   else if (t < (c.toucheJusqua || 0)) ctx.rotate(-0.14 * face);
   ctx.scale(face * c.echelle, c.echelle);
   ctx.strokeStyle = c.def.couleur;
@@ -805,7 +864,7 @@ function draw(t) {
   if (joueur && etat !== 'titre' && etat !== 'heros') {
     dessinerCombattant(boss, t);
     dessinerCombattant(joueur, t);
-    if (joueur.cast) dessinerEclairs(joueur, t);
+    if (joueur.cast || joueur.castCharge) dessinerEclairs(joueur, t);
     if (boss.cast) dessinerEclairs(boss, t);
     if (t < joueur.flameJusqua) dessinerAura(joueur, t);
     dessinerSignesConfusion(boss, t, Math.max(boss.confusJusqua, boss.bloqueJusqua, boss.antiReflexeJusqua));
@@ -868,7 +927,7 @@ window.addEventListener('keydown', e => {
   if (e.code === 'ArrowUp') saut();
   if (e.code === 'Space') {
     e.preventDefault();
-    tir();
+    if (!e.repeat) appuiTirDebut = performance.now();
   }
   if (e.code === 'ShiftLeft' || e.code === 'KeyE') special();
   if (e.code === 'KeyF') speciale();
@@ -877,6 +936,12 @@ window.addEventListener('keydown', e => {
 window.addEventListener('keyup', e => {
   if (e.code === 'ArrowLeft') touches.gauche = false;
   if (e.code === 'ArrowRight') touches.droite = false;
+  if (e.code === 'Space' && appuiTirDebut) {
+    const d = performance.now() - appuiTirDebut;
+    appuiTirDebut = 0;
+    if (d >= 1200) tirCharge();
+    else tir();
+  }
 });
 
 const COULEURS_BARRES = ['#e74c3c', '#e67e22', '#f1c40f', '#82e0aa', '#1e8449'];
@@ -900,8 +965,8 @@ const MORCEAUX = {
     bpm: 132,
     typeMel: 'square', volMel: 0.12,
     typeBass: 'triangle', volBass: 0.16,
-    melodie: [0, 59, 64, 66, 67, 64, 64, 64, 0, 59, 64, 66, 67, 64, 64, 64, 0, 59, 64, 66, 64, 64, 67, 67, 66, 64, 62, 62, 67, 67, 66, 64, 60, 60, 64, 64, 71, 71, 60, 60, 64, 64, 71, 71, 59, 59, 63, 63, 71, 71, 66, 69, 67, 71, 64, 72, 64, 72, 64, 64, 72, 72, 0, 67, 72, 76, 66, 71, 74, 64, 69, 72, 66, 72, 76, 64, 71, 74, 64, 64, 71, 71, 74, 74, 0, 0, 66, 69, 64, 67, 63, 63, 66, 66, 66, 66, 71, 71, 63, 63, 66, 66, 64, 64, 67, 67, 59, 59, 59, 59, 64, 64, 64, 64, 0, 59, 64, 66, 59, 59, 59, 59, 59, 59, 64, 64, 64, 64, 64, 64, 71, 71, 76, 76, 72, 72, 72, 72, 77, 77, 77, 77, 0, 60, 65, 67, 68, 65, 65, 65, 0, 60, 65, 67, 68, 65, 65, 65, 0, 60, 65, 67, 65, 65, 68, 68, 67, 65, 63, 63, 68, 68, 67, 65, 61, 61, 65, 65, 72, 72, 61, 61, 65, 65, 72, 72, 60, 60, 64, 64, 72, 72, 67, 70, 68, 72, 65, 73, 65, 73, 65, 65, 73, 73, 0, 68, 73, 77, 67, 72, 75, 65, 70, 73, 67, 73, 77, 65, 72, 75, 65, 65, 72, 72, 75, 75, 0, 0, 67, 70, 65, 68, 64, 64, 67, 67, 67, 67, 72, 72, 64, 64, 67, 67, 65, 65, 68, 68, 60, 60, 60, 60, 65, 65, 65, 65, 0, 60, 65, 67, 60, 60, 60, 60, 60, 60, 65, 65, 65, 65, 65, 65, 72, 72, 77, 77, 73, 73, 73, 73, 78, 78, 78, 78, 0, 61, 66, 68, 69, 66, 66, 66, 0, 61, 66, 68, 69, 66, 66, 66, 0, 61, 66, 68, 66, 66, 69, 69, 68, 66, 64, 64, 69, 69, 68, 66, 62, 62, 66, 66, 73, 73, 62, 62, 66, 66, 73, 73, 61, 61, 65, 65, 73, 73, 68, 71, 69, 73, 66, 74, 66, 74, 66, 66, 74, 74, 0, 69, 74, 78, 68, 73, 76, 66, 71, 74, 68, 74, 78, 66, 73, 76, 66, 66, 73, 73, 76, 76, 0, 0, 68, 71, 66, 69, 65, 65, 68, 68, 68, 68, 73, 73, 65, 65, 68, 68, 66, 66, 69, 69, 61, 61, 61, 61, 66, 66, 66, 66, 0, 61, 66, 68, 61, 61, 61, 61, 61, 61, 66, 66, 66, 66, 66, 66, 68, 71, 69, 73, 66, 74, 66, 74, 66, 66, 74, 74, 0, 69, 74, 78, 68, 73, 76, 66, 71, 74, 68, 74, 78, 66, 73, 76, 66, 66, 73, 73, 76, 76, 0, 0, 68, 71, 66, 69, 65, 65, 68, 68, 68, 68, 73, 73, 65, 65, 68, 68, 66, 66, 69, 69, 61, 61, 61, 61, 61, 61, 66, 66, 66, 66, 66, 66, 68, 71, 69, 73, 66, 74, 66, 74, 66, 66, 74, 74, 0, 69, 74, 78, 68, 73, 76, 66, 71, 74, 68, 74, 78, 66, 73, 76, 66, 66, 73, 73, 76, 76, 0, 0, 68, 71, 66, 69, 65, 65, 68, 68, 68, 68, 73, 73, 65, 65, 68, 68, 66, 66, 69, 69, 61, 61, 61, 61, 61, 61, 66, 66, 66, 66, 66, 66, 0, 0],
-    basse: [40, 52, 55, 35, 52, 55, 40, 52, 55, 35, 52, 55, 40, 52, 55, 35, 52, 55, 40, 52, 55, 35, 52, 55, 40, 52, 55, 35, 52, 55, 38, 50, 54, 38, 50, 54, 36, 48, 52, 36, 48, 52, 35, 47, 51, 35, 47, 51, 33, 48, 52, 40, 48, 52, 33, 48, 52, 36, 48, 52, 40, 52, 55, 35, 52, 55, 40, 52, 55, 35, 52, 55, 42, 47, 51, 57, 35, 47, 51, 57, 42, 47, 51, 57, 35, 47, 51, 57, 40, 52, 55, 35, 52, 55, 40, 52, 55, 35, 52, 55, 40, 52, 55, 35, 52, 55, 40, 52, 55, 35, 52, 55, 41, 53, 56, 36, 53, 56, 41, 53, 56, 36, 53, 56, 41, 53, 56, 36, 53, 56, 41, 53, 56, 36, 53, 56, 41, 53, 56, 36, 53, 56, 41, 53, 56, 36, 53, 56, 41, 53, 56, 36, 53, 56, 39, 51, 55, 39, 51, 55, 37, 49, 53, 37, 49, 53, 36, 48, 52, 36, 48, 52, 34, 49, 53, 41, 49, 53, 34, 49, 53, 37, 49, 53, 41, 53, 56, 36, 53, 56, 41, 53, 56, 36, 53, 56, 43, 48, 52, 58, 36, 48, 52, 58, 43, 48, 52, 58, 36, 48, 52, 58, 41, 53, 56, 36, 53, 56, 41, 53, 56, 36, 53, 56, 41, 53, 56, 36, 53, 56, 41, 53, 56, 36, 53, 56, 42, 54, 57, 37, 54, 57, 42, 54, 57, 37, 54, 57, 42, 54, 57, 37, 54, 57, 42, 54, 57, 37, 54, 57, 42, 54, 57, 37, 54, 57, 42, 54, 57, 37, 54, 57, 42, 54, 57, 37, 54, 57, 40, 52, 56, 40, 52, 56, 38, 50, 54, 38, 50, 54, 37, 49, 53, 37, 49, 53, 35, 50, 54, 42, 50, 54, 35, 50, 54, 38, 50, 54, 42, 54, 57, 37, 54, 57, 42, 54, 57, 37, 54, 57, 44, 49, 53, 59, 37, 49, 53, 59, 44, 49, 53, 59, 37, 49, 53, 59, 42, 54, 57, 37, 54, 57, 42, 54, 57, 37, 54, 57, 42, 54, 57, 37, 54, 57, 42, 54, 57, 37, 54, 57, 35, 50, 54, 42, 50, 54, 35, 50, 54, 38, 50, 54, 42, 54, 57, 37, 54, 57, 42, 54, 57, 37, 54, 57, 44, 49, 53, 59, 37, 49, 53, 59, 44, 49, 53, 59, 37, 49, 53, 59, 42, 54, 57, 37, 54, 57, 42, 54, 57, 37, 54, 57, 35, 50, 54, 42, 50, 54, 35, 50, 54, 38, 50, 54, 42, 54, 57, 37, 54, 57, 42, 54, 57, 37, 54, 57, 44, 49, 53, 59, 37, 49, 53, 59, 44, 49, 53, 59, 37, 49, 53, 59, 42, 42, 42, 42, 49, 49, 49, 49, 57, 57, 57, 57]
+    melodie: [0, 59, 64, 66, 67, 64, 64, 64, 0, 59, 64, 66, 67, 64, 64, 64, 0, 59, 64, 66, 64, 64, 67, 67, 66, 64, 62, 62, 67, 67, 66, 64, 60, 60, 64, 64, 71, 71, 60, 60, 64, 64, 71, 71, 59, 59, 63, 63, 71, 71, 66, 69, 67, 71, 64, 72, 64, 72, 64, 64, 72, 72, 0, 67, 72, 76, 66, 71, 74, 64, 69, 72, 66, 72, 76, 64, 71, 74, 64, 64, 71, 71, 74, 74, 0, 0, 66, 69, 64, 67, 63, 63, 66, 66, 66, 66, 71, 71, 63, 63, 66, 66, 64, 64, 67, 67],
+    basse: [40, 52, 55, 35, 52, 55, 40, 52, 55, 35, 52, 55, 40, 52, 55, 35, 52, 55, 40, 52, 55, 35, 52, 55, 40, 52, 55, 35, 52, 55, 38, 50, 54, 38, 50, 54, 36, 48, 52, 36, 48, 52, 35, 47, 51, 35, 47, 51, 33, 48, 52, 40, 48, 52, 33, 48, 52, 36, 48, 52, 40, 52, 55, 35, 52, 55, 40, 52, 55, 35, 52, 55, 42, 47, 51, 57, 35, 47, 51, 57, 42, 47, 51, 57, 35, 47, 51, 57]
   }
 };
 
@@ -1168,7 +1233,22 @@ element('btn-rejouer').addEventListener('click', () => {
 lierBouton('btn-gauche', () => { touches.gauche = true; }, () => { touches.gauche = false; });
 lierBouton('btn-droite', () => { touches.droite = true; }, () => { touches.droite = false; });
 lierBouton('btn-saut', saut);
-lierBouton('btn-tir', tir);
+const btnTir = element('btn-tir');
+btnTir.addEventListener('pointerdown', e => {
+  e.preventDefault();
+  appuiTirDebut = performance.now();
+  if (etat === 'combat' && !joueur.castCharge && performance.now() >= joueur.toucheJusqua && performance.now() >= joueur.confusJusqua) {
+    joueur.castCharge = appuiTirDebut;
+  }
+});
+['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => btnTir.addEventListener(ev, () => {
+  if (!appuiTirDebut) return;
+  const d = performance.now() - appuiTirDebut;
+  appuiTirDebut = 0;
+  joueur.castCharge = 0;
+  if (d >= 1200) tirCharge();
+  else tir();
+}));
 lierBouton('btn-special', special);
 lierBouton('btn-speciale', speciale);
 
