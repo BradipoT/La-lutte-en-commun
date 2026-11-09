@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 54;
+const VERSION = 55;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -27,6 +27,7 @@ let etat = 'titre';
 let indexBoss = 0;
 let herosChoisi = 0;
 let disponibles = [true, true, true, true];
+let melenchonDebloque = false;
 
 const NIVEAUX = {
   facile: { pv: 0.6, degats: 0.6, cadence: 1.5, reflexe: 0.5, pvJoueur: 150 },
@@ -63,7 +64,7 @@ function element(id) {
 }
 
 function cacherTout() {
-  ['ecran-titre', 'ecran-intro1', 'ecran-intro2', 'ecran-intro3', 'ecran-aide', 'ecran-heros', 'ecran-stats', 'ecran-versus', 'ecran-recompense', 'ecran-defaite', 'ecran-perdu', 'ecran-victoire', 'controles']
+  ['ecran-titre', 'ecran-intro1', 'ecran-intro2', 'ecran-intro3', 'ecran-aide', 'ecran-heros', 'ecran-stats', 'ecran-arrivee', 'ecran-melenchon', 'ecran-versus', 'ecran-recompense', 'ecran-defaite', 'ecran-perdu', 'ecran-victoire', 'controles']
     .forEach(id => element(id).classList.add('cache'));
 }
 
@@ -116,7 +117,8 @@ function commencerCombat() {
 function resetPartie() {
   indexBoss = 0;
   herosChoisi = 0;
-  disponibles = data.heroes.map(() => true);
+  disponibles = data.heroes.map((h, i) => i < data.heroes.length - 1);
+  melenchonDebloque = false;
 }
 
 function choisirHeros(i) {
@@ -190,13 +192,14 @@ function special() {
   if (t - dernierSpecial < 1000 || t < joueur.confusJusqua || t < joueur.toucheJusqua) return;
   dernierSpecial = t;
   const cible = projectiles.find(p =>
-    p.de === 'boss' && p.type !== 'bulle' && !p.nonContree &&
+    p.de === 'boss' && p.type !== 'bulle' && !p.nonContree && !p.renvoye &&
     Math.abs(p.x - joueur.x) < 200 &&
     Math.abs(p.y - hauteurTir(joueur)) < 70 &&
     Math.sign(p.vx) === Math.sign(joueur.x - p.x)
   );
   if (cible) {
     sfx('contre');
+    cible.renvoye = true;
     cible.de = 'joueur';
     cible.vx = -cible.vx;
     cible.degats = Math.round(cible.degats * 1.5);
@@ -213,6 +216,8 @@ function special() {
 
 function appliquerSpeciale(type, t) {
   sfx('speciale');
+  joueur.hp -= 10;
+  if (joueur.hp <= 0) { joueur.hp = 0; finCombat(false, t); return; }
   const nom = joueur.def.special.nom;
   joueur.flameJusqua = t + 800;
   joueur.action = 'pointe';
@@ -302,8 +307,21 @@ function afficherFin(gagne) {
   }
 }
 
+function avantLePen() {
+  if (indexBoss === data.boss.length - 1 && !melenchonDebloque) {
+    melenchonDebloque = true;
+    disponibles[disponibles.length - 1] = true;
+    setMorceau('espoir');
+    etat = 'arrivee';
+    montrer('ecran-arrivee');
+    return true;
+  }
+  return false;
+}
+
 function suivant() {
   indexBoss++;
+  if (avantLePen()) return;
   if (indexBoss >= data.boss.length) {
     etat = 'victoire';
     pauseMusique();
@@ -508,10 +526,11 @@ function update(dt, t) {
         }
         continue;
       }
-      if (p.type !== 'bulle' && !p.nonContree && !p.reflexeTeste && t >= boss.antiReflexeJusqua && Math.abs(p.x - boss.x) < 150 && Math.abs(p.y - chB) < 70) {
+      if (p.type !== 'bulle' && !p.nonContree && !p.renvoye && !p.reflexeTeste && t >= boss.antiReflexeJusqua && Math.abs(p.x - boss.x) < 150 && Math.abs(p.y - chB) < 70) {
         p.reflexeTeste = true;
         if (Math.random() < (bossDef.reflexe || 0)) {
           sfx('contre');
+          p.renvoye = true;
           p.de = 'boss';
           p.vx = -p.vx;
           boss.action = 'ironie';
@@ -961,6 +980,13 @@ const MORCEAUX = {
     melodie: [57, 0, 0, 60, 0, 0, 63, 0, 62, 0, 60, 0, 57, 0, 55, 0, 57, 0, 0, 60, 0, 63, 0, 65, 64, 0, 63, 60, 59, 0, 0, 0],
     basse: [33, 0, 0, 0, 33, 0, 0, 0, 32, 0, 0, 0, 31, 0, 0, 0]
   },
+  espoir: {
+    bpm: 120,
+    typeMel: 'square', volMel: 0.12,
+    typeBass: 'triangle', volBass: 0.14,
+    melodie: [60, 64, 67, 72, 74, 72, 71, 67, 69, 72, 76, 74, 79, 76, 74, 72],
+    basse: [48, 0, 43, 0, 45, 0, 41, 0]
+  },
   bella: {
     bpm: 132,
     typeMel: 'square', volMel: 0.12,
@@ -1141,7 +1167,7 @@ function construireHeros() {
     } else {
       const badge = document.createElement('div');
       badge.className = 'badge-tombe';
-      badge.textContent = 'Tombé.e au débat';
+      badge.textContent = (i === data.heroes.length - 1 && !melenchonDebloque) ? '🔒' : 'Tombé.e au débat';
       div.appendChild(badge);
     }
     liste.appendChild(div);
@@ -1196,6 +1222,7 @@ element('btn-aide-suivant').addEventListener('click', () => {
 element('btn-suivant').addEventListener('click', suivant);
 element('btn-changer').addEventListener('click', () => {
   indexBoss++;
+  if (avantLePen()) return;
   if (indexBoss >= data.boss.length) {
     etat = 'victoire';
     element('liste-mesures').innerHTML = data.recompenses.map(r => '<li>' + r + '</li>').join('');
@@ -1205,6 +1232,12 @@ element('btn-changer').addEventListener('click', () => {
     construireHeros();
     montrer('ecran-heros');
   }
+});
+element('btn-arrivee-suite').addEventListener('click', () => montrer('ecran-melenchon'));
+element('btn-melenchon-ok').addEventListener('click', () => {
+  etat = 'heros';
+  construireHeros();
+  montrer('ecran-heros');
 });
 element('btn-combat').addEventListener('click', () => commencerCombat());
 element('btn-musique').addEventListener('click', basculerMusique);

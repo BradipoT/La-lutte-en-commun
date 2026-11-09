@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0d0d1f">
 <title>La Lutte en Commun</title>
-<link rel="stylesheet" href="style.css?v=54">
+<link rel="stylesheet" href="style.css?v=55">
 </head>
 <body>
 <canvas id="jeu" width="960" height="540"></canvas>
@@ -69,6 +69,18 @@
   </div>
 </div>
 
+<div id="ecran-arrivee" class="ecran cache">
+  <h2>🌅 Une lueur à l'horizon…</h2>
+  <p class="intro-texte">Un nouveau héro approche sur son cheval blanc. Son charisme est inégalé, sa répartie légendaire. On l'appelle « le vieux », « le candidat », c'est…</p>
+  <button id="btn-arrivee-suite" class="gros-bouton">La suite ➜</button>
+</div>
+
+<div id="ecran-melenchon" class="ecran cache">
+  <h2 style="font-size:clamp(30px,7vw,54px);color:#e67e22">JEAN-LUC<br>MÉLENCHON</h2>
+  <img class="icone-heros" style="width:110px;height:147px" src="assets/personnages/melenchon/debout.svg" alt="Jean-Luc Mélenchon">
+  <button id="btn-melenchon-ok" class="gros-bouton">Choisir son camp ⚔️</button>
+</div>
+
 <div id="ecran-versus" class="ecran cache">
   <div class="micros"><span>🎤</span><span>🎤</span></div>
   <h2 id="vs-texte"></h2>
@@ -119,7 +131,7 @@
   </div>
 </div>
 
-<script src="js/data.js?v=54"></script>
-<script src="js/game.js?v=54"></script>
+<script src="js/data.js?v=55"></script>
+<script src="js/game.js?v=55"></script>
 </body>
 </html>
