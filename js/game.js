@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 46;
+const VERSION = 47;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -100,6 +100,7 @@ function commencerCombat() {
   prochainBracelet = performance.now() + 3000;
   prochainSpeBoss = performance.now() + 4000;
   ondes = [];
+  reprendreMusique();
   messageJ = '';
   messageB = '';
   etat = 'combat';
@@ -137,6 +138,7 @@ function tir() {
   const t = performance.now();
   if (t - dernierTir < joueur.def.stats.cadenceTir || t < joueur.confusJusqua) return;
   dernierTir = t;
+  sfx('tir');
   joueur.action = 'tir';
   joueur.actionT = t;
   const argsJ = joueur.def.arguments;
@@ -155,6 +157,7 @@ function saut() {
   if (etat === 'combat' && joueur.onGround && !joueur.cast && performance.now() >= joueur.etourdiJusqua) {
     joueur.vy = -joueur.def.stats.saut;
     joueur.onGround = false;
+    sfx('saut');
   }
 }
 
@@ -170,6 +173,7 @@ function special() {
     Math.sign(p.vx) === Math.sign(joueur.x - p.x)
   );
   if (cible) {
+    sfx('contre');
     cible.de = 'joueur';
     cible.vx = -cible.vx;
     cible.degats = Math.round(cible.degats * 1.5);
@@ -185,6 +189,7 @@ function special() {
 }
 
 function appliquerSpeciale(type, t) {
+  sfx('speciale');
   const nom = joueur.def.special.nom;
   joueur.flameJusqua = t + 800;
   joueur.action = 'pointe';
@@ -249,6 +254,8 @@ function speciale() {
 }
 
 function finCombat(gagne) {
+  pauseMusique();
+  sfx(gagne ? 'victoire' : 'tombe');
   if (gagne) {
     etat = 'recompense';
     element('texte-recompense').textContent = data.recompenses[indexBoss];
@@ -270,6 +277,7 @@ function suivant() {
   indexBoss++;
   if (indexBoss >= data.boss.length) {
     etat = 'victoire';
+    pauseMusique();
     element('liste-mesures').innerHTML = data.recompenses.map(r => '<li>' + r + '</li>').join('');
     montrer('ecran-victoire');
   } else {
@@ -321,6 +329,7 @@ function update(dt, t) {
       t0: t
     };
     if (touche) {
+      sfx('speciale');
       joueur.confusJusqua = t + speBoss.confusion;
       messageJ = '🤯 Vous êtes confus ' + (speBoss.confusion / 1000) + ' s !';
       messageJT = t + 2500;
@@ -366,6 +375,7 @@ function update(dt, t) {
       const dirB = Math.sign(dx);
       boss.action = 'tir';
       boss.actionT = t;
+      sfx('tir');
       const argsB = bossDef.arguments;
       const argB = argsB[Math.floor(Math.random() * argsB.length)];
       phraseB = argB.t;
@@ -428,6 +438,7 @@ function update(dt, t) {
     if (p.de === 'joueur') {
       if (Math.abs(p.x - boss.x) < boss.largeur / 2 + p.r && Math.abs(p.y - chB) < boss.hauteur / 2 + p.r) {
         boss.hp -= p.degats;
+        sfx('touche');
         projectiles.splice(i, 1);
         if (boss.cast) {
           boss.cast = null;
@@ -443,6 +454,7 @@ function update(dt, t) {
       if (p.type !== 'bulle' && !p.reflexeTeste && t >= boss.antiReflexeJusqua && Math.abs(p.x - boss.x) < 150 && Math.abs(p.y - chB) < 70) {
         p.reflexeTeste = true;
         if (Math.random() < (bossDef.reflexe || 0)) {
+          sfx('contre');
           p.de = 'boss';
           p.vx = -p.vx;
           boss.action = 'ironie';
@@ -454,6 +466,7 @@ function update(dt, t) {
     } else {
       if (Math.abs(p.x - joueur.x) < joueur.largeur / 2 + p.r && Math.abs(p.y - chJ) < joueur.hauteur / 2 + p.r) {
         joueur.hp -= p.degats * (joueur.cast ? 2 : 1);
+        sfx('touche');
         projectiles.splice(i, 1);
         if (joueur.cast) {
           joueur.cast = null;
@@ -878,7 +891,7 @@ const MORCEAUX = {
     bpm: 140,
     typeMel: 'square', volMel: 0.12,
     typeBass: 'triangle', volBass: 0.16,
-    melodie: [69, 69, 71, 72, 71, 69, 71, 72, 69, 71, 72, 74, 72, 71, 69, 68, 69, 0, 0, 0, 69, 69, 71, 72, 71, 69, 68, 69, 71, 72, 74, 0],
+    melodie: [69, 69, 71, 72, 71, 69, 71, 72, 69, 69, 71, 72, 74, 72, 71, 69, 68, 69, 0, 0, 72, 72, 74, 75, 74, 72, 74, 75, 77, 75, 74, 72, 68, 69, 0, 0],
     basse: [45, 0, 52, 0, 45, 0, 52, 0, 45, 0, 52, 0, 45, 52, 45, 0]
   }
 };
@@ -936,6 +949,40 @@ function setMorceau(nom) {
   morceau = MORCEAUX[nom];
   stepSeq = 0;
   if (audioCtx) prochaineNote = audioCtx.currentTime + 0.1;
+}
+
+function sfxNote(freqDepart, freqArrivee, t, duree, type, vol) {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freqDepart, t);
+  if (freqArrivee) osc.frequency.exponentialRampToValueAtTime(freqArrivee, t + duree);
+  gain.gain.setValueAtTime(vol, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + duree);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(t);
+  osc.stop(t + duree + 0.02);
+}
+
+function sfx(nom) {
+  if (!audioCtx || !musiqueOn) return;
+  const t = audioCtx.currentTime + 0.01;
+  if (nom === 'saut') sfxNote(500, 950, t, 0.12, 'square', 0.12);
+  else if (nom === 'tir') sfxNote(850, 250, t, 0.15, 'square', 0.12);
+  else if (nom === 'touche') sfxNote(160, 90, t, 0.18, 'square', 0.2);
+  else if (nom === 'contre') { sfxNote(660, 660, t, 0.09, 'square', 0.14); sfxNote(880, 880, t + 0.09, 0.12, 'square', 0.14); }
+  else if (nom === 'speciale') sfxNote(180, 1400, t, 0.55, 'sawtooth', 0.16);
+  else if (nom === 'victoire') [72, 76, 79, 84].forEach((m, i) => sfxNote(freq(m), freq(m), t + i * 0.16, 0.22, 'square', 0.16));
+  else if (nom === 'tombe') [64, 62, 59, 57].forEach((m, i) => sfxNote(freq(m), freq(m) * 0.9, t + i * 0.18, 0.25, 'triangle', 0.18));
+}
+
+function pauseMusique() {
+  if (audioCtx && musiqueOn && audioCtx.state === 'running') audioCtx.suspend();
+}
+
+function reprendreMusique() {
+  if (audioCtx && musiqueOn && audioCtx.state === 'suspended') audioCtx.resume();
 }
 
 function demarrerMusique() {
