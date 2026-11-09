@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 53;
+const VERSION = 54;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -51,7 +51,7 @@ let ondes = [];
 const PORTEE_ATTAQUE = 240;
 let dernierSpeciale = 0;
 const COOLDOWN_SPE = 8000;
-const DUREE_CAST = 1400;
+const DUREE_CAST = 1100;
 const PORTEE_SPE = 480;
 let annonce = null;
 let prochainTirBoss = 0;
@@ -330,7 +330,7 @@ function update(dt, t) {
     appliquerSpeciale(joueur.cast.type, t);
     joueur.cast = null;
   }
-  if (joueur.castCharge && t - joueur.castCharge >= 1200) {
+  if (joueur.castCharge && t - joueur.castCharge >= 1000) {
     joueur.castCharge = 0;
     tirCharge();
   }
@@ -366,7 +366,7 @@ function update(dt, t) {
     boss.cast = { t0: t, type: 'charge' };
     prochainChargeBoss = t + 9000;
   }
-  if (boss.cast && boss.cast.type === 'charge' && t - boss.cast.t0 >= 1200) {
+  if (boss.cast && boss.cast.type === 'charge' && t - boss.cast.t0 >= 1000) {
     const dirB3 = Math.sign(dx) || 1;
     projectiles.push({
       x: boss.x + dirB3 * 30 * boss.echelle, y: hauteurTir(boss),
@@ -939,7 +939,7 @@ window.addEventListener('keyup', e => {
   if (e.code === 'Space' && appuiTirDebut) {
     const d = performance.now() - appuiTirDebut;
     appuiTirDebut = 0;
-    if (d >= 1200) tirCharge();
+    if (d >= 1000) tirCharge();
     else tir();
   }
 });
@@ -1246,7 +1246,7 @@ btnTir.addEventListener('pointerdown', e => {
   const d = performance.now() - appuiTirDebut;
   appuiTirDebut = 0;
   joueur.castCharge = 0;
-  if (d >= 1200) tirCharge();
+  if (d >= 1000) tirCharge();
   else tir();
 }));
 lierBouton('btn-special', special);

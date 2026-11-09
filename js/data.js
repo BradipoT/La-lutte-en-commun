@@ -1,7 +1,7 @@
 window.GAME_DATA = {
   heroes: [
     { id: 'guette', nom: 'Clémence Guetté', couleur: '#e74c3c',
-      stats: { degats: 16, cadenceTir: 700, vitesse: 300, saut: 820, cooldownSpe: 12000, pv: 110 , portee: 280},
+      stats: { degats: 16, cadenceTir: 700, vitesse: 300, saut: 820, cooldownSpe: 12000, pv: 110 , portee: 340},
       arguments: [
         'La précarité n’est pas un choix de vie.',
         'Taxez les riches, pas les pauvres.',
@@ -9,7 +9,7 @@ window.GAME_DATA = {
       ],
       special: { type: 'bloqueAttaque', nom: '✨ Aura', desc: 'L’adversaire ne peut plus attaquer pendant 10 s.' } },
     { id: 'panot', nom: 'Mathilde Panot', couleur: '#9b59b6',
-      stats: { degats: 13, cadenceTir: 500, vitesse: 250, saut: 780, cooldownSpe: 16000, pv: 95 , portee: 460},
+      stats: { degats: 13, cadenceTir: 500, vitesse: 250, saut: 780, cooldownSpe: 16000, pv: 95 , portee: 520},
       arguments: [
         'La VIe République, c’est maintenant.',
         'Le peuple d’abord, les profits ensuite.',
@@ -17,7 +17,7 @@ window.GAME_DATA = {
       ],
       special: { type: 'soin', nom: '💚 Résilience', desc: 'Récupère 20 % de PV.' } },
     { id: 'balayoko', nom: 'Bally Bagayoko', couleur: '#3498db',
-      stats: { degats: 13, cadenceTir: 700, vitesse: 330, saut: 860, cooldownSpe: 10000, pv: 140 , portee: 300},
+      stats: { degats: 13, cadenceTir: 700, vitesse: 330, saut: 860, cooldownSpe: 10000, pv: 140 , portee: 360},
       arguments: [
         'Les services publics ne sont pas un coût, ce sont des droits.',
         'Un hôpital fermé, ce sont des vies en danger.',
@@ -25,7 +25,7 @@ window.GAME_DATA = {
       ],
       special: { type: 'confus', nom: '👑 La ville des rois', desc: 'L’adversaire est confus 6 s : il ne fait plus rien.' } },
     { id: 'bompard', nom: 'Manuel Bompard', couleur: '#16a085',
-      stats: { degats: 14, cadenceTir: 650, vitesse: 270, saut: 800, cooldownSpe: 9000, pv: 120 , portee: 380},
+      stats: { degats: 14, cadenceTir: 650, vitesse: 270, saut: 800, cooldownSpe: 9000, pv: 120 , portee: 440},
       arguments: [
         'Le SMIC à 1 700 €, on le fait.',
         'La planification écologique, maintenant !',
@@ -33,7 +33,7 @@ window.GAME_DATA = {
       ],
       special: { type: 'antiReflexe', nom: '🧮 Calculs de maths', desc: 'L’adversaire ne peut plus couper la parole pendant 12 s.' } },
     { id: 'melenchon', nom: 'Jean-Luc Mélenchon', couleur: '#e67e22',
-      stats: { degats: 19, cadenceTir: 500, vitesse: 230, saut: 740, cooldownSpe: 6000, pv: 140 , portee: 420},
+      stats: { degats: 19, cadenceTir: 500, vitesse: 230, saut: 740, cooldownSpe: 6000, pv: 140 , portee: 480},
       arguments: [
         'Si vous n’augmentez pas les salaires, vous aurez la récession.',
         'L’argent magique existe… pour les riches.',
@@ -48,6 +48,12 @@ window.GAME_DATA = {
       arguments: [ { t: 'Il faut relancer la croissance !', r: 'Vos « arguments » tiennent plus du communiqué de presse que du débat.' },
         { t: 'L’Europe, c’est trop bureaucratique !', r: 'Oui, et la paperasse fiscale adore les paradis fiscaux.' },
         { t: 'Il faut taxer les multinationales !', r: 'Évidemment… après les avoir subventionnées, bien sûr.' } ] },
+    { id: 'consigny', nom: 'Charles de Consigny', pv: 100, degats: 9, couleur: '#6c3483', vitesse: 138, cadence: 2500, reflexe: 0.11, portee: 540,
+      charge: false,
+      arguments: [
+        { t: 'Les Français sont des faignants !', r: 'Va travailler à l’usine et on en reparle.' },
+        { t: 'Les jeunes des cités vendent de la drogue !', r: 'Et vous, vous en savez quelque chose.' }
+      ] },
     { id: 'valet', nom: 'Matthieu Valet', pv: 120, degats: 10, couleur: '#5d6d7e', vitesse: 145, cadence: 2200, reflexe: 0.15,
       portee: 600,
       bulles: { cadence: 1500, degats: 5 },
@@ -113,7 +119,8 @@ window.GAME_DATA = {
     'Vous avez gagné : la planification écologique !',
     'Vous avez gagné : la 6ème semaine de congés payés !',
     'Vous avez gagné : l’augmentation générale des salaires !',
-    'Vous avez gagné : le revenu étudiant à 1 200 € !',
+    'Vous avez gagné : la taxe Zucman !',
+    'Vous avez gagné : la gratuité des transports en commun !',
     'Vous avez gagné : le grand service public de la santé et de l’éducation !',
     'Vous avez gagné : le référendum d’initiative citoyenne (RIC) !',
     'Vous avez gagné : la sortie des énergies fossiles !'
