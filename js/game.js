@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 66;
+const VERSION = 67;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -1051,8 +1051,8 @@ function boucleSequence() {
     if (m) jouerNote(m, prochaineNote, duree * 0.9, morceau.typeMel, morceau.volMel);
     const b = morceau.basse[stepSeq % morceau.basse.length];
     if (b) jouerNote(b, prochaineNote, duree * 1.8, morceau.typeBass, morceau.volBass);
-    if (morceau.accords && stepSeq % 8 === 3) {
-      const accord = morceau.accords[Math.floor((stepSeq - 3) / 8) % morceau.accords.length];
+    if (morceau.accords && stepSeq % 8 === 4) {
+      const accord = morceau.accords[Math.floor((stepSeq - 4) / 8) % morceau.accords.length];
       accord.forEach(n => jouerNote(n, prochaineNote, duree * 7.5, 'triangle', 0.07));
     }
     if (morceau.bpm >= 120 && stepSeq % 2 === 1) jouerHat(prochaineNote);
