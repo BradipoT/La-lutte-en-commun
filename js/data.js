@@ -1,7 +1,7 @@
 window.GAME_DATA = {
   heroes: [
     { id: 'guette', nom: 'Clémence Guetté', couleur: '#e74c3c',
-      stats: { degats: 16, cadenceTir: 700, vitesse: 300, saut: 820, cooldownSpe: 12000, pv: 110 , portee: 300},
+      stats: { degats: 16, cadenceTir: 700, vitesse: 300, saut: 820, cooldownSpe: 12000, pv: 110 , portee: 240},
       arguments: [
         'La précarité n’est pas un choix de vie.',
         'Taxez les riches, pas les pauvres.',
@@ -9,7 +9,7 @@ window.GAME_DATA = {
       ],
       special: { type: 'bloqueAttaque', nom: '✨ Aura', desc: 'L’adversaire ne peut plus attaquer pendant 10 s.' } },
     { id: 'panot', nom: 'Mathilde Panot', couleur: '#9b59b6',
-      stats: { degats: 13, cadenceTir: 500, vitesse: 250, saut: 780, cooldownSpe: 16000, pv: 95 , portee: 260},
+      stats: { degats: 13, cadenceTir: 500, vitesse: 250, saut: 780, cooldownSpe: 16000, pv: 95 , portee: 420},
       arguments: [
         'La VIe République, c’est maintenant.',
         'Le peuple d’abord, les profits ensuite.',
@@ -17,7 +17,7 @@ window.GAME_DATA = {
       ],
       special: { type: 'soin', nom: '💚 Résilience', desc: 'Récupère 20 % de PV.' } },
     { id: 'balayoko', nom: 'Bally Bagayoko', couleur: '#3498db',
-      stats: { degats: 13, cadenceTir: 700, vitesse: 330, saut: 860, cooldownSpe: 10000, pv: 140 , portee: 280},
+      stats: { degats: 13, cadenceTir: 700, vitesse: 330, saut: 860, cooldownSpe: 10000, pv: 140 , portee: 260},
       arguments: [
         'Les services publics ne sont pas un coût, ce sont des droits.',
         'Un hôpital fermé, ce sont des vies en danger.',
@@ -25,7 +25,7 @@ window.GAME_DATA = {
       ],
       special: { type: 'confus', nom: '👑 La ville des rois', desc: 'L’adversaire est confus 6 s : il ne fait plus rien.' } },
     { id: 'bompard', nom: 'Manuel Bompard', couleur: '#16a085',
-      stats: { degats: 14, cadenceTir: 650, vitesse: 270, saut: 800, cooldownSpe: 9000, pv: 120 , portee: 320},
+      stats: { degats: 14, cadenceTir: 650, vitesse: 270, saut: 800, cooldownSpe: 9000, pv: 120 , portee: 340},
       arguments: [
         'Le SMIC à 1 700 €, on le fait.',
         'La planification écologique, maintenant !',
@@ -33,7 +33,7 @@ window.GAME_DATA = {
       ],
       special: { type: 'antiReflexe', nom: '🧮 Calculs de maths', desc: 'L’adversaire ne peut plus couper la parole pendant 12 s.' } },
     { id: 'melenchon', nom: 'Jean-Luc Mélenchon', couleur: '#e67e22',
-      stats: { degats: 19, cadenceTir: 500, vitesse: 230, saut: 740, cooldownSpe: 6000, pv: 140 , portee: 360},
+      stats: { degats: 19, cadenceTir: 500, vitesse: 230, saut: 740, cooldownSpe: 6000, pv: 140 , portee: 380},
       arguments: [
         'Si vous n’augmentez pas les salaires, vous aurez la récession.',
         'L’argent magique existe… pour les riches.',

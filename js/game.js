@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 45;
+const VERSION = 46;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -48,7 +48,7 @@ let ondes = [];
 const PORTEE_ATTAQUE = 240;
 let dernierSpeciale = 0;
 const COOLDOWN_SPE = 8000;
-const DUREE_CAST = 1800;
+const DUREE_CAST = 1400;
 const PORTEE_SPE = 480;
 let annonce = null;
 let prochainTirBoss = 0;
@@ -429,6 +429,11 @@ function update(dt, t) {
       if (Math.abs(p.x - boss.x) < boss.largeur / 2 + p.r && Math.abs(p.y - chB) < boss.hauteur / 2 + p.r) {
         boss.hp -= p.degats;
         projectiles.splice(i, 1);
+        if (boss.cast) {
+          boss.cast = null;
+          messageB = '❌ Préparation interrompue !';
+          messageBT = t + 1500;
+        }
         if (boss.hp <= 0) {
           boss.hp = 0;
           finCombat(true);
@@ -450,6 +455,11 @@ function update(dt, t) {
       if (Math.abs(p.x - joueur.x) < joueur.largeur / 2 + p.r && Math.abs(p.y - chJ) < joueur.hauteur / 2 + p.r) {
         joueur.hp -= p.degats * (joueur.cast ? 2 : 1);
         projectiles.splice(i, 1);
+        if (joueur.cast) {
+          joueur.cast = null;
+          messageJ = '❌ Préparation interrompue !';
+          messageJT = t + 1500;
+        }
         if (joueur.hp <= 0) {
           joueur.hp = 0;
           finCombat(false);
