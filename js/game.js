@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 71;
+const VERSION = 72;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -992,11 +992,12 @@ const MORCEAUX = {
     basse: [33, 0, 0, 0, 33, 0, 0, 0, 32, 0, 0, 0, 31, 0, 0, 0]
   },
   espoir: {
-    bpm: 120,
-    typeMel: 'square', volMel: 0.12,
-    typeBass: 'triangle', volBass: 0.14,
-    melodie: [60, 64, 67, 72, 74, 72, 71, 67, 69, 72, 76, 74, 79, 76, 74, 72],
-    basse: [48, 0, 43, 0, 45, 0, 41, 0]
+    bpm: 100,
+    typeMel: 'sawtooth', volMel: 0.10,
+    typeBass: 'sawtooth', volBass: 0.10,
+    melodie: [60, 64, 67, 72, 71, 67, 64, 67, 69, 72, 76, 74, 72, 69, 67, 64, 65, 69, 72, 77, 79, 77, 76, 74, 72, 0, 0, 0, 0, 0, 0, 0],
+    basse: [36, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 29, 0, 0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 0, 0],
+    accords: [[48, 52, 55], [45, 48, 52], [41, 45, 48], [43, 47, 50]]
   },
   bella: {
     bpm: 132,
