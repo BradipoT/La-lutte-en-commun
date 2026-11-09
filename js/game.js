@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 80;
+const VERSION = 81;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -1270,7 +1270,7 @@ function choisirNiveau(n) {
 ['facile', 'moyen', 'dur'].forEach(n => {
   element('btn-niv-' + n).addEventListener('click', () => choisirNiveau(n));
 });
-element('btn-i1').addEventListener('click', () => montrer('ecran-intro2'));
+element('btn-i1').addEventListener('click', () => { setMorceau('bella'); montrer('ecran-intro2'); });
 element('btn-i2').addEventListener('click', () => montrer('ecran-intro3'));
 element('btn-i3').addEventListener('click', () => {
   setMorceau('bella');
