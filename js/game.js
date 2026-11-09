@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 58;
+const VERSION = 59;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -1151,6 +1151,7 @@ function construireHeros() {
   const liste = element('liste-heros');
   liste.innerHTML = '';
   data.heroes.forEach((h, i) => {
+    if (i === data.heroes.length - 1 && !melenchonDebloque) return;
     const div = document.createElement('div');
     const verrouille = i === data.heroes.length - 1 && !melenchonDebloque;
     div.className = 'carte-heros' + (disponibles[i] ? '' : (verrouille ? ' verrouille' : ' tombe'));
