@@ -18,9 +18,9 @@ const TRAITS = {
   praud:       { sexe: 'h', cheveux: '#f2f2f2', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: '#f2f2f2' },
   philippe:    { sexe: 'h', cheveux: '#8d8d8d', longueur: 'aucun',  teint: '#f0c8aa', lunettes: false, barbe: null },
   retailleau:  { sexe: 'h', cheveux: '#5d4037', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
-  saintcricq:  { sexe: 'f', cheveux: '#b5501e', longueur: 'mi-longs', teint: '#f5d0b0', lunettes: false, barbe: null },
+  saintcricq:  { sexe: 'f', cheveux: '#b5501e', longueur: 'carre',  teint: '#f5d0b0', lunettes: false, barbe: null },
   attal:       { sexe: 'h', cheveux: '#4e342e', longueur: 'courts',  teint: '#f0c8aa', lunettes: false, barbe: null },
-  lepen:       { sexe: 'f', cheveux: '#e8c96a', longueur: 'mi-longs', teint: '#f5d0b0', lunettes: false, barbe: null, bracelet: true },
+  lepen:       { sexe: 'f', cheveux: '#e8c96a', longueur: 'carre',  teint: '#f5d0b0', lunettes: false, barbe: null, bracelet: true },
   zemmour:     { sexe: 'h', cheveux: '#2c2c2c', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
   bardella:    { sexe: 'h', cheveux: '#5d4037', longueur: 'courts',  teint: '#f0c8aa', lunettes: false, barbe: null },
   consigny:    { sexe: 'h', cheveux: '#d4a017', longueur: 'aucun',  teint: '#f5d0b0', lunettes: false, barbe: null },
@@ -64,14 +64,14 @@ function bras(pose) {
 
 function cheveuxDessus(t) {
   if (t.longueur === 'aucun') return '';
-  if (t.longueur === 'carre') return 'M48 18 L63 7 L79 18 L78 34 L72 34 L73 20 L63 13 L53 20 L54 34 L48 34 Z';
+  if (t.longueur === 'carre') return 'M48 18 L63 7 L79 18 L78 30 L72 30 L73 20 L63 13 L53 20 L54 30 L48 30 Z';
   if (t.longueur === 'longs') return 'M50 18 L63 8 L78 20 L76 26 L63 18 L52 26 Z';
   if (t.longueur === 'mi-longs') return 'M49 16 L63 7 L79 18 L77 28 L63 20 L51 28 Z';
   return 'M49.1 24 A14 14 0 0 1 76.9 24 Z';
 }
 
 function cheveuxDerriere(t) {
-  if (t.longueur === 'carre') return 'M44 22 Q60 9 78 21 L80 56 L46 56 Z';
+  if (t.longueur === 'carre') return 'M44 22 Q60 9 78 21 L80 44 L46 44 Z';
   if (t.longueur === 'longs') return 'M42 22 Q60 8 80 20 L86 70 Q78 95 60 88 L44 80 Z';
   if (t.longueur === 'mi-longs') return 'M44 22 Q60 9 78 21 L82 48 Q72 60 60 56 L46 50 Z';
   return null;
@@ -79,8 +79,8 @@ function cheveuxDerriere(t) {
 
 function lunettes() {
   return '<g stroke="#222" stroke-width="2.5" fill="none">'
-    + '<circle cx="55" cy="22" r="6"/><circle cx="67" cy="22" r="6"/>'
-    + '<path d="M61 22 L63 22 M49 21 L44 19 M73 21 L78 19"/></g>';
+    + '<circle cx="57" cy="22" r="6"/><circle cx="69" cy="22" r="6"/>'
+    + '<path d="M63 22 L65 22 M51 21 L46 19 M75 21 L80 19"/></g>';
 }
 
 function barbe(couleur) {

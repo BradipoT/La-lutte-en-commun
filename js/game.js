@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 98;
+const VERSION = 99;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -142,7 +142,17 @@ function choisirHeros(i) {
   afficherVersus();
 }
 
+function jouerMotifZemmour() {
+  if (!audioCtx || !musiqueOn) return;
+  const notes = [64, 64, 67, 72, 72, 72, 72, 72, 72, 72, 72, 72, 72, 64, 64, 74, 72, 72, 72, 72, 72, 72, 72];
+  const d = 60 / 170 / 2;
+  const t0 = audioCtx.currentTime + 0.15;
+  notes.forEach((m, i) => jouerNote(m, t0 + i * d, d * 0.9, 'square', 0.15));
+}
+
 function afficherVersus() {
+  setMorceau('bella');
+  if (data.boss[indexBoss].id === 'zemmour') jouerMotifZemmour();
   etat = 'versus';
   element('vs-texte').textContent = data.heroes[herosChoisi].nom + ' affronte ' + data.boss[indexBoss].nom;
   const av = element('vs-avertissement');
@@ -644,16 +654,6 @@ function update(dt, t) {
         if (joueur.hp <= 0) finCombat(false, t);
         continue;
       }
-      if (p.de === 'joueur') {
-        for (let j = projectiles.length - 1; j >= 0; j--) {
-          const q = projectiles[j];
-          if (q.type === 'esprit' && Math.abs(p.x - q.x) < p.r + q.r && Math.abs(p.y - q.y) < p.r + q.r) {
-            projectiles.splice(j, 1);
-            messageJ = '👻 Esprit détruit !';
-            messageJT = t + 1000;
-          }
-        }
-      }
       if (Math.abs(p.x - joueur.x) < joueur.largeur / 2 + p.r && Math.abs(p.y - chJ) < joueur.hauteur / 2 + p.r) {
         joueur.hp -= p.degats * ((joueur.cast || joueur.castCharge) ? 2 : 1);
         joueur.toucheJusqua = t + 500;
@@ -1035,6 +1035,17 @@ function dessinerProjectiles(t) {
       g.addColorStop(0.75, 'rgba(160,210,255,0.9)');
       g.addColorStop(1, 'rgba(120,180,255,0.9)');
     } else if (p.de === 'joueur') {
+      if (p.de === 'joueur') {
+        for (let j = projectiles.length - 1; j >= 0; j--) {
+          const q = projectiles[j];
+          if (q.type === 'esprit' && Math.abs(p.x - q.x) < p.r + q.r && Math.abs(p.y - q.y) < p.r + q.r) {
+            projectiles.splice(j, 1);
+            messageJ = '👻 Esprit détruit !';
+            messageJT = t + 1000;
+          }
+        }
+      }
+
       g.addColorStop(0, '#fff8dc');
       g.addColorStop(0.4, '#ffd23f');
       g.addColorStop(1, 'rgba(255, 80, 0, 0)');
