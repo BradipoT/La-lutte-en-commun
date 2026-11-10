@@ -33,6 +33,7 @@
   #btn-sombre { background: linear-gradient(135deg, #34495e, #2c3e50); }
   #btn-bella { background: linear-gradient(135deg, #c0392b, #922b21); }
   #btn-espoir { background: linear-gradient(135deg, #e67e22, #ca6f1e); }
+  #btn-zemmour { background: linear-gradient(135deg, #2c3e50, #1a252f); }
   #btn-son { background: rgba(255, 255, 255, 0.15); width: min(420px, 90vw); }
   .actif { outline: 3px solid #ffd23f; }
   a { color: #ffd23f; }
@@ -44,6 +45,7 @@
   <button id="btn-sombre">🌑 Thème sombre (intro)</button>
   <button id="btn-bella">🎵 Bella Ciao (combat)</button>
   <button id="btn-espoir">🌅 Espoir (arrivée de Mélenchon)</button>
+  <button id="btn-zemmour">😬 Motif Zemmour (versus)</button>
 </div>
 <button id="btn-son">🔊 Son : ON</button>
 <p><a href="index.html">← Retour au jeu</a></p>
@@ -60,6 +62,7 @@
   document.getElementById('btn-sombre').addEventListener('click', e => jouer('sombre', e.target));
   document.getElementById('btn-bella').addEventListener('click', e => jouer('bella', e.target));
   document.getElementById('btn-espoir').addEventListener('click', e => jouer('espoir', e.target));
+  document.getElementById('btn-zemmour').addEventListener('click', e => jouer('zemmour', e.target));
   document.getElementById('btn-son').addEventListener('click', e => {
     const on = lecteur.basculer();
     e.target.textContent = on ? '🔊 Son : ON' : '🔇 Son : OFF';
