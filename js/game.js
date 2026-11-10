@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 92;
+const VERSION = 93;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -353,7 +353,6 @@ function suivant() {
   if (indexBoss >= data.boss.length) {
     etat = 'victoire';
     pauseMusique();
-    element('liste-mesures').innerHTML = data.recompenses.map(r => '<li>' + r + '</li>').join('');
     montrer('ecran-victoire');
   } else {
     afficherVersus();
@@ -437,7 +436,7 @@ function update(dt, t) {
   }
   if (boss.cast && boss.cast.type === 'oas' && t - boss.cast.t0 >= DUREE_CAST) {
     projectiles.push({ x: W + 40, y: SOL - 46, vx: -380, de: 'boss', type: 'esprit', r: 26, degats: 10, nonContree: true, fantome: true });
-    projectiles.push({ x: W + 190, y: SOL - 46, vx: -380, de: 'boss', type: 'esprit', r: 26, degats: 10, nonContree: true, fantome: true });
+    projectiles.push({ x: W + 420, y: SOL - 46, vx: -380, de: 'boss', type: 'esprit', r: 26, degats: 10, nonContree: true, fantome: true });
     annonce = { l1: boss.def.nom + ' lance ' + speBoss.nom + ' !', l2: 'Deux esprits traversent le plateau : esquivez ou détruisez-les !', t0: t };
     sfx('speciale');
     boss.cast = null;
@@ -782,7 +781,7 @@ function dessinerCombattant(c, t) {
   const face = autre && autre.x >= c.x ? 1 : -1;
   const h = c.hauteur;
 
-  const img = imagesPersos[c.def.id + '_' + pose];
+  const img = c.def.fantome ? imagesPersos['fantome-debout'] : imagesPersos[c.def.id + '_' + pose];
   if (img && img.complete && img.naturalWidth > 0) {
     const ih = 175 * c.echelle;
     const iw = ih * 0.6;
@@ -1432,7 +1431,6 @@ element('btn-changer').addEventListener('click', () => {
   if (avantLePen()) return;
   if (indexBoss >= data.boss.length) {
     etat = 'victoire';
-    element('liste-mesures').innerHTML = data.recompenses.map(r => '<li>' + r + '</li>').join('');
     montrer('ecran-victoire');
   } else {
     etat = 'heros';
