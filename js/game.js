@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 91;
+const VERSION = 92;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -15,7 +15,7 @@ const imagesPersos = {};
 function chargerImages() {
   if (typeof Image === 'undefined') return;
   const imgF = new Image();
-  imgF.src = 'assets/personnages/fantome/debout.svg?v=' + VERSION;
+  imgF.src = 'assets/intro/fantome.png?v=' + VERSION;
   imagesPersos['fantome-debout'] = imgF;
   data.heroes.concat(data.boss).concat([data.fantome]).forEach(p => {
     POSES.forEach(pose => {
@@ -1012,10 +1012,13 @@ function dessinerProjectiles(t) {
     const g = ctx.createRadialGradient(p.x, p.y, r * 0.15, p.x, p.y, r * 1.5);
     if (p.type === 'esprit') {
       ctx.save();
-      ctx.globalAlpha = 0.7;
+      ctx.globalAlpha = 0.85;
+      ctx.globalCompositeOperation = 'multiply';
       const img = imagesPersos['fantome-debout'];
-      if (img && img.complete) ctx.drawImage(img, p.x - 26, p.y - 66, 52, 87);
-      else {
+      if (img && img.complete) {
+        ctx.drawImage(img, p.x - 26, p.y - 66, 52, 87);
+        ctx.globalCompositeOperation = 'source-over';
+      } else {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(200, 200, 255, 0.6)';
@@ -1043,10 +1046,13 @@ function dessinerProjectiles(t) {
     ctx.fill();
     if (p.type === 'esprit') {
       ctx.save();
-      ctx.globalAlpha = 0.7;
+      ctx.globalAlpha = 0.85;
+      ctx.globalCompositeOperation = 'multiply';
       const img = imagesPersos['fantome-debout'];
-      if (img && img.complete) ctx.drawImage(img, p.x - 26, p.y - 66, 52, 87);
-      else {
+      if (img && img.complete) {
+        ctx.drawImage(img, p.x - 26, p.y - 66, 52, 87);
+        ctx.globalCompositeOperation = 'source-over';
+      } else {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(200, 200, 255, 0.6)';
@@ -1441,11 +1447,15 @@ element('btn-continuer-fantome').addEventListener('click', () => {
   montrer('ecran-fantome-intro');
   let i = 0;
   element('texte-fantome').textContent = LIGNES_FANTOME[0];
+  element('groupe-fantome').classList.add('cache');
   clearInterval(seqFantome);
   seqFantome = setInterval(() => {
     i++;
     if (i < LIGNES_FANTOME.length) element('texte-fantome').textContent = LIGNES_FANTOME[i];
-    else clearInterval(seqFantome);
+    else {
+      clearInterval(seqFantome);
+      element('groupe-fantome').classList.remove('cache');
+    }
   }, 2000);
 });
 function lancerCombatFantome() {

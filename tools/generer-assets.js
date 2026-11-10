@@ -17,7 +17,7 @@ const TRAITS = {
   valet:       { sexe: 'h', cheveux: '#b5651d', longueur: 'aucun',  teint: '#f7ead9', lunettes: true,  barbe: '#b5651d' },
   praud:       { sexe: 'h', cheveux: '#f2f2f2', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: '#f2f2f2' },
   philippe:    { sexe: 'h', cheveux: '#8d8d8d', longueur: 'aucun',  teint: '#f0c8aa', lunettes: false, barbe: null },
-  retailleau:  { sexe: 'h', cheveux: '#e0e0e0', longueur: 'courts',  teint: '#f0c8aa', lunettes: false, barbe: null },
+  retailleau:  { sexe: 'h', cheveux: '#5d4037', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
   saintcricq:  { sexe: 'f', cheveux: '#c8a24a', longueur: 'mi-longs', teint: '#f5d0b0', lunettes: false, barbe: null },
   attal:       { sexe: 'h', cheveux: '#4e342e', longueur: 'courts',  teint: '#f0c8aa', lunettes: false, barbe: null },
   lepen:       { sexe: 'f', cheveux: '#e8c96a', longueur: 'mi-longs', teint: '#f5d0b0', lunettes: false, barbe: null, bracelet: true },
