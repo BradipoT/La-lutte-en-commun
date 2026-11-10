@@ -112,6 +112,15 @@ window.GAME_DATA = {
         { t: 'L’insécurité partout !', r: 'Des millions de Français vivent dans l’insécurité à cause de vos idées.' }] }
   ],
 
+  fantome: { id: 'fantome', nom: 'Le Fantôme de Jean-Marie', pv: 160, degats: 12, couleur: '#3a3a6e', vitesse: 215, cadence: 2200, reflexe: 0.25, portee: 620, echelle: 1.1, vole: true, fantome: true,
+    bombes: { degats: 12, rayon: 95, cadence: 2600 },
+    avertissement: '⚠️ Il vole entre le sol et la hauteur de saut et jette des bombes à dégâts de zone — elles ne peuvent pas être contrées !',
+    arguments: [
+      { t: 'N’est-ce pas ?!', r: 'Si, carrément.' },
+      { t: 'Tu vas goûter de la gégène.', r: 'Je connais déjà, merci.' },
+      { t: 'Tu n’es qu’un détail pour moi.', r: 'Comme ton programme.' }
+    ] },
+
   recompenses: [
     'Vous avez gagné : le SMIC à 1 700 € net !',
     'Vous avez gagné : la retraite à 60 ans !',

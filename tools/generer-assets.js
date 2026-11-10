@@ -23,7 +23,8 @@ const TRAITS = {
   lepen:       { sexe: 'f', cheveux: '#e8c96a', longueur: 'mi-longs', teint: '#f5d0b0', lunettes: false, barbe: null, bracelet: true },
   zemmour:     { sexe: 'h', cheveux: '#2c2c2c', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
   bardella:    { sexe: 'h', cheveux: '#5d4037', longueur: 'courts',  teint: '#f0c8aa', lunettes: false, barbe: null },
-  consigny:    { sexe: 'h', cheveux: '#d4a017', longueur: 'aucun',  teint: '#f5d0b0', lunettes: true, barbe: null }
+  consigny:    { sexe: 'h', cheveux: '#d4a017', longueur: 'aucun',  teint: '#f5d0b0', lunettes: true, barbe: null },
+  fantome:     { sexe: 'h', cheveux: '#111111', longueur: 'aucun',  teint: '#cfd0ff', lunettes: false, barbe: null, fantome: true }
 };
 
 const PANTS = '#282846';
@@ -62,7 +63,7 @@ function bras(pose) {
 }
 
 function cheveuxDessus(t) {
-  if (t.longueur === 'aucun') return 'M50 15 Q63 9 76 15 L76 18 Q63 13 50 18 Z';
+  if (t.longueur === 'aucun') return '';
   if (t.longueur === 'longs') return 'M50 18 L63 8 L78 20 L76 26 L63 18 L52 26 Z';
   if (t.longueur === 'mi-longs') return 'M49 16 L63 7 L79 18 L77 28 L63 20 L51 28 Z';
   return 'M49.1 24 A14 14 0 0 1 76.9 24 Z';
@@ -86,9 +87,10 @@ function barbe(couleur) {
 }
 
 function svgPerso(couleur, pose, t) {
+  const opacite = t.fantome ? ' opacity="0.75"' : '';
   const b = bras(pose);
   const derriere = cheveuxDerriere(t);
-  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 200" width="120" height="200">'
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 200" width="120" height="200"' + opacite + '>'
     + (derriere ? '<path d="' + derriere + '" fill="' + t.cheveux + '"/>' : '')
     + '<g stroke="' + PANTS + '" stroke-width="7" stroke-linecap="round" fill="none" stroke-linejoin="round"><path d="' + jambes(pose) + '"/></g>'
     + chaussures(pose)
@@ -106,7 +108,7 @@ function svgPerso(couleur, pose, t) {
     + '</svg>\n';
 }
 
-const persos = data.heroes.concat(data.boss);
+const persos = data.heroes.concat(data.boss).concat([data.fantome]);
 persos.forEach(p => {
   const t = TRAITS[p.id] || { sexe: 'h', cheveux: '#333', longueur: 'courts', teint: '#f0c8aa', lunettes: false, barbe: null };
   const dir = path.join(__dirname, '..', 'assets', 'personnages', p.id);

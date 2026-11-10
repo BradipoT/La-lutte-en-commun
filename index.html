@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0d0d1f">
 <title>La Lutte en Commun</title>
-<link rel="stylesheet" href="style.css?v=88">
+<link rel="stylesheet" href="style.css?v=89">
 </head>
 <body>
 <canvas id="jeu" width="960" height="540"></canvas>
@@ -85,6 +85,21 @@
   <button id="btn-melenchon-ok" class="gros-bouton">Ici est la force ⚔️</button>
 </div>
 
+<div id="ecran-fantome-intro" class="ecran cache ecran-sombre">
+  <div style="font-size:80px">🪦</div>
+  <p id="texte-fantome" class="intro-texte"></p>
+  <div class="groupe" style="justify-content:center">
+    <button id="btn-fantome-meme" class="gros-bouton">Continuer avec le même camarade</button>
+    <button id="btn-fantome-changer" class="gros-bouton">Changer de camarade</button>
+  </div>
+</div>
+
+<div id="ecran-fantome-gagne" class="ecran cache ecran-sombre">
+  <h2>🌅 Le fascisme est définitivement vaincu.</h2>
+  <p class="intro-texte">Un avenir radieux s'annonce.</p>
+  <button id="btn-retour-menu" class="gros-bouton">Retour au menu</button>
+</div>
+
 <div id="ecran-versus" class="ecran cache">
   <div class="micros"><span>🎤</span><span>🎤</span></div>
   <h2 id="vs-texte"></h2>
@@ -116,6 +131,7 @@
   <p class="intro-texte">Le programme « L’Avenir en commun » va être mis en œuvre.</p>
   <p>Voici le programme que vous avez gagné :</p>
   <ul id="liste-mesures"></ul>
+  <button id="btn-continuer-fantome" class="gros-bouton">Continuer ➜</button>
   <button id="btn-rejouer" class="gros-bouton">Rejouer</button>
 </div>
 
@@ -136,8 +152,8 @@
   </div>
 </div>
 
-<script src="js/musique.js?v=88"></script>
-<script src="js/data.js?v=88"></script>
-<script src="js/game.js?v=88"></script>
+<script src="js/musique.js?v=89"></script>
+<script src="js/data.js?v=89"></script>
+<script src="js/game.js?v=89"></script>
 </body>
 </html>

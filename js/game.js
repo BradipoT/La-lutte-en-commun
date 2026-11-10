@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 88;
+const VERSION = 89;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -48,6 +48,11 @@ let prochainSpeBoss = 0;
 let prochainChargeBoss = 0;
 let appuiTirDebut = 0;
 let finEnAttente = null;
+let combatFantome = false;
+let prochainBombe = 0;
+let explosions = [];
+let seqFantome = null;
+const LIGNES_FANTOME = ['Par bleu', 'Des forces obscures semblent être à l’œuvre', 'Vous avez réveillé…', 'LE FANTÔME DE JEAN MARIE'];
 let ondes = [];
 const PORTEE_ATTAQUE = 240;
 let dernierSpeciale = 0;
@@ -66,7 +71,7 @@ function element(id) {
 }
 
 function cacherTout() {
-  ['ecran-titre', 'ecran-intro1', 'ecran-intro2', 'ecran-intro3', 'ecran-aide', 'ecran-heros', 'ecran-stats', 'ecran-arrivee', 'ecran-melenchon', 'ecran-versus', 'ecran-recompense', 'ecran-defaite', 'ecran-perdu', 'ecran-victoire', 'controles']
+  ['ecran-titre', 'ecran-intro1', 'ecran-intro2', 'ecran-intro3', 'ecran-aide', 'ecran-heros', 'ecran-stats', 'ecran-arrivee', 'ecran-melenchon', 'ecran-fantome-intro', 'ecran-fantome-gagne', 'ecran-versus', 'ecran-recompense', 'ecran-defaite', 'ecran-perdu', 'ecran-victoire', 'controles']
     .forEach(id => element(id).classList.add('cache'));
 }
 
@@ -90,11 +95,12 @@ function creerCombattant(def, x, estBoss) {
 
 function commencerCombat() {
   const f = NIVEAUX[niveau];
-  const defBoss = Object.assign({}, data.boss[indexBoss], {
-    pv: Math.round(data.boss[indexBoss].pv * f.pv),
-    degats: Math.max(1, Math.round(data.boss[indexBoss].degats * f.degats)),
-    cadence: Math.round(data.boss[indexBoss].cadence * f.cadence),
-    reflexe: data.boss[indexBoss].reflexe * f.reflexe
+  const srcBoss = combatFantome ? data.fantome : data.boss[indexBoss];
+  const defBoss = Object.assign({}, srcBoss, {
+    pv: Math.round(srcBoss.pv * f.pv),
+    degats: Math.max(1, Math.round(srcBoss.degats * f.degats)),
+    cadence: Math.round(srcBoss.cadence * f.cadence),
+    reflexe: srcBoss.reflexe * f.reflexe
   });
   joueur = creerCombattant(data.heroes[herosChoisi], 160, false);
   boss = creerCombattant(defBoss, W - 200, true);
@@ -106,6 +112,8 @@ function commencerCombat() {
   prochainBracelet = performance.now() + 3000;
   prochainSpeBoss = performance.now() + 4000;
   prochainChargeBoss = performance.now() + 6000;
+  prochainBombe = performance.now() + 3000;
+  explosions = [];
   finEnAttente = null;
   ondes = [];
   reprendreMusique();
@@ -289,6 +297,10 @@ function speciale() {
 
 function finCombat(gagne, t) {
   sfx(gagne ? 'victoire' : 'tombe');
+  if (combatFantome && gagne) {
+    explosions.push({ x: boss.x, y: boss.y - boss.hauteur / 2, r: 10, maxR: 260, t0: t, touche: true });
+    shakeJusqua = t + 600;
+  }
   setTimeout(pauseMusique, 1400);
   if (gagne) { boss.tombeJusqua = t + 1500; joueur.gagneJusqua = t + 1500; }
   else { joueur.tombeJusqua = t + 1500; boss.gagneJusqua = t + 1500; }
@@ -296,6 +308,12 @@ function finCombat(gagne, t) {
 }
 
 function afficherFin(gagne) {
+  if (combatFantome && gagne) {
+    combatFantome = false;
+    etat = 'fantome-gagne';
+    montrer('ecran-fantome-gagne');
+    return;
+  }
   if (gagne) {
     etat = 'recompense';
     element('texte-recompense').textContent = data.recompenses[indexBoss];
@@ -387,6 +405,11 @@ function update(dt, t) {
   } else if (!boss.phase || t > boss.phaseJusqua) {
     boss.phase = Math.random() < 0.5 ? 'avance' : 'recule';
     boss.phaseJusqua = t + 1000 + Math.random() * 2000;
+  }
+  if (bossDef.vole) {
+    boss.y = SOL - boss.hauteur - 100 - 100 * Math.sin(t / 650);
+    boss.onGround = false;
+    boss.vy = 0;
   }
   const bossConfus = t < boss.confusJusqua || t < boss.toucheJusqua || !!boss.cast;
   const bossBloque = t < boss.bloqueJusqua;
@@ -487,6 +510,15 @@ function update(dt, t) {
     });
   }
 
+  if (!bossBloque && !bossConfus && bossDef.bombes && t > prochainBombe) {
+    prochainBombe = t + bossDef.bombes.cadence;
+    const dirB4 = Math.sign(dx) || 1;
+    projectiles.push({
+      x: boss.x + dirB4 * 30 * boss.echelle, y: boss.y - boss.hauteur * 0.5,
+      vx: dirB4 * 260, vy: 60, de: 'boss', type: 'bombe', portee: bossDef.portee, startX: boss.x,
+      degats: bossDef.bombes.degats, rayon: bossDef.bombes.rayon, nonContree: true, r: 12, phrase: '💣'
+    });
+  }
   if (!bossBloque && !bossConfus && bossDef.bracelet && t > prochainBracelet) {
     prochainBracelet = t + bossDef.bracelet.delai;
     ondes.push({ x: boss.x, r: 12, maxR: bossDef.bracelet.portee, vitesse: bossDef.bracelet.vitesse, touche: false });
@@ -508,6 +540,21 @@ function update(dt, t) {
     if (o.r > o.maxR) ondes.splice(i, 1);
   }
 
+  for (let i = explosions.length - 1; i >= 0; i--) {
+    const e = explosions[i];
+    if (!e.touche && Math.abs(joueur.x - e.x) < e.maxR + joueur.largeur / 2 && joueur.y > SOL - 160) {
+      e.touche = true;
+      joueur.hp -= bossDef.bombes ? bossDef.bombes.degats : 10;
+      joueur.toucheJusqua = t + 500;
+      shakeJusqua = t + 250;
+      sfx('touche');
+      messageJ = '💥 Explosé !';
+      messageJT = t + 1200;
+      if (joueur.hp <= 0) finCombat(false, t);
+    }
+    if (t - e.t0 > 500) explosions.splice(i, 1);
+  }
+
   const chJ = hauteurTir(joueur);
   const chB = hauteurTir(boss);
 
@@ -515,8 +562,19 @@ function update(dt, t) {
     const p = projectiles[i];
     p.x += p.vx * dt;
     if (p.portee && Math.abs(p.x - p.startX) > p.portee) {
+      if (p.type === 'bombe') explosions.push({ x: p.x, y: SOL - 10, r: 8, maxR: p.rayon, t0: t });
       projectiles.splice(i, 1);
       continue;
+    }
+    if (p.type === 'bombe') {
+      p.vy += 1400 * dt;
+      p.y += p.vy * dt;
+      if (p.y >= SOL - 10) {
+        p.y = SOL - 10;
+        explosions.push({ x: p.x, y: SOL - 10, r: 8, maxR: p.rayon, t0: t });
+        projectiles.splice(i, 1);
+        continue;
+      }
     }
     if (p.type === 'bulle') p.y = p.baseY + Math.sin(p.x * 0.025) * 48;
     if (p.x < -40 || p.x > W + 40) {
@@ -693,6 +751,7 @@ function dessinerCombattant(c, t) {
     const ih = 175 * c.echelle;
     const iw = ih * 0.6;
     ctx.save();
+    if (c.def.fantome) ctx.globalAlpha = 0.75;
     ctx.translate(c.x, c.y);
     if (t < (c.tombeJusqua || 0)) ctx.rotate(-1.45 * face);
     else if (t < (c.toucheJusqua || 0)) ctx.rotate(-0.14 * face);
@@ -875,6 +934,19 @@ function dessinerOndes() {
   });
 }
 
+function dessinerExplosions(t) {
+  explosions.forEach(e => {
+    const k = Math.min(1, (t - e.t0) / 500);
+    ctx.beginPath();
+    ctx.arc(e.x, e.y, e.r + (e.maxR - e.r) * k, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255, ' + Math.round(200 - 150 * k) + ', 30, ' + (0.75 * (1 - k)) + ')';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 240, 150, ' + (1 - k) + ')';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+  });
+}
+
 function dessinerProjectiles(t) {
   projectiles.forEach(p => {
     const dir = Math.sign(p.vx) || 1;
@@ -884,6 +956,7 @@ function dessinerProjectiles(t) {
       ctx.arc(tx, p.y, p.r * 1.5 * (1 - k / 4), 0, Math.PI * 2);
       ctx.fillStyle = p.type === 'bulle'
         ? 'rgba(140, 190, 255, ' + (0.10 * (4 - k)) + ')'
+        : p.type === 'bombe' ? 'rgba(60, 60, 70, ' + (0.15 * (4 - k)) + ')'
         : 'rgba(255, 150, 40, ' + (0.12 * (4 - k)) + ')';
       ctx.fill();
     }
@@ -963,6 +1036,7 @@ function draw(t) {
     dessinerSignesConfusion(boss, t, Math.max(boss.confusJusqua, boss.bloqueJusqua, boss.antiReflexeJusqua));
     dessinerSignesConfusion(joueur, t, Math.max(joueur.confusJusqua, joueur.etourdiJusqua));
     dessinerOndes();
+    dessinerExplosions(t);
     dessinerProjectiles(t);
     dessinerAnnonce(t);
   }
@@ -1295,6 +1369,42 @@ element('btn-changer').addEventListener('click', () => {
     construireHeros();
     montrer('ecran-heros');
   }
+});
+element('btn-continuer-fantome').addEventListener('click', () => {
+  setMorceau('sombre');
+  reprendreMusique();
+  etat = 'fantome-intro';
+  montrer('ecran-fantome-intro');
+  let i = 0;
+  element('texte-fantome').textContent = LIGNES_FANTOME[0];
+  clearInterval(seqFantome);
+  seqFantome = setInterval(() => {
+    i++;
+    if (i < LIGNES_FANTOME.length) element('texte-fantome').textContent = LIGNES_FANTOME[i];
+    else clearInterval(seqFantome);
+  }, 2000);
+});
+function lancerCombatFantome() {
+  combatFantome = true;
+  const b = data.fantome;
+  element('versus-nom-b').textContent = b.nom;
+  element('versus-avertissement').textContent = b.avertissement || '';
+  element('versus-avertissement').classList.toggle('cache', !b.avertissement);
+  etat = 'versus';
+  montrer('ecran-versus');
+}
+element('btn-fantome-meme').addEventListener('click', lancerCombatFantome);
+element('btn-fantome-changer').addEventListener('click', () => {
+  etat = 'heros';
+  construireHeros();
+  montrer('ecran-heros');
+});
+element('btn-retour-menu').addEventListener('click', () => {
+  combatFantome = false;
+  setMorceau('sombre');
+  resetPartie();
+  etat = 'titre';
+  montrer('ecran-titre');
 });
 element('btn-arrivee-suite').addEventListener('click', () => montrer('ecran-melenchon'));
 element('btn-melenchon-ok').addEventListener('click', () => {
