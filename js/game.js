@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 99;
+const VERSION = 100;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -152,6 +152,7 @@ function jouerMotifZemmour() {
 
 function afficherVersus() {
   setMorceau('bella');
+  reprendreMusique();
   if (data.boss[indexBoss].id === 'zemmour') jouerMotifZemmour();
   etat = 'versus';
   element('vs-texte').textContent = data.heroes[herosChoisi].nom + ' affronte ' + data.boss[indexBoss].nom;
