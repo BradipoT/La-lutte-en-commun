@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 97;
+const VERSION = 98;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -56,6 +56,8 @@ let prochainBombe = 0;
 let explosions = [];
 let seqFantome = null;
 const LIGNES_FANTOME = ['Par bleu', 'Des forces obscures semblent être à l’œuvre', 'Vous avez réveillé…', 'LE FANTÔME DE JEAN MARIE'];
+let sonLoup = null;
+try { sonLoup = new Audio('assets/sons/loup.mp3?v=' + VERSION); } catch (e) {}
 let ondes = [];
 const PORTEE_ATTAQUE = 240;
 let dernierSpeciale = 0;
@@ -302,6 +304,7 @@ function finCombat(gagne, t) {
   sfx(gagne ? 'victoire' : 'tombe');
   if (combatFantome && gagne) {
     explosions.push({ x: boss.x, y: boss.y - boss.hauteur / 2, r: 10, maxR: 260, t0: t, touche: true });
+    sfx('boom');
     shakeJusqua = t + 600;
   }
   setTimeout(pauseMusique, 1400);
@@ -578,7 +581,7 @@ function update(dt, t) {
       continue;
     }
     if (p.portee && Math.abs(p.x - p.startX) > p.portee) {
-      if (p.type === 'bombe') explosions.push({ x: p.x, y: SOL - 10, r: 8, maxR: p.rayon, t0: t });
+      if (p.type === 'bombe') { explosions.push({ x: p.x, y: SOL - 10, r: 8, maxR: p.rayon, t0: t }); sfx('boom'); }
       projectiles.splice(i, 1);
       continue;
     }
@@ -588,6 +591,7 @@ function update(dt, t) {
       if (p.y >= SOL - 10) {
         p.y = SOL - 10;
         explosions.push({ x: p.x, y: SOL - 10, r: 8, maxR: p.rayon, t0: t });
+        sfx('boom');
         projectiles.splice(i, 1);
         continue;
       }
@@ -1276,6 +1280,16 @@ function sfx(nom) {
   else if (nom === 'contre') { sfxNote(660, 660, t, 0.09, 'square', 0.14); sfxNote(880, 880, t + 0.09, 0.12, 'square', 0.14); }
   else if (nom === 'speciale') sfxNote(180, 1400, t, 0.55, 'sawtooth', 0.16);
   else if (nom === 'victoire') [72, 76, 79, 84].forEach((m, i) => sfxNote(freq(m), freq(m), t + i * 0.16, 0.22, 'square', 0.16));
+  else if (nom === 'boom') {
+    const tampon = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.45, audioCtx.sampleRate);
+    const canal = tampon.getChannelData(0);
+    for (let i = 0; i < canal.length; i++) canal[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / canal.length, 2);
+    const src = audioCtx.createBufferSource(); src.buffer = tampon;
+    const f = audioCtx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 500;
+    const g = audioCtx.createGain(); g.gain.setValueAtTime(0.5, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+    src.connect(f); f.connect(g); g.connect(audioCtx.destination); src.start(t);
+    sfxNote(130, 40, t, 0.4, 'sine', 0.4);
+  }
   else if (nom === 'tombe') [64, 62, 59, 57].forEach((m, i) => sfxNote(freq(m), freq(m) * 0.9, t + i * 0.18, 0.25, 'triangle', 0.18));
 }
 
@@ -1451,6 +1465,7 @@ element('btn-continuer-fantome').addEventListener('click', () => {
     else {
       clearInterval(seqFantome);
       element('groupe-fantome').classList.remove('cache');
+      if (sonLoup && musiqueOn) { sonLoup.currentTime = 0; sonLoup.play().catch(() => {}); }
       const g = element('ghost-fly');
       g.style.display = 'block';
       g.style.animation = 'none';
