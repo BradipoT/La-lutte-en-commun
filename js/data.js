@@ -16,7 +16,7 @@ window.GAME_DATA = {
         'Le 49.3, vous connaissez ?'
       ],
       special: { type: 'soin', nom: '💚 Résilience', desc: 'Récupère 20 % de PV.' } },
-    { id: 'balayoko', nom: 'Bally Bagayoko', couleur: '#3498db',
+    { id: 'balayoko', nom: 'Bally Bagayoko', couleur: '#3498db', echelle: 1.08,
       stats: { degats: 13, cadenceTir: 700, vitesse: 330, saut: 860, cooldownSpe: 10000, pv: 140 , portee: 360},
       arguments: [
         'Les services publics ne sont pas un coût, ce sont des droits.',
@@ -24,7 +24,7 @@ window.GAME_DATA = {
         'Chaque quartier mérite son école publique.'
       ],
       special: { type: 'confus', nom: '👑 La ville des rois', desc: 'L’adversaire est confus 6 s : il ne fait plus rien.' } },
-    { id: 'bompard', nom: 'Manuel Bompard', couleur: '#16a085',
+    { id: 'bompard', nom: 'Manuel Bompard', couleur: '#16a085', echelle: 1.08,
       stats: { degats: 14, cadenceTir: 650, vitesse: 270, saut: 800, cooldownSpe: 9000, pv: 120 , portee: 440},
       arguments: [
         'Le SMIC à 1 700 €, on le fait.',
@@ -43,12 +43,12 @@ window.GAME_DATA = {
   ],
 
   boss: [
-    { id: 'glucksmann', nom: 'Raphaël Glucksmann', pv: 80, degats: 7, couleur: '#7f8c8d', vitesse: 130, cadence: 2800, reflexe: 0.08,
+    { id: 'glucksmann', nom: 'Raphaël Glucksmann', echelle: 1.08, pv: 80, degats: 7, couleur: '#7f8c8d', vitesse: 130, cadence: 2800, reflexe: 0.08,
       portee: 560,
       arguments: [ { t: 'Il faut relancer la croissance !', r: 'Vos « arguments » tiennent plus du communiqué de presse que du débat.' },
         { t: 'L’Europe, c’est trop bureaucratique !', r: 'Oui, et la paperasse fiscale adore les paradis fiscaux.' },
         { t: 'Il faut taxer les multinationales !', r: 'Évidemment… après les avoir subventionnées, bien sûr.' } ] },
-    { id: 'consigny', nom: 'Charles de Consigny', pv: 100, degats: 9, couleur: '#6c3483', vitesse: 138, cadence: 2500, reflexe: 0.11, portee: 540,
+    { id: 'consigny', nom: 'Charles de Consigny', echelle: 0.92, pv: 100, degats: 9, couleur: '#6c3483', vitesse: 138, cadence: 2500, reflexe: 0.11, portee: 540,
       charge: false,
       arguments: [
         { t: 'Les Français sont des faignants !', r: 'Va travailler à l’usine et on en reparle.' },
@@ -89,7 +89,7 @@ window.GAME_DATA = {
       arguments: [ { t: 'Vous êtes déconnecté de la réalité !', r: 'Déconnecté, non : juste pas branché sur vos combines.' },
         { t: 'Vous êtes vieux !', r: 'Vieux, mais avec une retraite assurée, contrairement à d’autres.' },
         { t: 'La jeunesse d’abord !', r: 'Votre gouvernement l’a tabassé' } ] },
-    { id: 'zemmour', nom: 'Éric Zemmour', pv: 210, degats: 15, couleur: '#2c3e50', vitesse: 235, cadence: 1700, reflexe: 0.42,
+    { id: 'zemmour', nom: 'Éric Zemmour', echelle: 0.92, pv: 210, degats: 15, couleur: '#2c3e50', vitesse: 235, cadence: 1700, reflexe: 0.42,
       portee: 720,
       charge: true,
       special: { nom: '🤯 Racisme sidérant', delai: 12000, confusion: 9000 },
@@ -97,7 +97,7 @@ window.GAME_DATA = {
       arguments: [ { t: ' Il a dit « La ville des noires » !', r: 'Ça rend sourd… comme disait l’autre.' },
         { t: 'Le grand remplacement est en cours !', r: 'Vous savez qu’on voit votre tête ?' },
         { t: 'Il faut défendre nos valeurs chrétiennes !', r: 'Comme l’accueil de l’étranger, donc.' } ] },
-    { id: 'bardella', nom: 'Jordan Bardella', pv: 215, degats: 16, couleur: '#1f618d', vitesse: 245, cadence: 1650, reflexe: 0.43,
+    { id: 'bardella', nom: 'Jordan Bardella', echelle: 1.08, pv: 215, degats: 16, couleur: '#1f618d', vitesse: 245, cadence: 1650, reflexe: 0.43,
       portee: 740,
       charge: true,
       arguments: [ { t: 'Mais où trouve-t-il toute cette énergie ?', r: 'J’aurais bien une réponse mais ce serait vulgaire.' },

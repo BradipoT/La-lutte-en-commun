@@ -10,9 +10,9 @@ const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege
 const TRAITS = {
   guette:      { sexe: 'f', cheveux: '#4e342e', longueur: 'longs',    teint: '#f0c8aa', lunettes: false, barbe: null },
   panot:       { sexe: 'f', cheveux: '#e8c96a', longueur: 'mi-longs', teint: '#e8b48c', lunettes: false, barbe: null },
-  balayoko:    { sexe: 'h', cheveux: '#1a1a1a', longueur: 'courts',  teint: '#6b4226', lunettes: false, barbe: '#1a1a1a' },
-  bompard:     { sexe: 'h', cheveux: '#3e2723', longueur: 'courts',  teint: '#e8b48c', lunettes: false, barbe: '#3e2723' },
-  melenchon:   { sexe: 'h', cheveux: '#cfcfcf', longueur: 'courts',  teint: '#f0c8aa', lunettes: false, barbe: '#cfcfcf' },
+  balayoko:    { sexe: 'h', cheveux: '#1a1a1a', longueur: 'courts',  teint: '#6b4226', lunettes: false, barbe: null },
+  bompard:     { sexe: 'h', cheveux: '#3e2723', longueur: 'aucun',  teint: '#e8b48c', lunettes: false, barbe: '#3e2723' },
+  melenchon:   { sexe: 'h', cheveux: '#cfcfcf', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
   glucksmann:  { sexe: 'h', cheveux: '#6d4c2f', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
   valet:       { sexe: 'h', cheveux: '#3e2723', longueur: 'courts',  teint: '#d9a066', lunettes: false, barbe: null },
   praud:       { sexe: 'h', cheveux: '#9e9e9e', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
@@ -20,7 +20,10 @@ const TRAITS = {
   retailleau:  { sexe: 'h', cheveux: '#e0e0e0', longueur: 'courts',  teint: '#f0c8aa', lunettes: false, barbe: null },
   saintcricq:  { sexe: 'f', cheveux: '#c8a24a', longueur: 'mi-longs', teint: '#f5d0b0', lunettes: false, barbe: null },
   attal:       { sexe: 'h', cheveux: '#4e342e', longueur: 'courts',  teint: '#f0c8aa', lunettes: false, barbe: null },
-  lepen:       { sexe: 'f', cheveux: '#e8c96a', longueur: 'mi-longs', teint: '#f5d0b0', lunettes: false, barbe: null, bracelet: true }
+  lepen:       { sexe: 'f', cheveux: '#e8c96a', longueur: 'mi-longs', teint: '#f5d0b0', lunettes: false, barbe: null, bracelet: true },
+  zemmour:     { sexe: 'h', cheveux: '#2c2c2c', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
+  bardella:    { sexe: 'h', cheveux: '#5d4037', longueur: 'courts',  teint: '#f0c8aa', lunettes: false, barbe: null },
+  consigny:    { sexe: 'h', cheveux: '#d4a017', longueur: 'mi-longs', teint: '#f5d0b0', lunettes: true, barbe: null }
 };
 
 const PANTS = '#282846';
@@ -59,6 +62,7 @@ function bras(pose) {
 }
 
 function cheveuxDessus(t) {
+  if (t.longueur === 'aucun') return 'M50 15 Q63 9 76 15 L76 18 Q63 13 50 18 Z';
   if (t.longueur === 'longs') return 'M50 18 L63 8 L78 20 L76 26 L63 18 L52 26 Z';
   if (t.longueur === 'mi-longs') return 'M49 16 L63 7 L79 18 L77 28 L63 20 L51 28 Z';
   return 'M49.1 24 A14 14 0 0 1 76.9 24 Z';
@@ -77,7 +81,8 @@ function lunettes() {
 }
 
 function barbe(couleur) {
-  return '<path d="M47 25 Q60 46 75 25 Q73 40 60 42 Q49 40 47 25 Z" fill="' + couleur + '"/>';
+  return '<path d="M48 24 Q60 50 74 24 L74 33 Q72 45 60 47 Q48 45 48 33 Z" fill="' + couleur + '"/>'
+    + '<path d="M55 34 Q60 38 65 34 Q60 40 55 34 Z" fill="' + couleur + '" opacity="0.7"/>';
 }
 
 function svgPerso(couleur, pose, t) {
