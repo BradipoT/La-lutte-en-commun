@@ -15,7 +15,7 @@ const TRAITS = {
   melenchon:   { sexe: 'h', cheveux: '#cfcfcf', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
   glucksmann:  { sexe: 'h', cheveux: '#6d4c2f', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
   valet:       { sexe: 'h', cheveux: '#b5651d', longueur: 'aucun',  teint: '#f7ead9', lunettes: true,  barbe: '#b5651d' },
-  praud:       { sexe: 'h', cheveux: '#9e9e9e', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
+  praud:       { sexe: 'h', cheveux: '#f2f2f2', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: '#f2f2f2' },
   philippe:    { sexe: 'h', cheveux: '#8d8d8d', longueur: 'aucun',  teint: '#f0c8aa', lunettes: false, barbe: null },
   retailleau:  { sexe: 'h', cheveux: '#e0e0e0', longueur: 'courts',  teint: '#f0c8aa', lunettes: false, barbe: null },
   saintcricq:  { sexe: 'f', cheveux: '#c8a24a', longueur: 'mi-longs', teint: '#f5d0b0', lunettes: false, barbe: null },

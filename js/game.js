@@ -7,14 +7,17 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 90;
+const VERSION = 91;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
 
 function chargerImages() {
   if (typeof Image === 'undefined') return;
-  data.heroes.concat(data.boss).forEach(p => {
+  const imgF = new Image();
+  imgF.src = 'assets/personnages/fantome/debout.svg?v=' + VERSION;
+  imagesPersos['fantome-debout'] = imgF;
+  data.heroes.concat(data.boss).concat([data.fantome]).forEach(p => {
     POSES.forEach(pose => {
       const img = new Image();
       img.src = 'assets/personnages/' + p.id + '/' + pose + '.svg?v=' + VERSION;
@@ -415,7 +418,7 @@ function update(dt, t) {
   const bossBloque = t < boss.bloqueJusqua;
   const speBoss = bossDef.special;
   if (speBoss && !boss.cast && !bossBloque && !bossConfus && t > prochainSpeBoss) {
-    boss.cast = { t0: t, type: 'boss' };
+    boss.cast = { t0: t, type: bossDef.vole ? 'oas' : 'boss' };
   }
   if (bossDef.charge && !boss.cast && !bossConfus && !bossBloque && t > prochainChargeBoss && Math.abs(dx) > 150) {
     boss.cast = { t0: t, type: 'charge' };
@@ -432,7 +435,15 @@ function update(dt, t) {
     boss.cast = null;
     prochainChargeBoss = t + 9000;
   }
-  if (boss.cast && boss.cast.type !== 'charge' && t - boss.cast.t0 >= DUREE_CAST) {
+  if (boss.cast && boss.cast.type === 'oas' && t - boss.cast.t0 >= DUREE_CAST) {
+    projectiles.push({ x: W + 40, y: SOL - 46, vx: -380, de: 'boss', type: 'esprit', r: 26, degats: 10, nonContree: true, fantome: true });
+    projectiles.push({ x: W + 190, y: SOL - 46, vx: -380, de: 'boss', type: 'esprit', r: 26, degats: 10, nonContree: true, fantome: true });
+    annonce = { l1: boss.def.nom + ' lance ' + speBoss.nom + ' !', l2: 'Deux esprits traversent le plateau : esquivez ou détruisez-les !', t0: t };
+    sfx('speciale');
+    boss.cast = null;
+    prochainSpeBoss = t + speBoss.delai;
+  }
+  if (boss.cast && boss.cast.type !== 'charge' && boss.cast.type !== 'oas' && t - boss.cast.t0 >= DUREE_CAST) {
     const touche = Math.abs(joueur.x - boss.x) <= PORTEE_SPE;
     annonce = {
       l1: boss.def.nom + ' lance ' + speBoss.nom + ' !',
@@ -480,7 +491,7 @@ function update(dt, t) {
     boss.x = Math.max(40, Math.min(W - 40, boss.x));
   }
 
-  if (!bossBloque && !bossConfus && t > prochainTirBoss) {
+  if (!bossBloque && !bossConfus && !bossDef.pasDeBoules && t > prochainTirBoss) {
     prochainTirBoss = t + bossDef.cadence;
     if (Math.abs(dx) > 100) {
       const dirB = Math.sign(dx);
@@ -561,6 +572,10 @@ function update(dt, t) {
   for (let i = projectiles.length - 1; i >= 0; i--) {
     const p = projectiles[i];
     p.x += p.vx * dt;
+    if (p.type === 'esprit' && p.x < -60) {
+      projectiles.splice(i, 1);
+      continue;
+    }
     if (p.portee && Math.abs(p.x - p.startX) > p.portee) {
       if (p.type === 'bombe') explosions.push({ x: p.x, y: SOL - 10, r: 8, maxR: p.rayon, t0: t });
       projectiles.splice(i, 1);
@@ -613,6 +628,27 @@ function update(dt, t) {
         }
       }
     } else {
+      if (p.type === 'esprit' && Math.abs(p.x - joueur.x) < joueur.largeur / 2 + p.r && Math.abs(p.y - chJ) < joueur.hauteur / 2 + p.r) {
+        joueur.hp -= p.degats;
+        joueur.toucheJusqua = t + 500;
+        shakeJusqua = t + 200;
+        sfx('touche');
+        messageJ = '👻 Touché par un esprit ! -' + p.degats + ' PV';
+        messageJT = t + 1200;
+        projectiles.splice(i, 1);
+        if (joueur.hp <= 0) finCombat(false, t);
+        continue;
+      }
+      if (p.de === 'joueur') {
+        for (let j = projectiles.length - 1; j >= 0; j--) {
+          const q = projectiles[j];
+          if (q.type === 'esprit' && Math.abs(p.x - q.x) < p.r + q.r && Math.abs(p.y - q.y) < p.r + q.r) {
+            projectiles.splice(j, 1);
+            messageJ = '👻 Esprit détruit !';
+            messageJT = t + 1000;
+          }
+        }
+      }
       if (Math.abs(p.x - joueur.x) < joueur.largeur / 2 + p.r && Math.abs(p.y - chJ) < joueur.hauteur / 2 + p.r) {
         joueur.hp -= p.degats * ((joueur.cast || joueur.castCharge) ? 2 : 1);
         joueur.toucheJusqua = t + 500;
@@ -974,6 +1010,20 @@ function dessinerProjectiles(t) {
       }
     }
     const g = ctx.createRadialGradient(p.x, p.y, r * 0.15, p.x, p.y, r * 1.5);
+    if (p.type === 'esprit') {
+      ctx.save();
+      ctx.globalAlpha = 0.7;
+      const img = imagesPersos['fantome-debout'];
+      if (img && img.complete) ctx.drawImage(img, p.x - 26, p.y - 66, 52, 87);
+      else {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(200, 200, 255, 0.6)';
+        ctx.fill();
+      }
+      ctx.restore();
+      return;
+    }
     if (p.type === 'bulle') {
       g.addColorStop(0, 'rgba(230,245,255,0.95)');
       g.addColorStop(0.75, 'rgba(160,210,255,0.9)');
@@ -991,6 +1041,20 @@ function dessinerProjectiles(t) {
     ctx.arc(p.x, p.y, r * 1.5, 0, Math.PI * 2);
     ctx.fillStyle = g;
     ctx.fill();
+    if (p.type === 'esprit') {
+      ctx.save();
+      ctx.globalAlpha = 0.7;
+      const img = imagesPersos['fantome-debout'];
+      if (img && img.complete) ctx.drawImage(img, p.x - 26, p.y - 66, 52, 87);
+      else {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(200, 200, 255, 0.6)';
+        ctx.fill();
+      }
+      ctx.restore();
+      return;
+    }
     if (p.type === 'bulle') {
       ctx.beginPath();
       ctx.arc(p.x, p.y, r * 1.5, 0, Math.PI * 2);

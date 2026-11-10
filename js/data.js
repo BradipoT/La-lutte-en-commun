@@ -112,8 +112,9 @@ window.GAME_DATA = {
         { t: 'L’insécurité partout !', r: 'Des millions de Français vivent dans l’insécurité à cause de vos idées.' }] }
   ],
 
-  fantome: { id: 'fantome', nom: 'Le Fantôme de Jean-Marie', pv: 160, degats: 12, couleur: '#3a3a6e', vitesse: 215, cadence: 2200, reflexe: 0.25, portee: 620, echelle: 1.1, vole: true, fantome: true,
-    bombes: { degats: 12, rayon: 95, cadence: 2600 },
+  fantome: { id: 'fantome', nom: 'Le Fantôme de Jean-Marie', pv: 160, degats: 12, couleur: '#3a3a6e', vitesse: 215, cadence: 1500, reflexe: 0.25, portee: 620, echelle: 1.25, vole: true, fantome: true, pasDeBoules: true,
+    bombes: { degats: 12, rayon: 95, cadence: 1800 },
+    special: { nom: '💀 Jean Marie invoque les esprits de l’OAS', delai: 8000 },
     avertissement: '⚠️ Il vole entre le sol et la hauteur de saut et jette des bombes à dégâts de zone — elles ne peuvent pas être contrées !',
     arguments: [
       { t: 'N’est-ce pas ?!', r: 'Si, carrément.' },
