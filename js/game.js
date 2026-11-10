@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 93;
+const VERSION = 94;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -1012,11 +1012,9 @@ function dessinerProjectiles(t) {
     if (p.type === 'esprit') {
       ctx.save();
       ctx.globalAlpha = 0.85;
-      ctx.globalCompositeOperation = 'multiply';
       const img = imagesPersos['fantome-debout'];
       if (img && img.complete) {
         ctx.drawImage(img, p.x - 26, p.y - 66, 52, 87);
-        ctx.globalCompositeOperation = 'source-over';
       } else {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
@@ -1046,11 +1044,9 @@ function dessinerProjectiles(t) {
     if (p.type === 'esprit') {
       ctx.save();
       ctx.globalAlpha = 0.85;
-      ctx.globalCompositeOperation = 'multiply';
       const img = imagesPersos['fantome-debout'];
       if (img && img.complete) {
         ctx.drawImage(img, p.x - 26, p.y - 66, 52, 87);
-        ctx.globalCompositeOperation = 'source-over';
       } else {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
