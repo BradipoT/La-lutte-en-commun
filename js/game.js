@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 95;
+const VERSION = 96;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -437,8 +437,8 @@ function update(dt, t) {
     prochainChargeBoss = t + 9000;
   }
   if (boss.cast && boss.cast.type === 'oas' && t - boss.cast.t0 >= DUREE_CAST) {
-    projectiles.push({ x: W + 40, y: SOL - 46, vx: -380, de: 'boss', type: 'esprit', r: 26, degats: 10, nonContree: true, fantome: true });
-    projectiles.push({ x: W + 420, y: SOL - 46, vx: -380, de: 'boss', type: 'esprit', r: 26, degats: 10, nonContree: true, fantome: true });
+    projectiles.push({ x: W + 40, y: SOL - 78, vx: -380, de: 'boss', type: 'esprit', r: 26, degats: 10, nonContree: true, fantome: true });
+    projectiles.push({ x: W + 420, y: SOL - 78, vx: -380, de: 'boss', type: 'esprit', r: 26, degats: 10, nonContree: true, fantome: true });
     annonce = { l1: boss.def.nom + ' lance ' + speBoss.nom + ' !', l2: 'Deux esprits traversent le plateau : esquivez ou détruisez-les !', t0: t };
     sfx('speciale');
     boss.cast = null;
@@ -1452,10 +1452,10 @@ element('btn-continuer-fantome').addEventListener('click', () => {
       clearInterval(seqFantome);
       element('groupe-fantome').classList.remove('cache');
       const g = element('ghost-fly');
-      g.classList.remove('cache');
-      g.classList.remove('vole');
+      g.style.display = 'block';
+      g.style.animation = 'none';
       void g.offsetWidth;
-      g.classList.add('vole');
+      g.style.animation = '';
     }
   }, 2000);
 });
