@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 103;
+const VERSION = 104;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -155,7 +155,7 @@ function afficherVersus() {
   if (data.boss[indexBoss].id === 'zemmour') {
     setMorceau('');
     reprendreMusique();
-    jouerMotifZemmour();
+    setTimeout(jouerMotifZemmour, 1000);
   } else {
     setMorceau('bella');
     reprendreMusique();
