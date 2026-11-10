@@ -12,13 +12,13 @@ const TRAITS = {
   panot:       { sexe: 'f', cheveux: '#e8c96a', longueur: 'mi-longs', teint: '#e8b48c', lunettes: false, barbe: null },
   balayoko:    { sexe: 'h', cheveux: '#1a1a1a', longueur: 'courts',  teint: '#6b4226', lunettes: false, barbe: null },
   bompard:     { sexe: 'h', cheveux: '#3e2723', longueur: 'aucun',  teint: '#e8b48c', lunettes: false, barbe: '#3e2723' },
-  melenchon:   { sexe: 'h', cheveux: '#cfcfcf', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
+  melenchon:   { sexe: 'h', cheveux: '#a9a9a9', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
   glucksmann:  { sexe: 'h', cheveux: '#6d4c2f', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
   valet:       { sexe: 'h', cheveux: '#b5651d', longueur: 'aucun',  teint: '#f7ead9', lunettes: true,  barbe: '#b5651d' },
   praud:       { sexe: 'h', cheveux: '#f2f2f2', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: '#f2f2f2' },
   philippe:    { sexe: 'h', cheveux: '#8d8d8d', longueur: 'aucun',  teint: '#f0c8aa', lunettes: false, barbe: null },
   retailleau:  { sexe: 'h', cheveux: '#5d4037', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
-  saintcricq:  { sexe: 'f', cheveux: '#c8a24a', longueur: 'mi-longs', teint: '#f5d0b0', lunettes: false, barbe: null },
+  saintcricq:  { sexe: 'f', cheveux: '#b5501e', longueur: 'mi-longs', teint: '#f5d0b0', lunettes: false, barbe: null },
   attal:       { sexe: 'h', cheveux: '#4e342e', longueur: 'courts',  teint: '#f0c8aa', lunettes: false, barbe: null },
   lepen:       { sexe: 'f', cheveux: '#e8c96a', longueur: 'mi-longs', teint: '#f5d0b0', lunettes: false, barbe: null, bracelet: true },
   zemmour:     { sexe: 'h', cheveux: '#2c2c2c', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
@@ -77,8 +77,8 @@ function cheveuxDerriere(t) {
 
 function lunettes() {
   return '<g stroke="#222" stroke-width="2.5" fill="none">'
-    + '<circle cx="55" cy="18" r="6"/><circle cx="67" cy="18" r="6"/>'
-    + '<path d="M61 18 L63 18 M49 17 L44 15 M73 17 L78 15"/></g>';
+    + '<circle cx="55" cy="22" r="6"/><circle cx="67" cy="22" r="6"/>'
+    + '<path d="M61 22 L63 22 M49 21 L44 19 M73 21 L78 19"/></g>';
 }
 
 function barbe(couleur) {

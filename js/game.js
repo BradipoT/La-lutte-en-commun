@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 94;
+const VERSION = 95;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -320,6 +320,7 @@ function afficherFin(gagne) {
   if (gagne) {
     etat = 'recompense';
     element('texte-recompense').textContent = data.recompenses[indexBoss];
+    element('btn-changer').style.display = (indexBoss >= data.boss.length - 1) ? 'none' : '';
     montrer('ecran-recompense');
   } else {
     disponibles[herosChoisi] = false;
@@ -352,6 +353,7 @@ function suivant() {
   if (avantLePen()) return;
   if (indexBoss >= data.boss.length) {
     etat = 'victoire';
+    element('btn-rejouer').style.display = 'none';
     pauseMusique();
     montrer('ecran-victoire');
   } else {
@@ -1449,6 +1451,11 @@ element('btn-continuer-fantome').addEventListener('click', () => {
     else {
       clearInterval(seqFantome);
       element('groupe-fantome').classList.remove('cache');
+      const g = element('ghost-fly');
+      g.classList.remove('cache');
+      g.classList.remove('vole');
+      void g.offsetWidth;
+      g.classList.add('vole');
     }
   }, 2000);
 });
