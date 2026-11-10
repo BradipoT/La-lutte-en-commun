@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 89;
+const VERSION = 90;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -1387,9 +1387,10 @@ element('btn-continuer-fantome').addEventListener('click', () => {
 function lancerCombatFantome() {
   combatFantome = true;
   const b = data.fantome;
-  element('versus-nom-b').textContent = b.nom;
-  element('versus-avertissement').textContent = b.avertissement || '';
-  element('versus-avertissement').classList.toggle('cache', !b.avertissement);
+  element('vs-texte').textContent = data.heroes[herosChoisi].nom + ' affronte ' + b.nom;
+  const av = element('vs-avertissement');
+  av.textContent = b.avertissement || '';
+  av.style.display = b.avertissement ? 'block' : 'none';
   etat = 'versus';
   montrer('ecran-versus');
 }

@@ -14,7 +14,7 @@ const TRAITS = {
   bompard:     { sexe: 'h', cheveux: '#3e2723', longueur: 'aucun',  teint: '#e8b48c', lunettes: false, barbe: '#3e2723' },
   melenchon:   { sexe: 'h', cheveux: '#cfcfcf', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
   glucksmann:  { sexe: 'h', cheveux: '#6d4c2f', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
-  valet:       { sexe: 'h', cheveux: '#b5651d', longueur: 'aucun',  teint: '#d9a066', lunettes: true,  barbe: '#b5651d' },
+  valet:       { sexe: 'h', cheveux: '#b5651d', longueur: 'aucun',  teint: '#f7ead9', lunettes: true,  barbe: '#b5651d' },
   praud:       { sexe: 'h', cheveux: '#9e9e9e', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
   philippe:    { sexe: 'h', cheveux: '#8d8d8d', longueur: 'aucun',  teint: '#f0c8aa', lunettes: false, barbe: null },
   retailleau:  { sexe: 'h', cheveux: '#e0e0e0', longueur: 'courts',  teint: '#f0c8aa', lunettes: false, barbe: null },
@@ -23,7 +23,7 @@ const TRAITS = {
   lepen:       { sexe: 'f', cheveux: '#e8c96a', longueur: 'mi-longs', teint: '#f5d0b0', lunettes: false, barbe: null, bracelet: true },
   zemmour:     { sexe: 'h', cheveux: '#2c2c2c', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
   bardella:    { sexe: 'h', cheveux: '#5d4037', longueur: 'courts',  teint: '#f0c8aa', lunettes: false, barbe: null },
-  consigny:    { sexe: 'h', cheveux: '#d4a017', longueur: 'aucun',  teint: '#f5d0b0', lunettes: true, barbe: null },
+  consigny:    { sexe: 'h', cheveux: '#d4a017', longueur: 'aucun',  teint: '#f5d0b0', lunettes: false, barbe: null },
   fantome:     { sexe: 'h', cheveux: '#111111', longueur: 'aucun',  teint: '#cfd0ff', lunettes: false, barbe: null, fantome: true }
 };
 
