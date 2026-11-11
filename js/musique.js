@@ -17,7 +17,7 @@ window.MUSIQUE_MORCEAUX = {
   },
   combat: {
     bpm: 170,
-    accordOffset: 6,
+    accordOffset: 14,
     accordEvery: 16,
     typeMel: 'square', volMel: 0.12,
     typeBass: 'sawtooth', volBass: 0.10,
