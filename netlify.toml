@@ -1,0 +1,4 @@
+# Netlify : site statique à la racine, branche dev = preview dev--*.netlify.app
+[build]
+  publish = "/"
+  command = ""
