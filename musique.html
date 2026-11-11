@@ -34,6 +34,7 @@
   #btn-bella { background: linear-gradient(135deg, #c0392b, #922b21); }
   #btn-espoir { background: linear-gradient(135deg, #e67e22, #ca6f1e); }
   #btn-marechal { background: linear-gradient(135deg, #2c3e50, #1a252f); }
+  #btn-combat { background: linear-gradient(135deg, #7b241c, #641e16); }
   #btn-son { background: rgba(255, 255, 255, 0.15); width: min(420px, 90vw); }
   .actif { outline: 3px solid #ffd23f; }
   a { color: #ffd23f; }
@@ -43,7 +44,8 @@
 <h1>🎵 Les musiques du jeu</h1>
 <div class="morceaux">
   <button id="btn-sombre">🌑 Thème sombre (intro)</button>
-  <button id="btn-bella">🎵 Bella Ciao (combat)</button>
+  <button id="btn-bella">🎵 Bella Ciao</button>
+  <button id="btn-combat">⚔️ Thème des combats</button>
   <button id="btn-espoir">🌅 Espoir (arrivée de Mélenchon)</button>
   <button id="btn-marechal">😬 Motif Maréchal (versus)</button>
 </div>
@@ -61,6 +63,7 @@
   }
   document.getElementById('btn-sombre').addEventListener('click', e => jouer('sombre', e.target));
   document.getElementById('btn-bella').addEventListener('click', e => jouer('bella', e.target));
+  document.getElementById('btn-combat').addEventListener('click', e => jouer('combat', e.target));
   document.getElementById('btn-espoir').addEventListener('click', e => jouer('espoir', e.target));
   document.getElementById('btn-marechal').addEventListener('click', e => jouer('marechal', e.target));
   document.getElementById('btn-son').addEventListener('click', e => {

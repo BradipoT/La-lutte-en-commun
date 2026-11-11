@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = "104-dev2";
+const VERSION = "104-dev3";
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -99,7 +99,7 @@ function creerCombattant(def, x, estBoss) {
 }
 
 function commencerCombat() {
-  setMorceau('bella');
+  setMorceau('combat');
   const f = NIVEAUX[niveau];
   const srcBoss = combatFantome ? data.fantome : data.boss[indexBoss];
   const defBoss = Object.assign({}, srcBoss, {
@@ -145,7 +145,7 @@ function choisirHeros(i) {
 
 function jouerMotifMarechal() {
   if (!audioCtx || !musiqueOn) return;
-  const notes = [64, 64, 67, 72, 72, 72, 72, 72, 72, 72, 72, 72, 72, 64, 64, 74, 72, 72, 72, 72, 72, 72, 72];
+  const notes = [64, 64, 67, 72, 72, 72, 72, 72, 72, 72, 72, 72, 72, 76, 76, 74, 72, 72, 72, 72, 72, 72, 72];
   const d = 60 / 170 / 2;
   const t0 = audioCtx.currentTime + 0.15;
   notes.forEach((m, i) => jouerNote(m, t0 + i * d, d * 0.9, 'square', 0.15));
