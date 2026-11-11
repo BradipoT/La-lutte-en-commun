@@ -45,9 +45,8 @@ window.GAME_DATA = {
   boss: [
     { id: 'glucksmann', nom: 'Raphaël Glucksmann', echelle: 1.08, pv: 80, degats: 7, couleur: '#7f8c8d', vitesse: 130, cadence: 2800, reflexe: 0.08,
       portee: 560,
-      arguments: [ { t: 'Il faut relancer la croissance !', r: 'Vos « arguments » tiennent plus du communiqué de presse que du débat.' },
-        { t: 'L’Europe, c’est trop bureaucratique !', r: 'Oui, et la paperasse fiscale adore les paradis fiscaux.' },
-        { t: 'Il faut taxer les multinationales !', r: 'Évidemment… après les avoir subventionnées, bien sûr.' } ] },
+      arguments: [ { t: 'On ne peut pas parler de génocide.', r: 'Ça n’est pas l’avis des experts du domaine.' },
+        { t: 'La LFI est méchante avec moi.', r: 'On vous ignore. Désolé que ça vous blesse.' } ] },
     { id: 'marechal', nom: 'Marion Maréchal', pv: 90, degats: 8, couleur: '#8e44ad', vitesse: 150, cadence: 2400, reflexe: 0.5, portee: 600,
       avertissement: '⚠️ Ses punchlines sont cinglantes : esquivez ou renvoyez-les !',
       arguments: [

@@ -80,7 +80,7 @@ window.createLecteurMusique = function () {
       const accOff = morceau.accordOffset || 4;
       const accEvery = morceau.accordEvery || 8;
       const rel = ((stepSeq % accEvery) + accEvery) % accEvery;
-      if (morceau.accords && (rel === accOff || (morceau.accordDouble && rel === accOff + 1))) {
+      if (morceau.accords && (rel === accOff || (morceau.accordDouble && rel === (accOff + 2) % accEvery))) {
         const accord = morceau.accords[Math.floor((((stepSeq - accOff) % morceau.melodie.length) + morceau.melodie.length) % morceau.melodie.length / accEvery) % morceau.accords.length];
         accord.forEach(n => jouerNote(n, prochaineNote, duree * 1.8, 'triangle', 0.09));
       }
