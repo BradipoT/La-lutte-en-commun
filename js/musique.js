@@ -19,6 +19,7 @@ window.MUSIQUE_MORCEAUX = {
     bpm: 170,
     accordOffset: 14,
     accordEvery: 16,
+    accordDouble: true,
     typeMel: 'square', volMel: 0.12,
     typeBass: 'sawtooth', volBass: 0.10,
     melodie: [64, 64, 64, 64, 62, 62, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 62, 64, 62, 60, 59, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 59, 60, 59, 57, 55, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 55, 57, 55, 53, 57, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55],
@@ -78,8 +79,9 @@ window.createLecteurMusique = function () {
       if (b) jouerNote(b, prochaineNote, duree * 1.8, morceau.typeBass, morceau.volBass);
       const accOff = morceau.accordOffset || 4;
       const accEvery = morceau.accordEvery || 8;
-      if (morceau.accords && stepSeq % accEvery === accOff) {
-        const accord = morceau.accords[Math.floor((stepSeq - accOff) / accEvery) % morceau.accords.length];
+      const rel = ((stepSeq % accEvery) + accEvery) % accEvery;
+      if (morceau.accords && (rel === accOff || (morceau.accordDouble && rel === accOff + 1))) {
+        const accord = morceau.accords[Math.floor((((stepSeq - accOff) % morceau.melodie.length) + morceau.melodie.length) % morceau.melodie.length / accEvery) % morceau.accords.length];
         accord.forEach(n => jouerNote(n, prochaineNote, duree * (accEvery - 0.5), 'triangle', 0.07));
       }
       if (morceau.bpm >= 120 && stepSeq % 2 === 1) jouerHat(prochaineNote);
