@@ -17,6 +17,7 @@ window.MUSIQUE_MORCEAUX = {
   },
   combat: {
     bpm: 170,
+    accordOffset: 6,
     typeMel: 'square', volMel: 0.12,
     typeBass: 'sawtooth', volBass: 0.10,
     melodie: [64, 64, 64, 64, 62, 62, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 62, 64, 62, 60, 59, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 59, 60, 59, 57, 55, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 55, 57, 55, 53, 57, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55],
@@ -74,8 +75,9 @@ window.createLecteurMusique = function () {
       const idxB = (((stepSeq - off) % morceau.basse.length) + morceau.basse.length) % morceau.basse.length;
       const b = morceau.basse[idxB];
       if (b) jouerNote(b, prochaineNote, duree * 1.8, morceau.typeBass, morceau.volBass);
-      if (morceau.accords && stepSeq % 8 === 4) {
-        const accord = morceau.accords[Math.floor((stepSeq - 4) / 8) % morceau.accords.length];
+      const accOff = morceau.accordOffset || 4;
+      if (morceau.accords && stepSeq % 8 === accOff) {
+        const accord = morceau.accords[Math.floor((stepSeq - accOff) / 8) % morceau.accords.length];
         accord.forEach(n => jouerNote(n, prochaineNote, duree * 7.5, 'triangle', 0.07));
       }
       if (morceau.bpm >= 120 && stepSeq % 2 === 1) jouerHat(prochaineNote);
