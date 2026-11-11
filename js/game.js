@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 104;
+const VERSION = "104-dev1";
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -156,6 +156,15 @@ function afficherVersus() {
     setMorceau('');
     reprendreMusique();
     setTimeout(jouerMotifZemmour, 1000);
+    const bc = element('btn-combat');
+    bc.disabled = true;
+    bc.textContent = 'Combattez ! (6 s)';
+    let reste = 6;
+    const compteur = setInterval(() => {
+      reste--;
+      if (reste > 0) bc.textContent = 'Combattez ! (' + reste + ' s)';
+      else { clearInterval(compteur); bc.disabled = false; bc.textContent = 'Combattez !'; }
+    }, 1000);
   } else {
     setMorceau('bella');
     reprendreMusique();
@@ -1479,11 +1488,11 @@ element('btn-continuer-fantome').addEventListener('click', () => {
   clearInterval(seqFantome);
   seqFantome = setInterval(() => {
     i++;
+    if (i === 1 && sonLoup && musiqueOn) { sonLoup.currentTime = 0; sonLoup.play().catch(() => {}); }
     if (i < LIGNES_FANTOME.length) element('texte-fantome').textContent = LIGNES_FANTOME[i];
     else {
       clearInterval(seqFantome);
       element('groupe-fantome').classList.remove('cache');
-      if (sonLoup && musiqueOn) { sonLoup.currentTime = 0; sonLoup.play().catch(() => {}); }
       const g = element('ghost-fly');
       g.style.display = 'block';
       g.style.animation = 'none';
