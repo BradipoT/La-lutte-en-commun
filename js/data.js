@@ -48,6 +48,12 @@ window.GAME_DATA = {
       arguments: [ { t: 'Il faut relancer la croissance !', r: 'Vos « arguments » tiennent plus du communiqué de presse que du débat.' },
         { t: 'L’Europe, c’est trop bureaucratique !', r: 'Oui, et la paperasse fiscale adore les paradis fiscaux.' },
         { t: 'Il faut taxer les multinationales !', r: 'Évidemment… après les avoir subventionnées, bien sûr.' } ] },
+    { id: 'marechal', nom: 'Marion Maréchal', pv: 90, degats: 8, couleur: '#8e44ad', vitesse: 150, cadence: 2400, reflexe: 0.5, portee: 600,
+      avertissement: '⚠️ Ses punchlines sont cinglantes : esquivez ou renvoyez-les !',
+      arguments: [
+        { t: 'Les immigrés nous coûtent cher.', r: 'Moins que les détournements de votre famille.' },
+        { t: 'Il y a des hordes de sauvages dans les rues.', r: 'Vous parlez de vos amis néo-nazis.' }
+      ] },
     { id: 'consigny', nom: 'Charles de Consigny', echelle: 0.92, pv: 100, degats: 9, couleur: '#6c3483', vitesse: 138, cadence: 2500, reflexe: 0.11, portee: 540,
       charge: false,
       arguments: [
@@ -124,6 +130,7 @@ window.GAME_DATA = {
 
   recompenses: [
     'Vous avez gagné : le SMIC à 1 700 € net !',
+    'Vous avez gagné : l’égalité réelle femmes-hommes (quotas et sanctions) !',
     'Vous avez gagné : la retraite à 60 ans !',
     'Vous avez gagné : le blocage des prix des produits de première nécessité !',
     'Vous avez gagné : la planification écologique !',

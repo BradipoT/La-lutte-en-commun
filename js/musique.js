@@ -15,7 +15,7 @@ window.MUSIQUE_MORCEAUX = {
     basse: [36, 43, 36, 43, 36, 43, 36, 43, 33, 40, 33, 40, 33, 40, 33, 40, 29, 36, 29, 36, 29, 36, 29, 36, 31, 38, 31, 38, 31, 38, 31, 38],
     accords: [[48, 52, 55], [45, 48, 52], [41, 45, 48], [43, 47, 50]]
   },
-  zemmour: {
+  marechal: {
     bpm: 170,
     typeMel: 'square', volMel: 0.15,
     typeBass: 'triangle', volBass: 0.0,

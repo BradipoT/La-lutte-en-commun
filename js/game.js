@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = "104-dev1";
+const VERSION = "104-dev2";
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -62,7 +62,7 @@ let ondes = [];
 const PORTEE_ATTAQUE = 240;
 let dernierSpeciale = 0;
 const COOLDOWN_SPE = 8000;
-const DUREE_CAST = 1100;
+const DUREE_CAST = 700;
 const PORTEE_SPE = 480;
 let annonce = null;
 let shakeJusqua = 0;
@@ -143,7 +143,7 @@ function choisirHeros(i) {
   afficherVersus();
 }
 
-function jouerMotifZemmour() {
+function jouerMotifMarechal() {
   if (!audioCtx || !musiqueOn) return;
   const notes = [64, 64, 67, 72, 72, 72, 72, 72, 72, 72, 72, 72, 72, 64, 64, 74, 72, 72, 72, 72, 72, 72, 72];
   const d = 60 / 170 / 2;
@@ -152,10 +152,10 @@ function jouerMotifZemmour() {
 }
 
 function afficherVersus() {
-  if (data.boss[indexBoss].id === 'zemmour') {
+  if (data.boss[indexBoss].id === 'marechal') {
     setMorceau('');
     reprendreMusique();
-    setTimeout(jouerMotifZemmour, 1000);
+    setTimeout(jouerMotifMarechal, 1000);
     const bc = element('btn-combat');
     bc.disabled = true;
     bc.textContent = 'Combattez ! (6 s)';

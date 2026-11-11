@@ -24,6 +24,7 @@ const TRAITS = {
   zemmour:     { sexe: 'h', cheveux: '#2c2c2c', longueur: 'courts',  teint: '#f0c8aa', lunettes: true,  barbe: null },
   bardella:    { sexe: 'h', cheveux: '#5d4037', longueur: 'courts',  teint: '#f0c8aa', lunettes: false, barbe: null },
   consigny:    { sexe: 'h', cheveux: '#d4a017', longueur: 'aucun',  teint: '#f5d0b0', lunettes: false, barbe: null },
+  marechal:    { sexe: 'f', cheveux: '#e8c96a', longueur: 'longs',  teint: '#f5d0b0', lunettes: false, barbe: null },
   fantome:     { sexe: 'h', cheveux: '#111111', longueur: 'aucun',  teint: '#cfd0ff', lunettes: false, barbe: null, fantome: true }
 };
 
