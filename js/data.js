@@ -97,7 +97,7 @@ window.GAME_DATA = {
     { id: 'zemmour', nom: 'Éric Zemmour', echelle: 0.92, pv: 315, degats: 15, couleur: '#2c3e50', vitesse: 235, cadence: 1700, reflexe: 0.42,
       portee: 720,
       charge: true,
-      special: { nom: '🤯 Racisme sidérant', delai: 12000, confusion: 9000 },
+      special: { nom: '🤯 Racisme sidérant', delai: 20000, confusion: 9000 },
       avertissement: 'Attention : son racisme est sidérant.',
       arguments: [ { t: ' Il a dit « La ville des noires » !', r: 'Ça rend sourd… comme disait l’autre.' },
         { t: 'Le grand remplacement est en cours !', r: 'Vous savez qu’on voit votre tête ?' },
