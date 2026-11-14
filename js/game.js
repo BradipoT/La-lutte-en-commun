@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 108;
+const VERSION = "108-dev1";
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -76,7 +76,7 @@ function element(id) {
 }
 
 function cacherTout() {
-  ['ecran-titre', 'ecran-intro1', 'ecran-intro2', 'ecran-intro3', 'ecran-aide', 'ecran-heros', 'ecran-stats', 'ecran-arrivee', 'ecran-melenchon', 'ecran-fantome-intro', 'ecran-fantome-gagne', 'ecran-versus', 'ecran-recompense', 'ecran-defaite', 'ecran-perdu', 'ecran-victoire', 'controles']
+  ['ecran-titre', 'ecran-intro1', 'ecran-intro2', 'ecran-intro3', 'ecran-aide', 'ecran-heros', 'ecran-stats', 'ecran-arrivee', 'ecran-melenchon', 'ecran-fantome-intro', 'ecran-fantome-gagne', 'ecran-versus', 'ecran-recompense', 'ecran-defaite', 'ecran-perdu', 'ecran-victoire', 'ecran-pause', 'controles']
     .forEach(id => element(id).classList.add('cache'));
 }
 
@@ -1171,6 +1171,8 @@ function draw(t) {
 
 let dernier = performance.now();
 function boucle(t) {
+  const bp = element('btn-pause');
+  if (bp) bp.classList.toggle('cache', etat !== 'combat');
   const dt = Math.min((t - dernier) / 1000, 0.05);
   dernier = t;
   update(dt, t);
@@ -1523,6 +1525,21 @@ element('btn-retour-menu').addEventListener('click', () => {
   resetPartie();
   etat = 'titre';
   montrer('ecran-titre');
+});
+element('btn-pause').addEventListener('click', () => {
+  if (etat !== 'combat') return;
+  etat = 'pause';
+  pauseMusique();
+  montrer('ecran-pause');
+});
+element('btn-reprendre').addEventListener('click', () => {
+  etat = 'combat';
+  reprendreMusique();
+  cacherTout();
+});
+element('btn-pause-recommencer').addEventListener('click', () => {
+  reprendreMusique();
+  commencerCombat();
 });
 element('btn-arrivee-suite').addEventListener('click', () => montrer('ecran-melenchon'));
 element('btn-melenchon-ok').addEventListener('click', () => {
