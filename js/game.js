@@ -7,7 +7,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = "108-dev1";
+const VERSION = "108-dev2";
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -1526,18 +1526,19 @@ element('btn-retour-menu').addEventListener('click', () => {
   etat = 'titre';
   montrer('ecran-titre');
 });
-element('btn-pause').addEventListener('click', () => {
+function auClic(id, fn) { const el = element(id); if (el) el.addEventListener('click', fn); }
+auClic('btn-pause', () => {
   if (etat !== 'combat') return;
   etat = 'pause';
   pauseMusique();
   montrer('ecran-pause');
 });
-element('btn-reprendre').addEventListener('click', () => {
+auClic('btn-reprendre', () => {
   etat = 'combat';
   reprendreMusique();
   cacherTout();
 });
-element('btn-pause-recommencer').addEventListener('click', () => {
+auClic('btn-pause-recommencer', () => {
   reprendreMusique();
   commencerCombat();
 });
