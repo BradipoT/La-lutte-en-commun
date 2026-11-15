@@ -1,0 +1,14 @@
+{
+  "name": "la-lutte-en-commun",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Jeu de combat 2D - La Lutte en Commun",
+  "scripts": {
+    "lint": "eslint js/",
+    "test": "node tests/parcours.test.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "jsdom": "^24.0.0"
+  }
+}
