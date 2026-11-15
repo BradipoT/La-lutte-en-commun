@@ -212,7 +212,13 @@ element('btn-retour-menu').addEventListener('click', () => {
   montrer('ecran-titre');
 });
 function auClic(id, fn) { const el = element(id); if (el) el.addEventListener('click', fn); }
-auClic('btn-pause', () => {
+function auTap(id, fn) {
+  const el = element(id);
+  if (!el) return;
+  el.addEventListener('click', fn);
+  el.addEventListener('pointerup', e => { e.preventDefault(); fn(); });
+}
+auTap('btn-pause', () => {
   if (etat !== 'combat') return;
   etat = 'pause';
   pauseMusique();
