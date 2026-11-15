@@ -1,3 +1,11 @@
+// diagnostic : affiche les erreurs JS à l'écran (utile sur mobile)
+window.addEventListener('error', e => {
+  const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#c0392b;color:#fff;padding:8px;z-index:9999;font:12px monospace;white-space:pre-wrap';
+  d.textContent = 'Erreur JS: ' + e.message + ' (' + (e.filename || '').split('/').pop() + ':' + e.lineno + ')';
+  document.body.appendChild(d);
+});
+
 const canvas = document.getElementById('jeu');
 const ctx = canvas.getContext('2d');
 const W = 960;
@@ -7,7 +15,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 121;
+const VERSION = 122;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
