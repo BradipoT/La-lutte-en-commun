@@ -15,7 +15,7 @@ const GRAV = 1800;
 const VITESSE_TIR = 460;
 const VITESSE_TIR_BOSS = 400;
 const data = window.GAME_DATA;
-const VERSION = 122;
+const VERSION = 123;
 
 const POSES = ['debout', 'marche', 'marche2', 'pointe', 'pointeMarche', 'protege', 'brasCiel'];
 const imagesPersos = {};
@@ -85,12 +85,13 @@ function element(id) {
 
 function cacherTout() {
   ['ecran-titre', 'ecran-intro1', 'ecran-intro2', 'ecran-intro3', 'ecran-aide', 'ecran-heros', 'ecran-stats', 'ecran-arrivee', 'ecran-melenchon', 'ecran-fantome-intro', 'ecran-fantome-gagne', 'ecran-versus', 'ecran-recompense', 'ecran-defaite', 'ecran-perdu', 'ecran-victoire', 'ecran-pause', 'controles']
-    .forEach(id => element(id).classList.add('cache'));
+    .forEach(id => { const el = element(id); if (el) el.classList.add('cache'); });
 }
 
 function montrer(id) {
   cacherTout();
-  element(id).classList.remove('cache');
+  const el = element(id);
+  if (el) el.classList.remove('cache');
 }
 
 function creerCombattant(def, x, estBoss) {
