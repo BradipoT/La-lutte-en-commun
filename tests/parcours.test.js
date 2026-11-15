@@ -44,3 +44,4 @@ assert(visible('ecran-versus'), 'écran versus affiché : ' + w.document.getElem
 clic('btn-combat');
 assert(visible('ecran-versus') === false, 'combat lancé (versus masqué)');
 console.log(process.exitCode ? 'TEST ÉCHOUÉ' : 'TEST RÉUSSI');
+process.exit(process.exitCode || 0);
