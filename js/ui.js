@@ -211,6 +211,22 @@ element('btn-retour-menu').addEventListener('click', () => {
   etat = 'titre';
   montrer('ecran-titre');
 });
+function auClic(id, fn) { const el = element(id); if (el) el.addEventListener('click', fn); }
+auClic('btn-pause', () => {
+  if (etat !== 'combat') return;
+  etat = 'pause';
+  pauseMusique();
+  montrer('ecran-pause');
+});
+auClic('btn-reprendre', () => {
+  etat = 'combat';
+  reprendreMusique();
+  cacherTout();
+});
+auClic('btn-pause-recommencer', () => {
+  reprendreMusique();
+  commencerCombat();
+});
 element('btn-arrivee-suite').addEventListener('click', () => montrer('ecran-melenchon'));
 element('btn-melenchon-ok').addEventListener('click', () => {
   reprendreMusique();
