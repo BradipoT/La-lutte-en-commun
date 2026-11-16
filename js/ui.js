@@ -219,6 +219,14 @@ function auTap(id, fn) {
   el.addEventListener('pointerup', e => { e.preventDefault(); fn(); });
   el.addEventListener('touchend', e => { e.preventDefault(); fn(); });
 }
+const bp = element('btn-pause');
+if (bp) bp.addEventListener('pointerdown', () => {
+  const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;top:40px;left:0;right:0;background:#2980b9;color:#fff;padding:8px;z-index:9999;font:12px monospace;text-align:center';
+  d.textContent = 'tap pause détecté, etat=' + etat;
+  document.body.appendChild(d);
+  setTimeout(() => d.remove(), 1500);
+});
 auTap('btn-pause', () => {
   if (etat !== 'combat') return;
   etat = 'pause';
