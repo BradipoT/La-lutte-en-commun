@@ -1071,8 +1071,6 @@ function draw(t) {
 
 let dernier = performance.now();
 function boucle(t) {
-  const bp = element('btn-pause');
-  if (bp) bp.classList.toggle('cache', etat !== 'combat');
   const dt = Math.min((t - dernier) / 1000, 0.05);
   dernier = t;
   update(dt, t);
