@@ -516,3 +516,6 @@ h2 { font-size: clamp(22px, 5vw, 36px); }
 }
 
 #btn-pause.cache { display: none !important; pointer-events: none; }
+
+#btn-pause { width: 64px; height: 64px; font-size: 26px; bottom: 18px; }
+#btn-pause::before { content: ''; position: absolute; inset: -14px; }

@@ -217,6 +217,7 @@ function auTap(id, fn) {
   if (!el) return;
   el.addEventListener('click', fn);
   el.addEventListener('pointerup', e => { e.preventDefault(); fn(); });
+  el.addEventListener('touchend', e => { e.preventDefault(); fn(); });
 }
 auTap('btn-pause', () => {
   if (etat !== 'combat') return;
