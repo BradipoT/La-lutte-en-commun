@@ -229,6 +229,8 @@ auTap('btn-reprendre', () => {
   etat = 'combat';
   reprendreMusique();
   cacherTout();
+  const c = element('controles');
+  if (c) c.classList.remove('cache');
 });
 auTap('btn-pause-recommencer', () => {
   reprendreMusique();
