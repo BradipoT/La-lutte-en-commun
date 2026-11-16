@@ -215,9 +215,11 @@ function auClic(id, fn) { const el = element(id); if (el) el.addEventListener('c
 function auTap(id, fn) {
   const el = element(id);
   if (!el) return;
-  el.addEventListener('click', fn);
-  el.addEventListener('pointerup', e => { e.preventDefault(); fn(); });
-  el.addEventListener('touchend', e => { e.preventDefault(); fn(); });
+  let fait = false;
+  const exec = e => { if (fait) return; fait = true; e.preventDefault(); fn(); };
+  el.addEventListener('pointerdown', exec);
+  el.addEventListener('touchstart', exec);
+  el.addEventListener('click', exec);
 }
 auTap('btn-pause', () => {
   if (etat !== 'combat') return;
