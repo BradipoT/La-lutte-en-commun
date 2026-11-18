@@ -854,7 +854,30 @@ function dessinerAnnonce(t) {
   ctx.fillText(annonce.l2, W / 2, y + 60);
 }
 
-function dessinerBoiteTexte(x, y, w, texte) {
+function dessinerBulle(x, y, w, h, queueX) {
+  // bulle de BD : rectangle arrondi blanc + queue triangulaire
+  const r = 12;
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y, x + w, y + r, r);
+  ctx.lineTo(x + w, y + h);
+  ctx.lineTo(queueX + 16, y + h);
+  ctx.lineTo(queueX, y + h + 16);
+  ctx.lineTo(queueX - 16, y + h);
+  ctx.lineTo(x, y + h);
+  ctx.arcTo(x, y + h, x, y + h - r, r);
+  ctx.lineTo(x, y + r);
+  ctx.arcTo(x, y, x + r, y, r);
+  ctx.closePath();
+  ctx.fillStyle = '#ffffff';
+  ctx.fill();
+  ctx.strokeStyle = '#222222';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+}
+
+function dessinerBoiteTexte(x, y, w, texte, cote) {
   if (!texte) return;
   ctx.font = 'bold 18px sans-serif';
   const mots = texte.split(' ');
@@ -871,11 +894,8 @@ function dessinerBoiteTexte(x, y, w, texte) {
   });
   if (ligne) lignes.push(ligne);
   const h = 20 + lignes.length * 21;
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(x, y, w, h);
-  ctx.strokeStyle = '#bbbbbb';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(x, y, w, h);
+  const queueX = cote === 'droite' ? x + w - 60 : x + 60;
+  dessinerBulle(x, y, w, h, queueX);
   ctx.fillStyle = '#111111';
   ctx.textAlign = 'left';
   lignes.forEach((l, i) => ctx.fillText(l, x + 10, y + 28 + i * 21));
@@ -1063,8 +1083,8 @@ function draw(t) {
     ctx.textAlign = 'left';
     ctx.fillText('🛡 ironie', 176, 51);
     ctx.fillText('⭐ spé', 176, 62);
-    dessinerBoiteTexte(20, 78, 440, t - messageJT < 3000 ? messageJ : (t - phraseJT < 2500 ? phraseJ : ''));
-    dessinerBoiteTexte(W - 460, 78, 440, t - messageBT < 3000 ? messageB : (t - phraseBT < 2500 ? phraseB : ''));
+    dessinerBoiteTexte(20, 78, 440, t - messageJT < 3000 ? messageJ : (t - phraseJT < 2500 ? phraseJ : '', 'gauche'));
+    dessinerBoiteTexte(W - 460, 78, 440, t - messageBT < 3000 ? messageB : (t - phraseBT < 2500 ? phraseB : '', 'droite'));
 
   }
 }
