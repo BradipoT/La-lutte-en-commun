@@ -1083,8 +1083,8 @@ function draw(t) {
     ctx.textAlign = 'left';
     ctx.fillText('🛡 ironie', 176, 51);
     ctx.fillText('⭐ spé', 176, 62);
-    dessinerBoiteTexte(20, 78, 440, t - messageJT < 3000 ? messageJ : (t - phraseJT < 2500 ? phraseJ : '', 'gauche'));
-    dessinerBoiteTexte(W - 460, 78, 440, t - messageBT < 3000 ? messageB : (t - phraseBT < 2500 ? phraseB : '', 'droite'));
+    dessinerBoiteTexte(20, 78, 440, t - messageJT < 3000 ? messageJ : (t - phraseJT < 2500 ? phraseJ : ''), 'gauche');
+    dessinerBoiteTexte(W - 460, 78, 440, t - messageBT < 3000 ? messageB : (t - phraseBT < 2500 ? phraseB : ''), 'droite');
 
   }
 }
