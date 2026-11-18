@@ -248,9 +248,19 @@ function pauseRedemarrer() {
   reprendreMusique();
   commencerCombat();
 }
+function pauseMenu() {
+  const maintenant = performance.now();
+  if (maintenant - dernierTapPause < 400) return;
+  dernierTapPause = maintenant;
+  resetPartie();
+  setMorceau('sombre');
+  etat = 'titre';
+  montrer('ecran-titre');
+}
 window.pauseOuvrir = pauseOuvrir;
 window.pauseReprendre = pauseReprendre;
 window.pauseRedemarrer = pauseRedemarrer;
+window.pauseMenu = pauseMenu;
 element('btn-arrivee-suite').addEventListener('click', () => montrer('ecran-melenchon'));
 element('btn-melenchon-ok').addEventListener('click', () => {
   reprendreMusique();
