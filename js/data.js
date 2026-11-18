@@ -3,41 +3,41 @@ window.GAME_DATA = {
     { id: 'guette', nom: 'Clémence Guetté', couleur: '#e74c3c',
       stats: { degats: 16, cadenceTir: 700, vitesse: 300, saut: 820, cooldownSpe: 12000, pv: 165 , portee: 340},
       arguments: [
-        'La précarité n’est pas un choix de vie.',
-        'Taxez les riches, pas les pauvres.',
-        'Un SMIC à 1 700 €, c’est possible.'
+        'Nous inscrirons dans la Constitution qu’on ne prélève pas sur la nature plus que ce qu’elle peut reconstituer.',
+        'Nous relocaliserons les productions essentielles à la vie de notre pays.',
+        'Nous lancerons un grand plan d’investissements écologiquement et socialement utiles.'
       ],
       special: { type: 'bloqueAttaque', nom: '✨ Aura', desc: 'L’adversaire ne peut plus attaquer pendant 10 s.' } },
     { id: 'panot', nom: 'Mathilde Panot', couleur: '#9b59b6',
       stats: { degats: 13, cadenceTir: 500, vitesse: 250, saut: 780, cooldownSpe: 16000, pv: 142 , portee: 520},
       arguments: [
-        'La VIe République, c’est maintenant.',
-        'Le peuple d’abord, les profits ensuite.',
-        'Le 49.3, vous connaissez ?'
+        'Nous adopterons des mesures antidumping d’urgence sur les industries stratégiques : sidérurgie, automobile, pharmaceutique.',
+        'Nous garantirons, quoi qu’il en coûte, l’accès à l’eau courante potable à tous les habitants des Outre-mer.',
+        'Nous créerons un pôle public des transports et de la mobilité.'
       ],
       special: { type: 'soin', nom: '💚 Résilience', desc: 'Récupère 20 % de PV.' } },
     { id: 'balayoko', nom: 'Bally Bagayoko', couleur: '#3498db', echelle: 1.08,
       stats: { degats: 13, cadenceTir: 700, vitesse: 330, saut: 860, cooldownSpe: 10000, pv: 210 , portee: 360},
       arguments: [
-        'Les services publics ne sont pas un coût, ce sont des droits.',
-        'Un hôpital fermé, ce sont des vies en danger.',
-        'Chaque quartier mérite son école publique.'
+        'Nous planifierons le passage à 100 % d’énergies renouvelables grâce à la sobriété et l’efficacité énergétiques.',
+        'Nous arrêterons les subventions aux énergies fossiles, y compris à l’étranger.',
+        'Nous reviendrons sur les hausses abusives du prix du gaz.'
       ],
       special: { type: 'confus', nom: '👑 La ville des rois', desc: 'L’adversaire est confus 6 s : il ne fait plus rien.' } },
     { id: 'bompard', nom: 'Manuel Bompard', couleur: '#16a085', echelle: 1.08,
       stats: { degats: 14, cadenceTir: 650, vitesse: 270, saut: 800, cooldownSpe: 9000, pv: 180 , portee: 440},
       arguments: [
-        'Le SMIC à 1 700 €, on le fait.',
-        'La planification écologique, maintenant !',
-        'Vos cadeaux fiscaux, on les connaît.'
+        'Nous isolerons au moins 700 000 logements par an.',
+        'Nous interdirons les fermes-usines.',
+        'Nous instaurerons une agriculture relocalisée, diversifiée et écologique et créerons 500 000 emplois agricoles.'
       ],
       special: { type: 'antiReflexe', nom: '🧮 Calculs de maths', desc: 'L’adversaire ne peut plus couper la parole pendant 12 s.' } },
     { id: 'melenchon', nom: 'Jean-Luc Mélenchon', couleur: '#e67e22',
       stats: { degats: 19, cadenceTir: 500, vitesse: 230, saut: 740, cooldownSpe: 6000, pv: 210 , portee: 480},
       arguments: [
-        'Si vous n’augmentez pas les salaires, vous aurez la récession.',
-        'L’argent magique existe… pour les riches.',
-        'La planète n’a pas de plan B.'
+        'Nous garantirons aux agricultrices et agriculteurs le droit à une retraite digne.',
+        'Nous reviendrons sur les privatisations (aéroports, autoroutes, Française des jeux, etc.).',
+        'Nous généraliserons l’économie sociale et solidaire (ESS) et protégerons le secteur associatif.'
       ],
       special: { type: 'gigantisme', nom: '📢 LA RÉPUBLIQUE C’EST MOI', desc: 'Grandit pendant 15 s : toutes ses stats sont améliorées.' } }
   ],
