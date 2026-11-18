@@ -221,23 +221,36 @@ function auTap(id, fn) {
   el.addEventListener('touchstart', exec);
   el.addEventListener('click', exec);
 }
-auTap('btn-pause', () => {
+let dernierTapPause = 0;
+function pauseOuvrir() {
+  const maintenant = performance.now();
+  if (maintenant - dernierTapPause < 400) return;
+  dernierTapPause = maintenant;
   if (etat !== 'combat') return;
   etat = 'pause';
   pauseMusique();
   montrer('ecran-pause');
-});
-auTap('btn-reprendre', () => {
+}
+function pauseReprendre() {
+  const maintenant = performance.now();
+  if (maintenant - dernierTapPause < 400) return;
+  dernierTapPause = maintenant;
   etat = 'combat';
   reprendreMusique();
   cacherTout();
   const c = element('controles');
   if (c) c.classList.remove('cache');
-});
-auTap('btn-pause-recommencer', () => {
+}
+function pauseRedemarrer() {
+  const maintenant = performance.now();
+  if (maintenant - dernierTapPause < 400) return;
+  dernierTapPause = maintenant;
   reprendreMusique();
   commencerCombat();
-});
+}
+window.pauseOuvrir = pauseOuvrir;
+window.pauseReprendre = pauseReprendre;
+window.pauseRedemarrer = pauseRedemarrer;
 element('btn-arrivee-suite').addEventListener('click', () => montrer('ecran-melenchon'));
 element('btn-melenchon-ok').addEventListener('click', () => {
   reprendreMusique();

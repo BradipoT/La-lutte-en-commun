@@ -147,23 +147,23 @@
     <div class="ligne-bas">
       <button id="btn-tir" class="bouton">🔥</button>
       <button id="btn-special" class="bouton">🛡</button>
-      <button id="btn-pause" class="bouton" title="Pause">⏸</button>
+      <button id="btn-pause" class="bouton" title="Pause" onpointerdown="pauseOuvrir()" ontouchstart="pauseOuvrir()" onclick="pauseOuvrir()">⏸</button>
     </div>
     <button id="btn-speciale" class="bouton bouton-speciale" title="Attaque spéciale">⭐</button>
   </div>
 </div>
 
-<script src="js/musique.js?v=130"></script>
-<script src="js/data.js?v=130"></script>
-<script src="js/core.js?v=130"></script>
-<script src="js/sfx.js?v=130"></script>
-<script src="js/combat.js?v=130"></script>
-<script src="js/ui.js?v=130"></script>
+<script src="js/musique.js?v=131"></script>
+<script src="js/data.js?v=131"></script>
+<script src="js/core.js?v=131"></script>
+<script src="js/sfx.js?v=131"></script>
+<script src="js/combat.js?v=131"></script>
+<script src="js/ui.js?v=131"></script>
 <div id="ecran-pause" class="ecran cache">
   <h2>⏸ Pause</h2>
   <div class="groupe" style="justify-content:center">
-    <button id="btn-reprendre" class="gros-bouton">▶ Reprendre</button>
-    <button id="btn-pause-recommencer" class="gros-bouton">🔄 Redémarrer le combat</button>
+    <button id="btn-reprendre" class="gros-bouton" onpointerdown="pauseReprendre()" ontouchstart="pauseReprendre()" onclick="pauseReprendre()">▶ Reprendre</button>
+    <button id="btn-pause-recommencer" class="gros-bouton" onpointerdown="pauseRedemarrer()" ontouchstart="pauseRedemarrer()" onclick="pauseRedemarrer()">🔄 Redémarrer le combat</button>
   </div>
 </div>
 
